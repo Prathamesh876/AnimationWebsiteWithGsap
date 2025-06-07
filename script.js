@@ -2,8 +2,16 @@
 
 // Initialize Lenis
 const lenis = new Lenis({
-   autoRaf: true,
+  lerp: window.innerWidth <= 768 ? 0.04 : 0.1, // Smoother scroll on mobile
+  smooth: true,
+  autoResize: true,
 });
+
+function raf(time) {
+  lenis.raf(time);
+  requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);
 
 // Listen for the scroll event and log the event data
 lenis.on('scroll', (e) => {
