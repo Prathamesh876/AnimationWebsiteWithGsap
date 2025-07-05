@@ -2,14 +2,14 @@
 
 // Initialize Lenis
 const lenis = new Lenis({
-  lerp: window.innerWidth <= 768 ? 0.04 : 0.1, // Smoother scroll on mobile
-  smooth: true,
-  autoResize: true,
+   lerp: window.innerWidth <= 768 ? 0.04 : 0.1, // Smoother scroll on mobile
+   smooth: true,
+   autoResize: true,
 });
 
 function raf(time) {
-  lenis.raf(time);
-  requestAnimationFrame(raf);
+   lenis.raf(time);
+   requestAnimationFrame(raf);
 }
 requestAnimationFrame(raf);
 
@@ -96,38 +96,38 @@ function loop2() {
 
 
 
-    var tl2 = gsap.timeline({
+   var tl2 = gsap.timeline({
       scrollTrigger: {
          trigger: "#page2",
          // markers:true,
          start: "top 25%",
          end: "top -100%",
          scrub: 2,
-         pin:true,
+         pin: true,
       }
    })
 
    tl2.to(".pos1", {
-   },"l1")
+   }, "l1")
 
    tl2.to(".pos2", {
       top: "0%",
-   },"l2")
-   
+   }, "l2")
+
    tl2.to(".pos3", {
       top: "0%",
-   },"l3")
+   }, "l3")
 
-    tl2.to(".front-line",{
-      width:"13vw",
-   },"l1")
-   tl2.to(".front-line2",{
-      width:"13vw",
-   },"l2")
-   tl2.to(".front-line3",{
-      width:"13vw",
-   },"l3")
-   
+   tl2.to(".front-line", {
+      width: "13vw",
+   }, "l1")
+   tl2.to(".front-line2", {
+      width: "13vw",
+   }, "l2")
+   tl2.to(".front-line3", {
+      width: "13vw",
+   }, "l3")
+
 }
 loop2();
 
@@ -137,8 +137,8 @@ function loop3() {
       scrollTrigger: {
          trigger: "#page3",
          //   markers:true,
-         start: "top 60%",
-         end: "top 15%",
+         start: "top 30%",
+         end: "top 0%",
          scrub: 2,
          // pin:true,
       }
@@ -146,38 +146,140 @@ function loop3() {
 
 
    tl.to(".video-container video", {
-      scale:1,
+      width:"100vw",
    })
 
 }
 loop3();
 
 
-function loop4(){
 
-var tl=gsap.timeline({
-   scrollTrigger:{
-      trigger:"#page5",
-      // markers:true,
-      start:"top 40%",
-      end:"top 0%",
-      scrub:true,
-   }
-});
+//page4
+function loop5() {
+   var tl = gsap.timeline({
+      scrollTrigger: {
+         trigger: "#page4",
+         //  markers:true,
+         start: "top 0%",
+         end: "end -500%",
+         scrub: 2,
+         pin: true,
+      }
+   })
 
-tl.to(".back-txtp5",{
-   width:"36vw",
-});
+   tl.to(".p4-mid-cont", {
+      transform: "translateX(-400%)",
+   })
 
-// tl.to(".back-para-p4",{
-//    width:"36vw",
-// })
+
+
+}
+loop5();
+
+//page4
+function loop6() {
+
+
+    gsap.from(".snikers", {
+       y: -700,
+      opacity: 0.5,
+      scrollTrigger: {
+         trigger: ".dv-Snickers",
+         // markers:true,
+         start: "left center",
+         end: "right 70%",
+         scrub: true,
+         // markers: true,
+      }
+   });
+
+
+   gsap.from(".galaxy", {
+      y: 1200,
+      opacity: 0.5,
+      scrollTrigger: {
+         trigger: ".dv-Galaxy",
+         // markers:true,
+         start: "left -10%",
+         end: "right 10%",
+         scrub: true,
+         // markers: true,
+      }
+   });
+
+   gsap.from(".lindt", {
+      x: 1000,
+      opacity: 0.5,
+      scrollTrigger: {
+         trigger: ".dv-Lindt",
+         // markers: true,
+         start: "left -80%",
+         end: "right -80%",
+         scrub: true,
+         // markers: true,
+      }
+   });
+
+   gsap.from(".milkybar", {
+      y: -700,
+      x: -700,
+      opacity: 0.5,
+      scrollTrigger: {
+         trigger: ".dv-Milkybar",
+         // markers: true,
+         start: "left -150%",
+         end: "right -180%",
+         scrub: true,
+         // markers: true,
+      }
+   });
+
+
+   gsap.from(".fabelle", {
+      y: 700,
+      x: 700,
+      opacity: 0.5,
+      scrollTrigger: {
+         trigger: ".dv-Fabelle",
+         // markers: true,
+         start: "left -310%",
+         end: "right -310%",
+         scrub: true,
+         // markers: true,
+      }
+   });
+
+}
+loop6();
+
+
+//page5
+function loop4() {
+
+   var tl = gsap.timeline({
+      scrollTrigger: {
+         trigger: "#page5",
+         // markers:true,
+         start: "top 40%",
+         end: "top 0%",
+         scrub: true,
+      }
+   });
+
+   tl.to(".back-txtp5", {
+      width: "36vw",
+   });
+
+   // tl.to(".back-para-p4",{
+   //    width:"36vw",
+   // })
 
 }
 loop4();
 
 
-// function loop5() {
+// function loops() {
+
 //     const page4 = document.querySelector("#page4");
 //     const cursore = document.querySelector(".custm-curs");
 
@@ -200,4 +302,11 @@ loop4();
 //         cursore.style.display = "none";
 //     });
 // }
-// loop5();
+// loops();
+
+
+
+
+
+
+//for page 4 animations
