@@ -512,7 +512,7 @@ li {
     height: 100vh;
     width: 10vw;
     object-fit: cover;
-   
+
 }
 
 
@@ -563,81 +563,82 @@ li {
 } */
 
 
-.p4-mid-cont{
+.p4-mid-cont {
     position: relative;
     height: 100%;
     width: 100%;
     background-color: lightcyan;
-   
+
     /* overflow-x: hidden; */
 }
 
-.back-headding{
+.back-headding {
     height: 100%;
     width: 500%;
     background-color: lightcoral;
-    display: flex; 
-   text-transform: uppercase;
+    display: flex;
+    text-transform: uppercase;
 }
 
 
-.dv-Snickers{
+.dv-Snickers {
     height: 100%;
     width: 100vw;
     background-color: #FAD59A;
 }
 
-.wraper-snikers{
+.wraper-snikers {
     position: absolute;
     height: 100%;
     width: 100%;
 }
-.wraper-snikers img{
+
+.wraper-snikers img {
     height: 550px;
     width: 370px;
     object-fit: cover;
-   
+
 }
 
-.dv-Galaxy{
+.dv-Galaxy {
     height: 100%;
     width: 100vw;
     background-color: #735557
 }
 
-.dv-Lindt{
+.dv-Lindt {
     height: 100%;
     width: 100vw;
     background-color: #DCA06D;
 }
 
-.dv-Lindt img{
-       height: 570px;
+.dv-Lindt img {
+    height: 570px;
     width: 390px;
     object-fit: cover;
 }
 
-.dv-Milkybar{
+.dv-Milkybar {
     height: 100%;
     width: 100vw;
     background-color: #EFDCAB;
 }
 
-.dv-Fabelle{
+.dv-Fabelle {
     height: 100%;
     width: 100vw;
-    background-color: #FFB4B4;    
+    background-color: #FFB4B4;
 }
 
-.dv-Fabelle img{
-       height: 680px;
+.dv-Fabelle img {
+    height: 680px;
     width: 420px;
     object-fit: cover;
 }
 
 
 
-.back-headding h1{
+.back-headding h1 {
     font-size: 15vw;
     color: #00000074;
 }
@@ -981,8 +982,8 @@ li {
     }
 
     .frnt-para-p5 {
-    position: absolute;
-    bottom: 16%;
+        position: absolute;
+        bottom: 16%;
     }
 
     .bt-txt h1 {
@@ -1000,17 +1001,17 @@ li {
     }
 
 
-     .wraper-snikers img {
-     height: 365px;
-    width: 270px;
+    .wraper-snikers img {
+        height: 365px;
+        width: 270px;
     }
 
-.dv-Fabelle img {
+    .dv-Fabelle img {
         height: 440px;
         width: 231px;
     }
 
-   
+
 }
 
 
@@ -1344,62 +1345,63 @@ li {
     }
 
     .wraper-snikers img {
-    height: 275px;
-    width: 170px;
-}
+        height: 275px;
+        width: 170px;
+    }
 
-.dv-Fabelle img {
-    height: 335px;
-    width: 170px;
-  
-}
+    .dv-Fabelle img {
+        height: 335px;
+        width: 170px;
+
+    }
 
 
-#page5 {
-    display: block;
-}
+    #page5 {
+        display: block;
+    }
 
-#page5 .left-p5-dv {
-    height: 35%;
-    width: 100%;
+    #page5 .left-p5-dv {
+        height: 35%;
+        width: 100%;
         padding: 9vh 12vw;
-}
-.right-p5-dv {
-    height: 65%;
-    width: 100%;
+    }
 
-}
-.frnt-txtp5 {   
-    top: 11%;
-    height: 30vh;
-    font-size: 9.8vw;
-   
-}
+    .right-p5-dv {
+        height: 65%;
+        width: 100%;
 
-.back-txtp5 {
-    top: 11%;
-height: 34vh;
-font-size: 9.8vw;
+    }
 
-}
+    .frnt-txtp5 {
+        top: 11%;
+        height: 30vh;
+        font-size: 9.8vw;
 
-.frnt-para-p5 {
-    bottom: 30%;
-    right: 5%;
-     height: 11vh;
-    font-size: 2.5vw;
-  
-}
+    }
 
-.sm-t-all {
-    margin-top: 3vh;
-}
+    .back-txtp5 {
+        top: 11%;
+        height: 34vh;
+        font-size: 9.8vw;
 
-.sm-t-all h1
- {
-    position: absolute;
-    font-size: 5.5vw;
- }
+    }
+
+    .frnt-para-p5 {
+        bottom: 30%;
+        right: 5%;
+        height: 11vh;
+        font-size: 2.5vw;
+
+    }
+
+    .sm-t-all {
+        margin-top: 3vh;
+    }
+
+    .sm-t-all h1 {
+        position: absolute;
+        font-size: 5.5vw;
+    }
 
 
 }
@@ -1522,6 +1524,71 @@ font-size: 9.8vw;
     }
 
 
+/* Scrolling mages hight set  */
+    
+    .wraper-snikers img {
+        height: 275px;
+        width: 170px;
+    }
+
+    .dv-Fabelle img {
+        height: 335px;
+        width: 170px;
+
+    }
+
+
+    /* here start Page5 */
+
+    #page5 {
+        display: block;
+    }
+
+
+    #page5 .left-p5-dv {
+        height: 35%;
+        width: 100%;
+        padding: 9vh 12vw;
+    }
+
+    .right-p5-dv {
+        height: 65%;
+        width: 100%;
+
+    }
+
+    .frnt-txtp5 {
+        top: 11%;
+        height: 30vh;
+        font-size: 9.8vw;
+
+    }
+
+    .back-txtp5 {
+        top: 11%;
+        height: 34vh;
+        font-size: 9.8vw;
+
+    }
+
+    .frnt-para-p5 {
+        bottom: 30%;
+        right: 5%;
+        height: 11vh;
+        font-size: 2.5vw;
+
+    }
+
+    .sm-t-all {
+        margin-top: 3vh;
+    }
+
+    .sm-t-all h1 {
+        position: absolute;
+        font-size: 5.5vw;
+    }
+
+
 
 }
 
@@ -1638,7 +1705,73 @@ font-size: 9.8vw;
         margin-left: 16px;
 
     }
-  
+
+
+    /* Scrolling mages hight set  */
+    
+    .wraper-snikers img {
+        height: 275px;
+        width: 170px;
+    }
+
+    .dv-Fabelle img {
+        height: 335px;
+        width: 170px;
+
+    }
+
+
+    /* here start Page5 */
+
+    #page5 {
+        display: block;
+    }
+
+
+    #page5 .left-p5-dv {
+        height: 35%;
+        width: 100%;
+        padding: 9vh 12vw;
+    }
+
+    .right-p5-dv {
+        height: 65%;
+        width: 100%;
+
+    }
+
+    .frnt-txtp5 {
+        top: 11%;
+        height: 30vh;
+        font-size: 9.8vw;
+
+    }
+
+    .back-txtp5 {
+        top: 11%;
+        height: 34vh;
+        font-size: 9.8vw;
+
+    }
+
+    .frnt-para-p5 {
+        bottom: 30%;
+        right: 5%;
+        height: 11vh;
+        font-size: 2.5vw;
+
+    }
+
+    .sm-t-all {
+        margin-top: 3vh;
+    }
+
+    .sm-t-all h1 {
+        position: absolute;
+        font-size: 5.5vw;
+    }
+
+
 
 
 }
