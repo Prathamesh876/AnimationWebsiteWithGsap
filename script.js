@@ -182,7 +182,7 @@ function loop6() {
 
     gsap.from(".snikers", {
        y: -700,
-      opacity: 0.5,
+      // opacity: 0.5,
       scrollTrigger: {
          trigger: ".dv-Snickers",
          // markers:true,
@@ -196,7 +196,7 @@ function loop6() {
 
    gsap.from(".galaxy", {
       y: 1200,
-      opacity: 0.5,
+      // opacity: 0.5,
       scrollTrigger: {
          trigger: ".dv-Galaxy",
          // markers:true,
@@ -209,7 +209,7 @@ function loop6() {
 
    gsap.from(".lindt", {
       x: 1000,
-      opacity: 0.5,
+      // opacity: 0.5,
       scrollTrigger: {
          trigger: ".dv-Lindt",
          // markers: true,
@@ -223,7 +223,7 @@ function loop6() {
    gsap.from(".milkybar", {
       y: -700,
       x: -700,
-      opacity: 0.5,
+      // opacity: 0.5,
       scrollTrigger: {
          trigger: ".dv-Milkybar",
          // markers: true,
@@ -238,7 +238,7 @@ function loop6() {
    gsap.from(".fabelle", {
       y: 700,
       x: 700,
-      opacity: 0.5,
+      // opacity: 0.5,
       scrollTrigger: {
          trigger: ".dv-Fabelle",
          // markers: true,
@@ -270,9 +270,14 @@ function loop4() {
       width: "36vw",
    });
 
-   // tl.to(".back-para-p4",{
-   //    width:"36vw",
-   // })
+//    var mm = gsap.matchMedia();
+//    mm.add("(min-width: 425px)", () => {
+//   let tl = gsap.timeline();
+//   tl.to(".back-txtp5", {
+//     width: "50vw",
+//     duration: 1,
+//   });
+// });
 
 }
 loop4();

@@ -611,6 +611,12 @@ li {
     background-color: #DCA06D;
 }
 
+.dv-Lindt img{
+       height: 570px;
+    width: 390px;
+    object-fit: cover;
+}
+
 .dv-Milkybar{
     height: 100%;
     width: 100vw;
@@ -620,9 +626,15 @@ li {
 .dv-Fabelle{
     height: 100%;
     width: 100vw;
-    background-color: #FFB4B4;
-    
+    background-color: #FFB4B4;    
 }
+
+.dv-Fabelle img{
+       height: 680px;
+    width: 420px;
+    object-fit: cover;
+}
+
 
 
 .back-headding h1{
@@ -968,6 +980,11 @@ li {
         width: 40vw !important;
     }
 
+    .frnt-para-p5 {
+    position: absolute;
+    bottom: 16%;
+    }
+
     .bt-txt h1 {
         height: 9vh;
         width: 41vw;
@@ -981,6 +998,19 @@ li {
     .bt-txt p {
         font-size: 1.9vw;
     }
+
+
+     .wraper-snikers img {
+     height: 365px;
+    width: 270px;
+    }
+
+.dv-Fabelle img {
+        height: 440px;
+        width: 231px;
+    }
+
+   
 }
 
 
@@ -1313,7 +1343,63 @@ li {
         font-size: 2.7vw;
     }
 
+    .wraper-snikers img {
+    height: 275px;
+    width: 170px;
+}
 
+.dv-Fabelle img {
+    height: 335px;
+    width: 170px;
+  
+}
+
+
+#page5 {
+    display: block;
+}
+
+#page5 .left-p5-dv {
+    height: 35%;
+    width: 100%;
+        padding: 9vh 12vw;
+}
+.right-p5-dv {
+    height: 65%;
+    width: 100%;
+
+}
+.frnt-txtp5 {   
+    top: 11%;
+    height: 30vh;
+    font-size: 9.8vw;
+   
+}
+
+.back-txtp5 {
+    top: 11%;
+height: 34vh;
+font-size: 9.8vw;
+
+}
+
+.frnt-para-p5 {
+    bottom: 30%;
+    right: 5%;
+     height: 11vh;
+    font-size: 2.5vw;
+  
+}
+
+.sm-t-all {
+    margin-top: 3vh;
+}
+
+.sm-t-all h1
+ {
+    position: absolute;
+    font-size: 5.5vw;
+ }
 
 
 }
@@ -1435,6 +1521,8 @@ li {
         font-size: 2.9vw;
     }
 
+
+
 }
 
 
@@ -1550,6 +1638,7 @@ li {
         margin-left: 16px;
 
     }
+  
 
 
 }
