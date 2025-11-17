@@ -1775,3 +1775,260 @@ li {
 
 
 }
+
+
+
+
+/* <div id="main">
+
+        <header>
+            <div class="logo">CHOCOLATE</div>
+            <nav class="d-flex">
+                <ul>
+                    <li>HOME</li>
+                    <li>ABOUT</li>
+                    <li>PRODUCTS</li>
+                    <li>CONTACT</li>
+                </ul>
+            </nav>
+        </header>
+
+        <div id="page1">
+
+            <div class="wrapper-coco-div d-flex">
+                <div class="overlay">
+
+                </div>
+                <div class="coco-div1 m-size res-img-sz">
+                    <img class="img" src="/img/coco1.jpg" alt="">
+                    <img class="img" src="/img/coco2.jpg" alt="">
+                    <img class="img" src="/img/coco3.jpg" alt="">
+                    <img class="img" src="/img/coco4.jpg" alt="">
+                    <img class="img" src="/img/coco5.jpg" alt="">
+                    <img class="img" src="/img/coco6.jpg" alt="">
+                </div>
+                <div class="coco-div2 m-size res-img-sz">
+                    <img class="img" src="/img/coco5.jpg" alt="">
+                    <img class="img" src="/img/coco6.jpg" alt="">
+                    <img class="img" src="/img/coco4.jpg" alt="">
+                    <img class="img" src="/img/coco2.jpg" alt="">
+                    <img class="img" src="/img/coco3.jpg" alt="">
+                    <img class="img" src="/img/coco1.jpg" alt="">
+
+                </div>
+                <div class="coco-div3 m-size res-img-sz">
+                    <img class="img" src="/img/coco2.jpg" alt="">
+                    <img class="img" src="/img/coco3.jpg" alt="">
+                    <img class="img" src="/img/coco1.jpg" alt="">
+                    <img class="img" src="/img/coco6.jpg" alt="">
+                    <img class="img" src="/img/coco4.jpg" alt="">
+                    <img class="img" src="/img/coco5.jpg" alt="">
+                </div>
+                <div class="coco-div4 m-size res-img-sz">
+                    <img class="img" src="/img/coco1.jpg" alt="">
+                    <img class="img" src="/img/coco2.jpg" alt="">
+                    <img class="img" src="/img/coco3.jpg" alt="">
+                    <img class="img" src="/img/coco4.jpg" alt="">
+                    <img class="img" src="/img/coco5.jpg" alt="">
+                    <img class="img" src="/img/coco6.jpg" alt="">
+                </div>
+                <div class="coco-div5 m-size res-img-sz">
+                    <img class="img" src="/img/coco5.jpg" alt="">
+                    <img class="img" src="/img/coco6.jpg" alt="">
+                    <img class="img" src="/img/coco4.jpg" alt="">
+                    <img class="img" src="/img/coco2.jpg" alt="">
+                    <img class="img" src="/img/coco3.jpg" alt="">
+                    <img class="img" src="/img/coco1.jpg" alt="">
+                </div>
+                <div class="coco-div6 m-size res-img-sz">
+                    <img class="img" src="/img/coco2.jpg" alt="">
+                    <img class="img" src="/img/coco3.jpg" alt="">
+                    <img class="img" src="/img/coco1.jpg" alt="">
+                    <img class="img" src="/img/coco6.jpg" alt="">
+                    <img class="img" src="/img/coco4.jpg" alt="">
+                    <img class="img" src="/img/coco5.jpg" alt="">
+                </div>
+                <div class="coco-div7 m-size res-img-sz">
+                    <img class="img" src="/img/coco1.jpg" alt="">
+                    <img class="img" src="/img/coco2.jpg" alt="">
+                    <img class="img" src="/img/coco3.jpg" alt="">
+                    <img class="img" src="/img/coco4.jpg" alt="">
+                    <img class="img" src="/img/coco5.jpg" alt="">
+                    <img class="img" src="/img/coco6.jpg" alt="">
+                </div>
+                <div class="coco-div8 m-size res-img-sz">
+                    <img class="img" src="/img/coco5.jpg" alt="">
+                    <img class="img" src="/img/coco6.jpg" alt="">
+                    <img class="img" src="/img/coco4.jpg" alt="">
+                    <img class="img" src="/img/coco2.jpg" alt="">
+                    <img class="img" src="/img/coco3.jpg" alt="">
+                    <img class="img" src="/img/coco1.jpg" alt="">
+
+                </div>
+                <div class="coco-div9 m-size res-img-sz">
+                    <img class="img" src="/img/coco2.jpg" alt="">
+                    <img class="img" src="/img/coco3.jpg" alt="">
+                    <img class="img" src="/img/coco1.jpg" alt="">
+                    <img class="img" src="/img/coco6.jpg" alt="">
+                    <img class="img" src="/img/coco4.jpg" alt="">
+                    <img class="img" src="/img/coco5.jpg" alt="">
+                </div>
+            </div>
+            <div class="heading-dv d-flex">
+                <h1>CHOCOLATE</h1>
+            </div>
+        </div>
+        <div id="page2">
+            <div class="container-crv">
+                <div class="curve-dv">
+                    <h1>DISCOVER THE TEST OF CHOCOLATE</h1>
+                </div>
+
+            </div>
+
+            <div class="discover-cont d-flex">
+                <div class="left-cont">
+                    <div class="front-line"></div>
+                    <div class="front-line2"></div>
+                    <div class="front-line3"></div>
+                </div>
+                <div class="right-cont">
+                    <div class="img-txt-wrapper">
+                        <div class="img-txt-cont cont pose2 d-flex">
+                            <img src="/img/chocolate1.jpg" alt="">
+                            <div class="bt-txt">
+                                <h1>Chocolate Chocca Mockup</h1>
+                                <hr>
+                                <p>Lorem ipsum dolor sit, amet consectetur.
+                                    Maiores distinctio asperiores consequatur,
+                                    debitis nihil quae numquam.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="img-txt-cont cont pos2 d-flex">
+                            <img src="/img/chocolate2.jpg" alt="">
+                            <div class="bt-txt">
+                                <h1>Chocolate Chocca Mockup</h1>
+                                <hr>
+                                <p>Lorem ipsum dolor sit, amet consectetur.
+                                    Maiores distinctio asperiores consequatur,
+                                    debitis nihil quae numquam.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="img-txt-cont cont pos3 d-flex">
+                            <img src="/img/chocolate3.jpg" alt="">
+                            <div class="bt-txt">
+                                <h1>Chocolate Chocca Mockup</h1>
+                                <hr>
+                                <p>Lorem ipsum dolor sit, amet consectetur.
+                                    Maiores distinctio asperiores consequatur,
+                                    debitis nihil quae numquam.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div id="page3">
+
+            <div class="video-container d-flex">
+                <video autoplay loop muted src="/video/8963649-hd_1920_1080_30fps.mp4"></video>
+            </div>
+
+        </div>
+        <div id="page4">
+            <!-- <div class="top-scroller d-flex">
+                <div class="scroll-cont">
+                    <div class="img1 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img2 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img3 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img4 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img5 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img6 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img7 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img8 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img9 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img10 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img11 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                    <div class="img12 All-sl"><img src="https://lifestyleyouth.com/wp-content/uploads/2023/12/cadbury-chocolates-31-12-2020-00-1024x435.jpg" alt="Dairymillk"></div>
+                </div>
+            </div>        -->
+            <div class="p4-mid-cont">
+                <div class="back-headding ">
+                    <div class="dv-Snickers wd-cal d-flex">
+                        <h1>Snickers</h1>
+                        <div class="wraper-snikers d-flex">
+                            <img class="snikers" src="/img/snikers_bucket_animation-removebg-preview.png" alt="snikers_bucket">
+                        </div>
+                    </div>
+                    <div class="dv-Galaxy wd-cal d-flex">
+                        <h1>Galaxy</h1>
+                        <div class="wraper-snikers d-flex">
+                            <img class="galaxy" src="/img/Galaxy_bucket_animation-removebg-preview.png.png" alt="snikers_bucket">
+                        </div>
+                    </div>
+                    <div class="dv-Lindt wd-cal d-flex">
+                        <h1>Lindt</h1>
+                        <div class="wraper-snikers d-flex">
+                            <img class="lindt" src="/img/Lindt_bucket_animation-removebg-preview.png.png" alt="snikers_bucket">
+                        </div>
+                    </div>
+                    <div class="dv-Milkybar wd-cal d-flex">
+                        <h1>Milkybar</h1>
+                        <div class="wraper-snikers d-flex">
+                            <img class="milkybar" src="/img/milkybar_bucket_animation-removebg-preview.png.png" alt="snikers_bucket">
+                        </div>
+                    </div>
+                    <div class="dv-Fabelle wd-cal d-flex">
+                        <h1>Fabelle</h1>
+                        <div class="wraper-snikers d-flex">
+                            <img class="fabelle" src="/img/Fabelle_bucket_animation-removebg-preview.png.png" alt="snikers_bucket">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- <div class="custm-curs"></div> -->
+        <div id="page5">
+
+            <div class="left-p5-dv">
+                <h1 class="frnt-txtp5">Cocolate Top Brands</h1>
+                <h1 class="back-txtp5">Cocolate Top Brands</h1>
+                <h3 class="frnt-para-p5">Chocolate is a delicious, melt-in-your-mouth treat that blends sweetness with
+                    ahint of
+                    bitterness, making it truly irresistible.
+                </h3>
+            </div>
+            <div class="right-p5-dv">
+
+                <div class="right-p5-dv-cont">
+                    <div class="sec-cont-dv1 sm-t-all d-flex">
+                        <div class="back-scale"></div>
+                        <h1>Cadbury</h1>
+                    </div>
+                    <div class="sec-cont-dv2 sm-t-all d-flex">
+                        <div class="back-scale"></div>
+                        <h1>Ferrero Rocher</h1>
+                    </div>
+                    <div class="sec-cont-dv3 sm-t-all d-flex">
+                        <div class="back-scale"></div>
+                        <h1>Toblerone</h1>
+                    </div>
+                    <div class="sec-cont-dv4 sm-t-all d-flex">
+                        <div class="back-scale"></div>
+                        <h1>Nestlé</h1>
+                    </div>
+                    <div class="sec-cont-dv5 sm-t-all d-flex">
+                        <div class="back-scale"></div>
+                        <h1>Godiva</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div id="page6"></div> -->
+    </div> */
