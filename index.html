@@ -11,2107 +11,3900 @@
 </head>
 
 <body>
-
-
-    <pre>
-        Design and Analysis of Algorithms
-_______________________________________________________________________________________________
+<pre>
+    <code>
+    Mobile App Development Technologies
+_________________________________________________________________________________
 SLIP 1
-Q.1) Write a program to sort a list of n numbers in ascending order using selection sort and
-determine the time required to sort the elements .
-#include <stdio.h>
-#include <time.h>
-void selectionSort(int arr[], int n) {
-int i, j, min_idx, temp;
-for (i = 0; i < n - 1; i++) {
-min_idx = i;
-for (j = i + 1; j < n; j++) {
-if (arr[j] < arr[min_idx]) {
-min_idx = j;
+Q.1) Write an application to create a splash screen.
+Step 1: Create New Project
+Open Android Studio
+Click New Project → Empty Activity
+Name: SplashApp
+Step 2: Create Splash Activity
+Create a new Activity:
+Right click → New → Activity → Empty Activity
+Name: SplashActivity
+Step 3: SplashActivity.java (Java Code)
+package com.example.splashapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import androidx.appcompat.app.AppCompatActivity;
+public class SplashActivity extends AppCompatActivity {
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_splash);
+new Handler().postDelayed(new Runnable() {
+@Override
+public void run() {
+Intent i = new Intent(SplashActivity.this, MainActivity.class);
+startActivity(i);
+finish();
+}
+}, 3000);
 }
 }
-temp = arr[i];
-arr[i] = arr[min_idx];
-arr[min_idx] = temp;
+Step 4: activity_splash.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:gravity="center"
+android:orientation="vertical"
+android:background="#FFFFFF">
+<ImageView
+android:layout_width="150dp"
+android:layout_height="150dp"
+android:src="@mipmap/ic_launcher" />
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="My Splash Screen"
+android:textSize="20sp"
+android:paddingTop="20dp"/>
+</LinearLayout>
+Step 5: MainActivity.java
+package com.example.splashapp;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
 }
 }
-int main() {
-int n, i;
-printf("Enter number of elements: ");
-scanf("%d", &n);
-int arr[n];
-for (i = 0; i < n; i++) {
-scanf("%d", &arr[i]);
+Q.2) Create table Student (roll_no, name, address, percentage). Create Application
+for performing the following operation on the table. (Using SQLite database).
+i] Insert record of 5 new student details.
+ii] Show all the student details.
+Step 1: Create Database Helper Class
+DatabaseHelper.java
+package com.example.studentapp;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+public class DatabaseHelper extends SQLiteOpenHelper {
+public static final String DB_NAME = "StudentDB";
+public static final String TABLE_NAME = "Student";
+public DatabaseHelper(Context context) {
+super(context, DB_NAME, null, 1);
 }
-clock_t start = clock();
-selectionSort(arr, n);
-clock_t end = clock();
-printf("Sorted array:\n");
-for (i = 0; i < n; i++) {
-printf("%d ", arr[i]);
+@Override
+public void onCreate(SQLiteDatabase db) {
+db.execSQL("CREATE TABLE " + TABLE_NAME +
+"(roll_no INTEGER PRIMARY KEY, name TEXT, address TEXT, percentage REAL)");
 }
-double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
-printf("\nTime taken: %f seconds\n", time_taken);
-return 0;
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+onCreate(db);
 }
-Q.2) Write a program to sort a given set of elements using the Quick sort method and determine
-the time required to sort the elements. Repeat the experiment for different values of n, the
-number of elements in the list to be sorted. The elements can be read from a file or can be
-generated using the random number generator.
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-void quickSort(int arr[], int low, int high) {
-if (low < high) {
-int pivot = arr[high];
-int i = low - 1, j, temp;
-for (j = low; j < high; j++) {
-if (arr[j] <= pivot) {
-i++;
-temp = arr[i];
-arr[i] = arr[j];
-arr[j] = temp;
+public boolean insertStudent(int roll, String name, String address, float
+percentage) {
+SQLiteDatabase db = this.getWritableDatabase();
+ContentValues values = new ContentValues();
+values.put("roll_no", roll);
+values.put("name", name);
+values.put("address", address);
+values.put("percentage", percentage);
+long result = db.insert(TABLE_NAME, null, values);
+return result != -1;
 }
-}
-temp = arr[i + 1];
-arr[i + 1] = arr[high];
-arr[high] = temp;
-int pi = i + 1;
-quickSort(arr, low, pi - 1);
-quickSort(arr, pi + 1, high);
+public Cursor getAllStudents() {
+SQLiteDatabase db = this.getReadableDatabase();
+return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 }
 }
-int main() {
-int n, i;
-printf("Enter number of elements: ");
-scanf("%d", &n);
-int arr[n];
-srand(time(0));
-for (i = 0; i < n; i++) {
-arr[i] = rand() % 1000;
+Step 2: MainActivity.java
+package com.example.studentapp;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+DatabaseHelper db;
+Button insertBtn, showBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+db = new DatabaseHelper(this);
+insertBtn = findViewById(R.id.insertBtn);
+showBtn = findViewById(R.id.showBtn);
+insertBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+db.insertStudent(1, "Amit", "Pune", 85.5f);
+db.insertStudent(2, "Ravi", "Mumbai", 78.2f);
+db.insertStudent(3, "Sneha", "Nashik", 91.0f);
+db.insertStudent(4, "Pooja", "Nagpur", 88.3f);
+db.insertStudent(5, "Vikas", "Solapur", 76.4f);
+Toast.makeText(MainActivity.this, "5 Students Inserted", Toast.LENGTH_SHORT).show();
 }
-clock_t start = clock();
-quickSort(arr, 0, n - 1);
-clock_t end = clock();
-printf("Sorted array:\n");
-for (i = 0; i < n; i++) {
-printf("%d ", arr[i]);
+});
+showBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+Cursor cursor = db.getAllStudents();
+StringBuilder buffer = new StringBuilder();
+while (cursor.moveToNext()) {
+buffer.append("Roll No: ").append(cursor.getInt(0)).append("\n");
+buffer.append("Name: ").append(cursor.getString(1)).append("\n");
+buffer.append("Address: ").append(cursor.getString(2)).append("\n");
+buffer.append("Percentage: ").append(cursor.getFloat(3)).append("\n\n");
 }
-double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
-printf("\nTime taken: %f seconds\n", time_taken);
-return 0;
+Toast.makeText(MainActivity.this, buffer.toString(), Toast.LENGTH_LONG).show();
 }
-______________________________________________________________________________________________
+});
+}
+}
+Step 3: activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:padding="20dp">
+<Button
+android:id="@+id/insertBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Insert 5 Students"/>
+<Button
+android:id="@+id/showBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Show Students"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+_________________________________________________________________________________________________________________
 SLIP 2
-Q.1) Write a program to sort n randomly generated elements using Heapsort method.
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-void heapify(int arr[], int n, int i) {
-int largest = i;
-int left = 2*i + 1;
-int right = 2*i + 2;
-int temp;
-if (left < n && arr[left] > arr[largest])
-largest = left;
-if (right < n && arr[right] > arr[largest])
-largest = right;
-if (largest != i) {
-temp = arr[i];
-arr[i] = arr[largest];
-arr[largest] = temp;
-heapify(arr, n, largest);
+Q.1) Create an application that allows the user to enter a number in the textbox.
+Check whether the number in the textbox is perfect number or not. Print the
+message using Toast control.
+Step 1: activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:padding="20dp">
+<EditText
+android:id="@+id/numberInput"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Enter a number"
+android:inputType="number" />
+<Button
+android:id="@+id/checkBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Check Perfect Number"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+Step 2: MainActivity.java
+package com.example.perfectnumber;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText numberInput;
+Button checkBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+numberInput = findViewById(R.id.numberInput);
+checkBtn = findViewById(R.id.checkBtn);
+checkBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String value = numberInput.getText().toString();
+if (value.isEmpty()) {
+Toast.makeText(MainActivity.this, "Enter a number", Toast.LENGTH_SHORT).show();
+return;
+}
+int num = Integer.parseInt(value);
+int sum = 0;
+for (int i = 1; i < num; i++) {
+if (num % i == 0) {
+sum += i;
 }
 }
-void heapSort(int arr[], int n) {
-int i, temp;
-for (i = n/2 - 1; i >= 0; i--)
-heapify(arr, n, i);
-for (i = n-1; i > 0; i--) {
-temp = arr[0];
-arr[0] = arr[i];
-arr[i] = temp;
-heapify(arr, i, 0);
-}
-}
-int main() {
-int n, i;
-printf("Enter number of elements: ");
-scanf("%d", &n);
-int arr[n];
-srand(time(0));
-for (i = 0; i < n; i++) {
-arr[i] = rand() % 1000;
-}
-clock_t start = clock();
-heapSort(arr, n);
-clock_t end = clock();
-printf("Sorted array:\n");
-for (i = 0; i < n; i++) {
-printf("%d ", arr[i]);
-}
-double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
-printf("\nTime taken: %f seconds\n", time_taken);
-return 0;
-}
-Q.2) Write a program to implement Strassenâs Matrix multiplication
-#include <stdio.h>
-void add(int A[2][2], int B[2][2], int C[2][2]) {
-for(int i=0;i<2;i++)
-for(int j=0;j<2;j++)
-C[i][j] = A[i][j] + B[i][j];
-}
-void sub(int A[2][2], int B[2][2], int C[2][2]) {
-for(int i=0;i<2;i++)
-for(int j=0;j<2;j++)
-C[i][j] = A[i][j] - B[i][j];
-}
-void multiply(int A[2][2], int B[2][2], int C[2][2]) {
-int M1, M2, M3, M4, M5, M6, M7;
-M1 = (A[0][0]+A[1][1])*(B[0][0]+B[1][1]);
-M2 = (A[1][0]+A[1][1])*B[0][0];
-M3 = A[0][0]*(B[0][1]-B[1][1]);
-M4 = A[1][1]*(B[1][0]-B[0][0]);
-M5 = (A[0][0]+A[0][1])*B[1][1];
-M6 = (A[1][0]-A[0][0])*(B[0][0]+B[0][1]);
-M7 = (A[0][1]-A[1][1])*(B[1][0]+B[1][1]);
-C[0][0] = M1 + M4 - M5 + M7;
-C[0][1] = M3 + M5;
-C[1][0] = M2 + M4;
-C[1][1] = M1 - M2 + M3 + M6;
-}
-int main() {
-int A[2][2], B[2][2], C[2][2];
-printf("Enter Matrix A (2x2):\n");
-for(int i=0;i<2;i++)
-for(int j=0;j<2;j++)
-scanf("%d",&A[i][j]);
-printf("Enter Matrix B (2x2):\n");
-for(int i=0;i<2;i++)
-for(int j=0;j<2;j++)
-scanf("%d",&B[i][j]);
-multiply(A,B,C);
-printf("Result Matrix:\n");
-for(int i=0;i<2;i++) {
-for(int j=0;j<2;j++)
-printf("%d ",C[i][j]);
-printf("\n");
-}
-return 0;
-}
-____________________________________________________________________________________________
-SLIP 3
-Q.1) Write a program to sort a given set of elements using the Quick sort method and determine
-the time required to sort the elements.
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-void quickSort(int arr[], int low, int high) {
-if (low < high) {
-int pivot = arr[high];
-int i = low - 1, j, temp;
-for (j = low; j < high; j++) {
-if (arr[j] <= pivot) {
-i++;
-temp = arr[i];
-arr[i] = arr[j];
-arr[j] = temp;
-}
-}
-temp = arr[i + 1];
-arr[i + 1] = arr[high];
-arr[high] = temp;
-int pi = i + 1;
-quickSort(arr, low, pi - 1);
-quickSort(arr, pi + 1, high);
-}
-}
-int main() {
-int n, i;
-printf("Enter number of elements: ");
-scanf("%d", &n);
-int arr[n];
-srand(time(0));
-for (i = 0; i < n; i++) {
-arr[i] = rand() % 1000;
-}
-clock_t start = clock();
-quickSort(arr, 0, n - 1);
-clock_t end = clock();
-printf("Sorted array:\n");
-for (i = 0; i < n; i++) {
-printf("%d ", arr[i]);
-}
-double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
-printf("\nTime taken: %f seconds\n", time_taken);
-return 0;
-}
-Q.2) Write a program to find Minimum Cost Spanning Tree of a given undirected graph using
-Prims algorithm
-#include <stdio.h>
-#include <limits.h>
-#define V 10
-int minKey(int key[], int mstSet[], int n) {
-int min = INT_MAX, min_index;
-for (int v = 0; v < n; v++)
-if (mstSet[v] == 0 && key[v] < min)
-min = key[v], min_index = v;
-return min_index;
-}
-void primMST(int graph[V][V], int n) {
-int parent[V];
-int key[V];
-int mstSet[V];
-for (int i = 0; i < n; i++) {
-key[i] = INT_MAX;
-mstSet[i] = 0;
-}
-key[0] = 0;
-parent[0] = -1;
-for (int count = 0; count < n - 1; count++) {
-int u = minKey(key, mstSet, n);
-mstSet[u] = 1;
-for (int v = 0; v < n; v++)
-if (graph[u][v] && mstSet[v] == 0 && graph[u][v] < key[v]) {
-parent[v] = u;
-key[v] = graph[u][v];
-}
-}
-int total = 0;
-printf("Edge \tWeight\n");
-for (int i = 1; i < n; i++) {
-printf("%d - %d \t%d\n", parent[i], i, graph[i][parent[i]]);
-total += graph[i][parent[i]];
-}
-printf("Total Cost = %d\n", total);
-}
-int main() {
-int n;
-printf("Enter number of vertices: ");
-scanf("%d", &n);
-int graph[V][V];
-printf("Enter adjacency matrix:\n");
-for(int i=0;i<n;i++)
-for(int j=0;j<n;j++)
-scanf("%d",&graph[i][j]);
-primMST(graph, n);
-return 0;
-}
-______________________________________________________________________________________
-SLIP 4
-Q.1) Write a program to implement a Merge Sort algorithm to sort a given set of elements and
-determine the time required to sort the elements
-#include <stdio.h>
-#include <time.h>
-void merge(int arr[], int l, int m, int r) {
-int i, j, k;
-int n1 = m - l + 1;
-int n2 = r - m;
-int L[n1], R[n2];
-for (i = 0; i < n1; i++)
-L[i] = arr[l + i];
-for (j = 0; j < n2; j++)
-R[j] = arr[m + 1 + j];
-i = j = 0;
-k = l;
-while (i < n1 && j < n2) {
-if (L[i] <= R[j])
-arr[k++] = L[i++];
-else
-arr[k++] = R[j++];
-}
-while (i < n1)
-arr[k++] = L[i++];
-while (j < n2)
-arr[k++] = R[j++];
-}
-void mergeSort(int arr[], int l, int r) {
-if (l < r) {
-int m = (l + r) / 2;
-mergeSort(arr, l, m);
-mergeSort(arr, m + 1, r);
-merge(arr, l, m, r);
-}
-}
-int main() {
-int n;
-printf("Enter number of elements: ");
-scanf("%d", &n);
-int arr[n];
-for (int i = 0; i < n; i++)
-scanf("%d", &arr[i]);
-clock_t start = clock();
-mergeSort(arr, 0, n - 1);
-clock_t end = clock();
-printf("Sorted array:\n");
-for (int i = 0; i < n; i++)
-printf("%d ", arr[i]);
-double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
-printf("\nTime taken: %f seconds\n", time_taken);
-return 0;
-}
-Q.2) Write a program to implement Knapsack problems using Greedy method
-#include <stdio.h>
-struct Item {
-int value, weight;
-float ratio;
-};
-void sort(struct Item arr[], int n) {
-for(int i=0;i<n-1;i++) {
-for(int j=i+1;j<n;j++) {
-if(arr[i].ratio < arr[j].ratio) {
-struct Item temp = arr[i];
-arr[i] = arr[j];
-arr[j] = temp;
-}
-}
-}
-}
-int main() {
-int n, capacity;
-printf("Enter number of items: ");
-scanf("%d", &n);
-struct Item arr[n];
-printf("Enter values:\n");
-for(int i=0;i<n;i++)
-scanf("%d", &arr[i].value);
-printf("Enter weights:\n");
-for(int i=0;i<n;i++) {
-scanf("%d", &arr[i].weight);
-arr[i].ratio = (float)arr[i].value / arr[i].weight;
-}
-printf("Enter capacity: ");
-scanf("%d", &capacity);
-sort(arr, n);
-float total = 0;
-for(int i=0;i<n;i++) {
-if(capacity >= arr[i].weight) {
-capacity -= arr[i].weight;
-total += arr[i].value;
+if (sum == num) {
+Toast.makeText(MainActivity.this,
+num + " is a Perfect Number", Toast.LENGTH_LONG).show();
 } else {
-total += arr[i].ratio * capacity;
+Toast.makeText(MainActivity.this,
+num + " is NOT a Perfect Number", Toast.LENGTH_LONG).show();
+}
+}
+});
+}
+}
+2) Java Android Program to perform all arithmetic Operations using Calculator.
+Step 1: activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:padding="20dp">
+<EditText
+android:id="@+id/num1"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Enter First Number"
+android:inputType="numberDecimal"/>
+<EditText
+android:id="@+id/num2"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Enter Second Number"
+android:inputType="numberDecimal"
+android:layout_marginTop="10dp"/>
+<Button
+android:id="@+id/addBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Add"/>
+<Button
+android:id="@+id/subBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Subtract"/>
+<Button
+android:id="@+id/mulBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Multiply"/>
+<Button
+android:id="@+id/divBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Divide"/>
+<TextView
+android:id="@+id/resultText"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Result:"
+android:textSize="18sp"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+Step 2: MainActivity.java
+package com.example.calculatorapp;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText num1, num2;
+Button addBtn, subBtn, mulBtn, divBtn;
+TextView resultText;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+num1 = findViewById(R.id.num1);
+num2 = findViewById(R.id.num2);
+addBtn = findViewById(R.id.addBtn);
+subBtn = findViewById(R.id.subBtn);
+mulBtn = findViewById(R.id.mulBtn);
+divBtn = findViewById(R.id.divBtn);
+resultText = findViewById(R.id.resultText);
+addBtn.setOnClickListener(v -> calculate('+'));
+subBtn.setOnClickListener(v -> calculate('-'));
+mulBtn.setOnClickListener(v -> calculate('*'));
+divBtn.setOnClickListener(v -> calculate('/'));
+}
+private void calculate(char op) {
+double n1 = Double.parseDouble(num1.getText().toString());
+double n2 = Double.parseDouble(num2.getText().toString());
+double result = 0;
+switch (op) {
+case '+':
+result = n1 + n2;
+break;
+case '-':
+result = n1 - n2;
+break;
+case '*':
+result = n1 * n2;
+break;
+case '/':
+if (n2 != 0)
+result = n1 / n2;
+else {
+resultText.setText("Cannot divide by zero");
+return;
+}
 break;
 }
+resultText.setText("Result: " + result);
 }
-printf("Maximum value = %.2f\n", total);
-return 0;
-}
-__________________________________________________________________________________________________
-SLIP 5
-Q.1) Write a program for the Implementation of Kruskalâs algorithm to find minimum
-cost spanning tree.
-#include <stdio.h>
-#include <stdlib.h>
-#define MAX 100
-struct Edge {
-int u, v, weight;
-};
-struct Edge edges[MAX];
-int parent[MAX];
-int find(int i) {
-while (parent[i] != i)
-i = parent[i];
-return i;
-}
-void union_set(int u, int v) {
-int u_root = find(u);
-int v_root = find(v);
-parent[u_root] = v_root;
-}
-void sortEdges(int e) {
-for (int i = 0; i < e - 1; i++) {
-for (int j = 0; j < e - i - 1; j++) {
-if (edges[j].weight > edges[j + 1].weight) {
-struct Edge temp = edges[j];
-edges[j] = edges[j + 1];
-edges[j + 1] = temp;
-}
-}
-}
-}
-int main() {
-int V, E;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-printf("Enter number of edges: ");
-scanf("%d", &E);
-for (int i = 0; i < E; i++) {
-printf("Enter edge %d (u v weight): ", i + 1);
-scanf("%d %d %d", &edges[i].u, &edges[i].v, &edges[i].weight);
-}
-for (int i = 0; i < V; i++) {
-parent[i] = i;
-}
-sortEdges(E);
-int count = 0, i = 0;
-int total_cost = 0;
-printf("\nEdges in MST:\n");
-while (count < V - 1 && i < E) {
-int u = edges[i].u;
-int v = edges[i].v;
-int set_u = find(u);
-int set_v = find(v);
-if (set_u != set_v) {
-printf("%d -- %d == %d\n", u, v, edges[i].weight);
-total_cost += edges[i].weight;
-union_set(set_u, set_v);
-count++;
-}
-i++;
-}
-printf("Total cost of MST = %d\n", total_cost);
-return 0;
-}
-Q.2) Write a program to implement Huffman Code using greedy methods and also calculate the
-best case and worst-case complexity.
-#include <stdio.h>
-#include <stdlib.h>
-#define MAX 100
-struct Node {
-char data;
-unsigned freq;
-struct Node *left, *right;
-};
-struct MinHeap {
-int size;
-struct Node* array[MAX];
-};
-struct Node* newNode(char data, unsigned freq) {
-struct Node* temp = (struct Node*)malloc(sizeof(struct Node));
-temp->left = temp->right = NULL;
-temp->data = data;
-temp->freq = freq;
-return temp;
-}
-void swap(struct Node** a, struct Node** b) {
-struct Node* t = *a;
-*a = *b;
-*b = t;
-}
-void heapify(struct MinHeap* heap, int i) {
-int smallest = i;
-int left = 2*i + 1;
-int right = 2*i + 2;
-if (left < heap->size && heap->array[left]->freq < heap->array[smallest]->freq)
-smallest = left;
-if (right < heap->size && heap->array[right]->freq < heap->array[smallest]->freq)
-smallest = right;
-if (smallest != i) {
-swap(&heap->array[i], &heap->array[smallest]);
-heapify(heap, smallest);
-}
-}
-struct Node* extractMin(struct MinHeap* heap) {
-struct Node* temp = heap->array[0];
-heap->array[0] = heap->array[heap->size - 1];
-heap->size--;
-heapify(heap, 0);
-return temp;
-}
-void insertHeap(struct MinHeap* heap, struct Node* node) {
-int i = heap->size;
-heap->size++;
-while (i && node->freq < heap->array[(i - 1)/2]->freq) {
-heap->array[i] = heap->array[(i - 1)/2];
-i = (i - 1)/2;
-}
-heap->array[i] = node;
-}
-struct Node* buildHuffman(char data[], int freq[], int n) {
-struct MinHeap heap;
-heap.size = n;
-for (int i = 0; i < n; i++) {
-heap.array[i] = newNode(data[i], freq[i]);
-}
-for (int i = (n-2)/2; i >= 0; i--) {
-heapify(&heap, i);
-}
-while (heap.size > 1) {
-struct Node* left = extractMin(&heap);
-struct Node* right = extractMin(&heap);
-struct Node* top = newNode('$', left->freq + right->freq);
-top->left = left;
-top->right = right;
-insertHeap(&heap, top);
-}
-return extractMin(&heap);
-}
-void printCodes(struct Node* root, int arr[], int top) {
-if (root->left) {
-arr[top] = 0;
-printCodes(root->left, arr, top + 1);
-}
-if (root->right) {
-arr[top] = 1;
-printCodes(root->right, arr, top + 1);
-}
-if (!root->left && !root->right) {
-printf("%c: ", root->data);
-for (int i = 0; i < top; i++)
-printf("%d", arr[i]);
-printf("\n");
-}
-}
-int main() {
-int n;
-printf("Enter number of characters: ");
-scanf("%d", &n);
-char data[n];
-int freq[n];
-printf("Enter characters:\n");
-for (int i = 0; i < n; i++)
-scanf(" %c", &data[i]);
-printf("Enter frequencies:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &freq[i]);
-struct Node* root = buildHuffman(data, freq, n);
-int arr[MAX], top = 0;
-printf("\nHuffman Codes:\n");
-printCodes(root, arr, top);
-return 0;
-}
-___________________________________________________________________________________
-SLIP 6
-Q-1) Write a program for the Implementation of Primâs algorithm to find minimum cost spanning tree.
-#include <stdio.h>
-#include <limits.h>
-#define MAX 100
-int minKey(int key[], int mstSet[], int V) {
-int min = INT_MAX, min_index = -1;
-for (int v = 0; v < V; v++) {
-if (mstSet[v] == 0 && key[v] < min) {
-min = key[v];
-min_index = v;
-}
-}
-return min_index;
-}
-void printMST(int parent[], int graph[MAX][MAX], int V) {
-int total = 0;
-printf("\nEdge \tWeight\n");
-for (int i = 1; i < V; i++) {
-printf("%d - %d \t%d\n", parent[i], i, graph[i][parent[i]]);
-total += graph[i][parent[i]];
-}
-printf("Total Cost = %d\n", total);
-}
-void primMST(int graph[MAX][MAX], int V) {
-int parent[MAX];
-int key[MAX];
-int mstSet[MAX];
-for (int i = 0; i < V; i++) {
-key[i] = INT_MAX;
-mstSet[i] = 0;
-}
-key[0] = 0;
-parent[0] = -1;
-for (int count = 0; count < V - 1; count++) {
-int u = minKey(key, mstSet, V);
-mstSet[u] = 1;
-for (int v = 0; v < V; v++) {
-if (graph[u][v] && mstSet[v] == 0 && graph[u][v] < key[v]) {
-parent[v] = u;
-key[v] = graph[u][v];
-}
-}
-}
-printMST(parent, graph, V);
-}
-int main() {
-int V;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-int graph[MAX][MAX];
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-primMST(graph, V);
-return 0;
-}
-Q.2) Write a Program to find only length of Longest Common Subsequence.
-#include <stdio.h>
-#include <string.h>
-#define MAX 100
-int max(int a, int b) {
-return (a > b) ? a : b;
-}
-int main() {
-char X[MAX], Y[MAX];
-int m, n;
-printf("Enter first string: ");
-scanf("%s", X);
-printf("Enter second string: ");
-scanf("%s", Y);
-m = strlen(X);
-n = strlen(Y);
-int L[m + 1][n + 1];
-for (int i = 0; i <= m; i++) {
-for (int j = 0; j <= n; j++) {
-if (i == 0 || j == 0)
-L[i][j] = 0;
-else if (X[i - 1] == Y[j - 1])
-L[i][j] = L[i - 1][j - 1] + 1;
-else
-L[i][j] = max(L[i - 1][j], L[i][j - 1]);
-}
-}
-printf("Length of LCS = %d\n", L[m][n]);
-return 0;
-}
-__________________________________________________________________________________
-SLIP 7
-Q-1) Write a program for the Implementation of Dijkstraâs algorithm to find shortest path to
-other vertices
-#include <stdio.h>
-#include <limits.h>
-#define MAX 100
-int minDistance(int dist[], int visited[], int V) {
-int min = INT_MAX, min_index = -1;
-for (int i = 0; i < V; i++) {
-if (!visited[i] && dist[i] <= min) {
-min = dist[i];
-min_index = i;
-}
-}
-return min_index;
-}
-void dijkstra(int graph[MAX][MAX], int V, int src) {
-int dist[MAX];
-int visited[MAX];
-for (int i = 0; i < V; i++) {
-dist[i] = INT_MAX;
-visited[i] = 0;
-}
-dist[src] = 0;
-for (int count = 0; count < V - 1; count++) {
-int u = minDistance(dist, visited, V);
-visited[u] = 1;
-for (int v = 0; v < V; v++) {
-if (!visited[v] && graph[u][v] &&
-dist[u] != INT_MAX &&
-dist[u] + graph[u][v] < dist[v]) {
-dist[v] = dist[u] + graph[u][v];
-}
-}
-}
-printf("\nVertex \t Distance from Source\n");
-for (int i = 0; i < V; i++) {
-printf("%d \t %d\n", i, dist[i]);
-}
-}
-int main() {
-int V, src;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-int graph[MAX][MAX];
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-printf("Enter source vertex: ");
-scanf("%d", &src);
-dijkstra(graph, V, src);
-return 0;
-}
-Q.2) Write a program for finding Topological sorting for Directed Acyclic Graph (DAG)
-#include <stdio.h>
-#define MAX 100
-int main() {
-int V, E;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-printf("Enter number of edges: ");
-scanf("%d", &E);
-int adj[MAX][MAX] = {0};
-int indegree[MAX] = {0};
-printf("Enter edges (u v):\n");
-for (int i = 0; i < E; i++) {
-int u, v;
-scanf("%d %d", &u, &v);
-adj[u][v] = 1;
-indegree[v]++;
-}
-int queue[MAX], front = 0, rear = -1;
-for (int i = 0; i < V; i++) {
-if (indegree[i] == 0) {
-queue[++rear] = i;
-}
-}
-int count = 0;
-int topo[MAX];
-while (front <= rear) {
-int u = queue[front++];
-topo[count++] = u;
-for (int v = 0; v < V; v++) {
-if (adj[u][v]) {
-indegree[v]--;
-if (indegree[v] == 0) {
-queue[++rear] = v;
-}
-}
-}
-}
-if (count != V) {
-printf("Graph is not a DAG (cycle exists)\n");
-} else {
-printf("Topological Order:\n");
-for (int i = 0; i < V; i++) {
-printf("%d ", topo[i]);
-}
-printf("\n");
-}
-return 0;
-}
-_____________________________________________________________________________________
-SLIP 8
-Q.1) Write a program to implement Fractional Knapsack problems using Greedy
-Method
-#include <stdio.h>
-struct Item {
-int value, weight;
-float ratio;
-};
-void sort(struct Item arr[], int n) {
-for (int i = 0; i < n - 1; i++) {
-for (int j = i + 1; j < n; j++) {
-if (arr[i].ratio < arr[j].ratio) {
-struct Item temp = arr[i];
-arr[i] = arr[j];
-arr[j] = temp;
-}
-}
-}
-}
-int main() {
-int n, capacity;
-printf("Enter number of items: ");
-scanf("%d", &n);
-struct Item arr[n];
-printf("Enter values:\n");
-for (int i = 0; i < n; i++) {
-scanf("%d", &arr[i].value);
-}
-printf("Enter weights:\n");
-for (int i = 0; i < n; i++) {
-scanf("%d", &arr[i].weight);
-arr[i].ratio = (float)arr[i].value / arr[i].weight;
-}
-printf("Enter knapsack capacity: ");
-scanf("%d", &capacity);
-sort(arr, n);
-float totalValue = 0.0;
-for (int i = 0; i < n; i++) {
-if (capacity >= arr[i].weight) {
-capacity -= arr[i].weight;
-totalValue += arr[i].value;
-} else {
-totalValue += arr[i].ratio * capacity;
-break;
-}
-}
-printf("Maximum value in knapsack = %.2f\n", totalValue);
-return 0;
-}
-Q.2) Write Program to implement Traveling Salesman Problem using nearest neighbor
-algorithm
-#include <stdio.h>
-#include <limits.h>
-#define MAX 100
-int main() {
-int n;
-printf("Enter number of cities: ");
-scanf("%d", &n);
-int cost[MAX][MAX];
-printf("Enter cost matrix:\n");
-for (int i = 0; i < n; i++) {
-for (int j = 0; j < n; j++) {
-scanf("%d", &cost[i][j]);
-}
-}
-int visited[MAX] = {0};
-int path[MAX];
-int totalCost = 0;
-int current = 0;
-visited[current] = 1;
-path[0] = current;
-printf("\nPath: %d", current);
-for (int count = 1; count < n; count++) {
-int next = -1;
-int min = INT_MAX;
-for (int i = 0; i < n; i++) {
-if (!visited[i] && cost[current][i] != 0 && cost[current][i] < min) {
-min = cost[current][i];
-next = i;
-}
-}
-if (next != -1) {
-visited[next] = 1;
-path[count] = next;
-totalCost += min;
-current = next;
-printf(" -> %d", next);
-}
-}
-totalCost += cost[current][0];
-printf(" -> %d", 0);
-printf("\nTotal Cost = %d\n", totalCost);
-return 0;
-}
-_________________________________________________________________________________________
-SLIP 9
-Q.1) Write a program to implement optimal binary search tree and also calculate
-the best-casecomplexity.
-#include <stdio.h>
-#include <limits.h>
-#define MAX 50
-int min(int a, int b) {
-return (a < b) ? a : b;
-}
-int sum(int freq[], int i, int j) {
-int s = 0;
-for (int k = i; k <= j; k++)
-s += freq[k];
-return s;
-}
-int optimalBST(int keys[], int freq[], int n) {
-int cost[MAX][MAX];
-for (int i = 0; i < n; i++)
-cost[i][i] = freq[i];
-for (int L = 2; L <= n; L++) {
-for (int i = 0; i <= n - L; i++) {
-int j = i + L - 1;
-cost[i][j] = INT_MAX;
-for (int r = i; r <= j; r++) {
-int c = ((r > i) ? cost[i][r - 1] : 0) +
-((r < j) ? cost[r + 1][j] : 0) +
-sum(freq, i, j);
-if (c < cost[i][j])
-cost[i][j] = c;
-}
-}
-}
-return cost[0][n - 1];
-}
-int main() {
-int n;
-printf("Enter number of keys: ");
-scanf("%d", &n);
-int keys[n], freq[n];
-printf("Enter keys:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &keys[i]);
-printf("Enter frequencies:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &freq[i]);
-int cost = optimalBST(keys, freq, n);
-printf("Cost of Optimal BST = %d\n", cost);
-return 0;
-}
-Q.2) Write a program to implement Sum of Subset by Backtracking
-#include <stdio.h>
-#define MAX 50
-int w[MAX], x[MAX];
-int n, target;
-void printSubset() {
-printf("{ ");
-for (int i = 0; i < n; i++) {
-if (x[i] == 1)
-printf("%d ", w[i]);
-}
-printf("}\n");
-}
-void sumOfSubsets(int k, int currentSum, int remainingSum) {
-x[k] = 1;
-if (currentSum + w[k] == target) {
-printSubset();
-}
-else if (currentSum + w[k] + remainingSum >= target && k + 1 < n) {
-sumOfSubsets(k + 1, currentSum + w[k], remainingSum - w[k]);
-}
-if (currentSum + remainingSum - w[k] >= target && k + 1 < n) {
-x[k] = 0;
-sumOfSubsets(k + 1, currentSum, remainingSum - w[k]);
-}
-}
-int main() {
-int total = 0;
-printf("Enter number of elements: ");
-scanf("%d", &n);
-printf("Enter elements:\n");
-for (int i = 0; i < n; i++) {
-scanf("%d", &w[i]);
-total += w[i];
-}
-printf("Enter target sum: ");
-scanf("%d", &target);
-printf("\nSubsets with sum = %d:\n", target);
-sumOfSubsets(0, 0, total);
-return 0;
-}
-_____________________________________________________________________________________
-SLIP 10
-Q.1) Write a program to implement Huffman Code using greedy methods
-#include <stdio.h>
-#include <stdlib.h>
-#define MAX 100
-struct Node {
-char data;
-int freq;
-struct Node *left, *right;
-};
-struct Node* newNode(char data, int freq) {
-struct Node* temp = (struct Node*)malloc(sizeof(struct Node));
-temp->data = data;
-temp->freq = freq;
-temp->left = temp->right = NULL;
-return temp;
-}
-void swap(struct Node** a, struct Node** b) {
-struct Node* t = *a;
-*a = *b;
-*b = t;
-}
-void heapify(struct Node* heap[], int size, int i) {
-int smallest = i;
-int left = 2*i + 1;
-int right = 2*i + 2;
-if (left < size && heap[left]->freq < heap[smallest]->freq)
-smallest = left;
-if (right < size && heap[right]->freq < heap[smallest]->freq)
-smallest = right;
-if (smallest != i) {
-swap(&heap[i], &heap[smallest]);
-heapify(heap, size, smallest);
-}
-}
-struct Node* extractMin(struct Node* heap[], int *size) {
-struct Node* temp = heap[0];
-heap[0] = heap[*size - 1];
-(*size)--;
-heapify(heap, *size, 0);
-return temp;
-}
-void insertHeap(struct Node* heap[], int *size, struct Node* node) {
-int i = (*size)++;
-while (i && node->freq < heap[(i - 1) / 2]->freq) {
-heap[i] = heap[(i - 1) / 2];
-i = (i - 1) / 2;
-}
-heap[i] = node;
-}
-struct Node* buildHuffman(char data[], int freq[], int n) {
-struct Node* heap[MAX];
-int size = n;
-for (int i = 0; i < n; i++) {
-heap[i] = newNode(data[i], freq[i]);
-}
-for (int i = (size - 2) / 2; i >= 0; i--) {
-heapify(heap, size, i);
-}
-while (size > 1) {
-struct Node* left = extractMin(heap, &size);
-struct Node* right = extractMin(heap, &size);
-struct Node* top = newNode('$', left->freq + right->freq);
-top->left = left;
-top->right = right;
-insertHeap(heap, &size, top);
-}
-return heap[0];
-}
-void printCodes(struct Node* root, int arr[], int top) {
-if (root->left) {
-arr[top] = 0;
-printCodes(root->left, arr, top + 1);
-}
-if (root->right) {
-arr[top] = 1;
-printCodes(root->right, arr, top + 1);
-}
-if (!root->left && !root->right) {
-printf("%c: ", root->data);
-for (int i = 0; i < top; i++)
-printf("%d", arr[i]);
-printf("\n");
-}
-}
-int main() {
-int n;
-printf("Enter number of characters: ");
-scanf("%d", &n);
-char data[n];
-int freq[n];
-printf("Enter characters:\n");
-for (int i = 0; i < n; i++)
-scanf(" %c", &data[i]);
-printf("Enter frequencies:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &freq[i]);
-struct Node* root = buildHuffman(data, freq, n);
-int arr[MAX], top = 0;
-printf("\nHuffman Codes:\n");
-printCodes(root, arr, top);
-return 0;
-}
-Q-2) Write a program to solve 4 Queens Problem using Backtracking
-#include <stdio.h>
-#define N 4
-int board[N][N];
-int isSafe(int row, int col) {
-int i, j;
-for (i = 0; i < col; i++)
-if (board[row][i])
-return 0;
-for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
-if (board[i][j])
-return 0;
-for (i = row, j = col; j >= 0 && i < N; i++, j--)
-if (board[i][j])
-return 0;
-return 1;
-}
-int solve(int col) {
-if (col >= N)
-return 1;
-for (int i = 0; i < N; i++) {
-if (isSafe(i, col)) {
-board[i][col] = 1;
-if (solve(col + 1))
-return 1;
-board[i][col] = 0;
-}
-}
-return 0;
-}
-void printSolution() {
-printf("Solution:\n");
-for (int i = 0; i < N; i++) {
-for (int j = 0; j < N; j++) {
-printf("%d ", board[i][j]);
-}
-printf("\n");
-}
-}
-int main() {
-for (int i = 0; i < N; i++)
-for (int j = 0; j < N; j++)
-board[i][j] = 0;
-if (solve(0)) {
-printSolution();
-} else {
-printf("No solution exists\n");
-}
-return 0;
-}
-__________________________________________________________________________
-SLIP 11
-Q.1) Write a programs to implement DFS (Depth First Search) and determine the time
-complexity for the same.
-#include <stdio.h>
-#define MAX 100
-int visited[MAX];
-void DFS(int graph[MAX][MAX], int V, int v) {
-printf("%d ", v);
-visited[v] = 1;
-for (int i = 0; i < V; i++) {
-if (graph[v][i] == 1 && !visited[i]) {
-DFS(graph, V, i);
-}
-}
-}
-int main() {
-int V;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-int graph[MAX][MAX];
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-int start;
-printf("Enter starting vertex: ");
-scanf("%d", &start);
-for (int i = 0; i < V; i++)
-visited[i] = 0;
-printf("DFS Traversal: ");
-DFS(graph, V, start);
-return 0;
-}
-Q.2) Write a program to find shortest paths from a given vertex in a weighted connected
-graph, to other vertices using Dijkstraâs algorithm.
-#include <stdio.h>
-#include <limits.h>
-#define MAX 100
-int minDistance(int dist[], int visited[], int V) {
-int min = INT_MAX, min_index = -1;
-for (int i = 0; i < V; i++) {
-if (!visited[i] && dist[i] < min) {
-min = dist[i];
-min_index = i;
-}
-}
-return min_index;
-}
-void dijkstra(int graph[MAX][MAX], int V, int src) {
-int dist[MAX], visited[MAX];
-for (int i = 0; i < V; i++) {
-dist[i] = INT_MAX;
-visited[i] = 0;
-}
-dist[src] = 0;
-for (int count = 0; count < V - 1; count++) {
-int u = minDistance(dist, visited, V);
-visited[u] = 1;
-for (int v = 0; v < V; v++) {
-if (!visited[v] && graph[u][v] &&
-dist[u] != INT_MAX &&
-dist[u] + graph[u][v] < dist[v]) {
-dist[v] = dist[u] + graph[u][v];
-}
-}
-}
-printf("\nVertex\tDistance from Source\n");
-for (int i = 0; i < V; i++) {
-printf("%d\t%d\n", i, dist[i]);
-}
-}
-int main() {
-int V, src;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-int graph[MAX][MAX];
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-printf("Enter source vertex: ");
-scanf("%d", &src);
-dijkstra(graph, V, src);
-return 0;
-}
-____________________________________________________________________________
-SLIP 12
-Q.1) Write a program to implement BFS (Breadth First Search) and determine the time
-complexity for the same.
-#include <stdio.h>
-#define MAX 100
-int queue[MAX], front = 0, rear = -1;
-int visited[MAX];
-void enqueue(int v) {
-queue[++rear] = v;
-}
-int dequeue() {
-return queue[front++];
-}
-int isEmpty() {
-return front > rear;
-}
-void BFS(int graph[MAX][MAX], int V, int start) {
-enqueue(start);
-visited[start] = 1;
-while (!isEmpty()) {
-int v = dequeue();
-printf("%d ", v);
-for (int i = 0; i < V; i++) {
-if (graph[v][i] == 1 && !visited[i]) {
-enqueue(i);
-visited[i] = 1;
-}
-}
-}
-}
-int main() {
-int V, start;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-int graph[MAX][MAX];
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-printf("Enter starting vertex: ");
-scanf("%d", &start);
-for (int i = 0; i < V; i++)
-visited[i] = 0;
-printf("BFS Traversal: ");
-BFS(graph, V, start);
-return 0;
-}
-Q.2) Write a program to sort a given set of elements using the Selection sort method and
-determine the time required to sort the elements.
-#include <stdio.h>
-#include <time.h>
-// Selection Sort function
-void selectionSort(int arr[], int n) {
-int i, j, min_idx, temp;
-for (i = 0; i < n - 1; i++) {
-min_idx = i;
-for (j = i + 1; j < n; j++) {
-if (arr[j] < arr[min_idx]) {
-min_idx = j;
-}
-}
-temp = arr[i];
-arr[i] = arr[min_idx];
-arr[min_idx] = temp;
-}
-}
-int main() {
-int n;
-printf("Enter number of elements: ");
-scanf("%d", &n);
-int arr[n];
-printf("Enter elements:\n");
-for (int i = 0; i < n; i++) {
-scanf("%d", &arr[i]);
-}
-clock_t start, end;
-start = clock();
-selectionSort(arr, n);
-end = clock();
-printf("\nSorted array:\n");
-for (int i = 0; i < n; i++) {
-printf("%d ", arr[i]);
-}
-double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
-printf("\nTime taken: %f seconds\n", time_taken);
-return 0;
-}
-______________________________________________________________________________
-SLIP 13
-Q.1) Write a program to find minimum number of multiplications in Matrix Chain
-Multiplication.
-#include <stdio.h>
-#include <limits.h>
-#define MAX 50
-int matrixChainOrder(int p[], int n) {
-int m[MAX][MAX];
-for (int i = 1; i < n; i++)
-m[i][i] = 0;
-for (int L = 2; L < n; L++) {
-for (int i = 1; i < n - L + 1; i++) {
-int j = i + L - 1;
-m[i][j] = INT_MAX;
-for (int k = i; k < j; k++) {
-int q = m[i][k] + m[k + 1][j] + p[i - 1] * p[k] * p[j];
-if (q < m[i][j])
-m[i][j] = q;
-}
-}
-}
-return m[1][n - 1];
-}
-int main() {
-int n;
-printf("Enter number of matrices: ");
-scanf("%d", &n);
-int p[n + 1];
-printf("Enter dimensions array (size %d):\n", n + 1);
-for (int i = 0; i <= n; i++) {
-scanf("%d", &p[i]);
-}
-int result = matrixChainOrder(p, n + 1);
-printf("Minimum number of multiplications = %d\n", result);
-return 0;
-}
-Q.2) Write a program to implement an optimal binary search tree and also calculate the
-best case and worst-case complexity.
-#include <stdio.h>
-#include <limits.h>
-#define MAX 50
-int sum(int freq[], int i, int j) {
-int s = 0;
-for (int k = i; k <= j; k++)
-s += freq[k];
-return s;
-}
-int optimalBST(int keys[], int freq[], int n) {
-int cost[MAX][MAX];
-for (int i = 0; i < n; i++)
-cost[i][i] = freq[i];
-for (int L = 2; L <= n; L++) {
-for (int i = 0; i <= n - L; i++) {
-int j = i + L - 1;
-cost[i][j] = INT_MAX;
-for (int r = i; r <= j; r++) {
-int c = ((r > i) ? cost[i][r - 1] : 0) +
-((r < j) ? cost[r + 1][j] : 0) +
-sum(freq, i, j);
-if (c < cost[i][j])
-cost[i][j] = c;
-}
-}
-}
-return cost[0][n - 1];
-}
-int main() {
-int n;
-printf("Enter number of keys: ");
-scanf("%d", &n);
-int keys[n], freq[n];
-printf("Enter keys:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &keys[i]);
-printf("Enter frequencies:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &freq[i]);
-int result = optimalBST(keys, freq, n);
-printf("Cost of Optimal BST = %d\n", result);
-return 0;
-}
-___________________________________________________________________________
-SLIP 14
-Slip 14
-Q.1) Write a program to sort a list of n numbers in ascending order using Insertion sort and
-determine the time required to sort the elements.
-#include <stdio.h>
-#include <time.h>
-void insertionSort(int arr[], int n) {
-int i, key, j;
-for (i = 1; i < n; i++) {
-key = arr[i];
-j = i - 1;
-while (j >= 0 && arr[j] > key) {
-arr[j + 1] = arr[j];
-j--;
-}
-arr[j + 1] = key;
-}
-}
-int main() {
-int n;
-printf("Enter number of elements: ");
-scanf("%d", &n);
-int arr[n];
-printf("Enter elements:\n");
-for (int i = 0; i < n; i++) {
-scanf("%d", &arr[i]);
-}
-clock_t start, end;
-start = clock();
-insertionSort(arr, n);
-end = clock();
-printf("\nSorted array:\n");
-for (int i = 0; i < n; i++) {
-printf("%d ", arr[i]);
-}
-double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
-printf("\nTime taken: %f seconds\n", time_taken);
-return 0;
-}
-Q.2) Write a program to implement DFS and BFS. Compare the time complexity
-#include <stdio.h>
-#define MAX 100
-int graph[MAX][MAX];
-int visited[MAX];
-int queue[MAX], front = 0, rear = -1;
-void enqueue(int v) {
-queue[++rear] = v;
-}
-int dequeue() {
-return queue[front++];
-}
-int isEmpty() {
-return front > rear;
-}
-void BFS(int V, int start) {
-for (int i = 0; i < V; i++)
-visited[i] = 0;
-front = 0; rear = -1;
-enqueue(start);
-visited[start] = 1;
-printf("BFS Traversal: ");
-while (!isEmpty()) {
-int v = dequeue();
-printf("%d ", v);
-for (int i = 0; i < V; i++) {
-if (graph[v][i] == 1 && !visited[i]) {
-enqueue(i);
-visited[i] = 1;
-}
-}
-}
-printf("\n");
-}
-void DFS(int V, int v) {
-printf("%d ", v);
-visited[v] = 1;
-for (int i = 0; i < V; i++) {
-if (graph[v][i] == 1 && !visited[i]) {
-DFS(V, i);
-}
-}
-}
-int main() {
-int V, start;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-printf("Enter starting vertex: ");
-scanf("%d", &start);
-BFS(V, start);
-for (int i = 0; i < V; i++)
-visited[i] = 0;
-printf("DFS Traversal: ");
-DFS(V, start);
-printf("\n");
-return 0;
-}
-________________________________________________________________________
-SLIP 15
-Q.1) Write a program to implement to find out solution for 0/1 knapsack problem using
-LCBB (Least Cost Branch and Bound).
-#include <stdio.h>
-#include <stdlib.h>
-#define MAX 100
-struct Node {
-int level, profit, weight;
-float bound;
-};
-struct Item {
-int value, weight;
-float ratio;
-};
-void sort(struct Item arr[], int n) {
-for (int i = 0; i < n - 1; i++) {
-for (int j = i + 1; j < n; j++) {
-if (arr[i].ratio < arr[j].ratio) {
-struct Item temp = arr[i];
-arr[i] = arr[j];
-arr[j] = temp;
-}
-}
-}
-}
-float bound(struct Node u, int n, int W, struct Item arr[]) {
-if (u.weight >= W)
-return 0;
-float profit_bound = u.profit;
-int j = u.level + 1;
-int totweight = u.weight;
-while (j < n && totweight + arr[j].weight <= W) {
-totweight += arr[j].weight;
-profit_bound += arr[j].value;
-j++;
-}
-if (j < n) {
-profit_bound += (W - totweight) * arr[j].ratio;
-}
-return profit_bound;
-}
-int knapsack(int W, struct Item arr[], int n) {
-struct Node u, v;
-struct Node queue[MAX];
-int front = 0, rear = 0;
-int maxProfit = 0;
-v.level = -1;
-v.profit = 0;
-v.weight = 0;
-v.bound = bound(v, n, W, arr);
-queue[rear++] = v;
-while (front < rear) {
-v = queue[front++];
-if (v.level == n - 1)
-continue;
-u.level = v.level + 1;
-u.weight = v.weight + arr[u.level].weight;
-u.profit = v.profit + arr[u.level].value;
-if (u.weight <= W && u.profit > maxProfit)
-maxProfit = u.profit;
-u.bound = bound(u, n, W, arr);
-if (u.bound > maxProfit)
-queue[rear++] = u;
-u.weight = v.weight;
-u.profit = v.profit;
-u.bound = bound(u, n, W, arr);
-if (u.bound > maxProfit)
-queue[rear++] = u;
-}
-return maxProfit;
-}
-int main() {
-int n, W;
-printf("Enter number of items: ");
-scanf("%d", &n);
-struct Item arr[n];
-printf("Enter values:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &arr[i].value);
-printf("Enter weights:\n");
-for (int i = 0; i < n; i++) {
-scanf("%d", &arr[i].weight);
-arr[i].ratio = (float)arr[i].value / arr[i].weight;
-}
-printf("Enter knapsack capacity: ");
-scanf("%d", &W);
-sort(arr, n);
-int result = knapsack(W, arr, n);
-printf("Maximum profit = %d\n", result);
-return 0;
-}
-Q.2) Write a program to implement Graph Coloring Algorithm
-#include <stdio.h>
-#define MAX 100
-int graph[MAX][MAX];
-int color[MAX];
-int V, m;
-int isSafe(int v, int c) {
-for (int i = 0; i < V; i++) {
-if (graph[v][i] == 1 && color[i] == c)
-return 0;
-}
-return 1;
-}
-int graphColoring(int v) {
-if (v == V)
-return 1;
-for (int c = 1; c <= m; c++) {
-if (isSafe(v, c)) {
-color[v] = c;
-if (graphColoring(v + 1))
-return 1;
-color[v] = 0;
-}
-}
-return 0;
-}
-int main() {
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-printf("Enter number of colors: ");
-scanf("%d", &m);
-for (int i = 0; i < V; i++)
-color[i] = 0;
-if (graphColoring(0)) {
-printf("Solution exists:\n");
-for (int i = 0; i < V; i++) {
-printf("Vertex %d -> Color %d\n", i, color[i]);
-}
-} else {
-printf("No solution exists\n");
-}
-return 0;
 }
 ____________________________________________________________________________________
+SLIP 3
+Q.1) Create an application that allows the user to enter a number in the textbox.
+Check whether the number in the textbox is Armstrong or not. Print the message
+accordingly in the label control.
+Step 1: activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:padding="20dp">
+<EditText
+android:id="@+id/inputNumber"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Enter a number"
+android:inputType="number"/>
+<Button
+android:id="@+id/checkButton"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Check Armstrong"
+android:layout_marginTop="20dp"/>
+<TextView
+android:id="@+id/resultLabel"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Result will be shown here"
+android:textSize="18sp"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+Step 2: MainActivity.java
+package com.example.armstrongapp;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText inputNumber;
+Button checkButton;
+TextView resultLabel;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+inputNumber = findViewById(R.id.inputNumber);
+checkButton = findViewById(R.id.checkButton);
+resultLabel = findViewById(R.id.resultLabel);
+checkButton.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String value = inputNumber.getText().toString();
+if (value.isEmpty()) {
+resultLabel.setText("Please enter a number");
+return;
+}
+int num = Integer.parseInt(value);
+int temp = num;
+int sum = 0;
+while (temp != 0) {
+int digit = temp % 10;
+sum += digit * digit * digit;
+temp = temp / 10;
+}
+if (sum == num) {
+resultLabel.setText(num + " is an Armstrong Number");
+} else {
+resultLabel.setText(num + " is NOT an Armstrong Number");
+}
+}
+});
+}
+}
+Q.2) Create an Android application which examine a phone number entered by a
+user with the given format.
+• Area code should be one of the following: 040, 041, 050, 0400, 044
+• There should 6 - 8 numbers in telephone number (+ area code).
+Step 1: activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:padding="20dp">
+<EditText
+android:id="@+id/phoneInput"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Enter Phone Number (e.g. 0401234567)"
+android:inputType="phone"/>
+<Button
+android:id="@+id/validateBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Validate Number"
+android:layout_marginTop="20dp"/>
+<TextView
+android:id="@+id/resultText"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Result will appear here"
+android:textSize="18sp"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+Step 2: MainActivity.java
+package com.example.phonevalidation;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText phoneInput;
+Button validateBtn;
+TextView resultText;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+phoneInput = findViewById(R.id.phoneInput);
+validateBtn = findViewById(R.id.validateBtn);
+resultText = findViewById(R.id.resultText);
+validateBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String phone = phoneInput.getText().toString().trim();
+String[] validCodes = {"040", "041", "050", "0400", "044"};
+boolean validCode = false;
+String matchedCode = "";
+for (String code : validCodes) {
+if (phone.startsWith(code)) {
+validCode = true;
+matchedCode = code;
+break;
+}
+}
+if (!validCode) {
+resultText.setText("Invalid Area Code");
+return;
+}
+String numberPart = phone.substring(matchedCode.length());
+if (numberPart.length() >= 6 && numberPart.length() <= 8) {
+resultText.setText("Valid Phone Number");
+} else {
+resultText.setText("Invalid Number: Must have 6 to 8 digits after area code");
+}
+}
+});
+}
+}
+____________________________________________________________________________________________________
+SLIP 4
+Q.1) Construct image switcher using setFactory().
+Step 1: activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:gravity="center"
+android:padding="20dp">
+<ImageSwitcher
+android:id="@+id/imageSwitcher"
+android:layout_width="300dp"
+android:layout_height="300dp"
+android:layout_marginBottom="20dp"/>
+<Button
+android:id="@+id/nextBtn"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Next Image"/>
+</LinearLayout>
+Step 2: MainActivity.java
+package com.example.imageswitcherapp;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
+import android.widget.ViewSwitcher;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+ImageSwitcher imageSwitcher;
+Button nextBtn;
+int[] images = {android.R.drawable.ic_menu_camera,
+android.R.drawable.ic_menu_compass,
+android.R.drawable.ic_menu_gallery};
+int index = 0;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+imageSwitcher = findViewById(R.id.imageSwitcher);
+nextBtn = findViewById(R.id.nextBtn);
+imageSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
+@Override
+public View makeView() {
+ImageView imageView = new ImageView(getApplicationContext());
+imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+imageView.setLayoutParams(
+new ImageSwitcher.LayoutParams(
+ImageSwitcher.LayoutParams.MATCH_PARENT,
+ImageSwitcher.LayoutParams.MATCH_PARENT
+)
+);
+return imageView;
+}
+});
+imageSwitcher.setImageResource(images[index]);
+nextBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+index++;
+if (index == images.length) {
+index = 0;
+}
+imageSwitcher.setImageResource(images[index]);
+}
+});
+}
+}
+Q.2) Write a program to search a specific location on Google Map.
+Step 1: Add Permission (AndroidManifest.xml)
+<uses-permission android:name="android.permission.INTERNET"/>
+Step 2: activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:padding="20dp">
+<EditText
+android:id="@+id/locationInput"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Enter location (e.g. Pune)"
+android:inputType="text"/>
+<Button
+android:id="@+id/searchBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Search on Map"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+Step 3: MainActivity.java
+package com.example.googlemapapp;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText locationInput;
+Button searchBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+locationInput = findViewById(R.id.locationInput);
+searchBtn = findViewById(R.id.searchBtn);
+searchBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String location = locationInput.getText().toString();
+if (!location.isEmpty()) {
+Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + location);
+Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+mapIntent.setPackage("com.google.android.apps.maps");
+if (mapIntent.resolveActivity(getPackageManager()) != null) {
+startActivity(mapIntent);
+} else {
+Uri browserUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + location);
+Intent browserIntent = new Intent(Intent.ACTION_VIEW, browserUri);
+startActivity(browserIntent);
+}
+}
+}
+});
+}
+}
+________________________________________________________________________________________________________________________
+SLIP 5
+Q.1) Java Android Program to Demonstrate Alert Dialog Box.
+activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:gravity="center"
+android:orientation="vertical">
+<Button
+android:id="@+id/showDialog"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Show Alert" />
+</LinearLayout>
+MainActivity.java
+package com.example.alertdialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+Button showDialog;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+showDialog = findViewById(R.id.showDialog);
+showDialog.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+builder.setTitle("Alert");
+builder.setMessage("Do you want to continue?");
+builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+@Override
+public void onClick(DialogInterface dialog, int which) {
+dialog.dismiss();
+}
+});
+builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+@Override
+public void onClick(DialogInterface dialog, int which) {
+dialog.cancel();
+}
+});
+AlertDialog alertDialog = builder.create();
+alertDialog.show();
+}
+});
+}
+}
+Q.2) Create an Android application which will ask the user to input his / her name.
+A message should display the two items concatenated in a label. Change the format
+of the label using radio buttons and check boxes for selection. The user can make
+the label text bold, underlined or italic as well as change its color. Also include
+buttons to display the message in the label, clear the text boxes as well as label.
+Finally exit.
+activity_main.xml
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<LinearLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:padding="20dp">
+<EditText
+android:id="@+id/nameInput"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Enter Name"/>
+<TextView
+android:id="@+id/resultLabel"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Result"
+android:textSize="18sp"
+android:padding="10dp"/>
+<RadioGroup
+android:id="@+id/colorGroup"
+android:layout_width="match_parent"
+android:layout_height="wrap_content">
+<RadioButton
+android:id="@+id/red"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Red"/>
+<RadioButton
+android:id="@+id/blue"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Blue"/>
+<RadioButton
+android:id="@+id/green"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Green"/>
+</RadioGroup>
+<CheckBox
+android:id="@+id/bold"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Bold"/>
+<CheckBox
+android:id="@+id/italic"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Italic"/>
+<CheckBox
+android:id="@+id/underline"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Underline"/>
+<Button
+android:id="@+id/displayBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Display"/>
+<Button
+android:id="@+id/clearBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Clear"/>
+<Button
+android:id="@+id/exitBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Exit"/>
+</LinearLayout>
+</ScrollView>
+MainActivity.java
+package com.example.nameformatapp;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText nameInput;
+TextView resultLabel;
+RadioGroup colorGroup;
+CheckBox bold, italic, underline;
+Button displayBtn, clearBtn, exitBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+nameInput = findViewById(R.id.nameInput);
+resultLabel = findViewById(R.id.resultLabel);
+colorGroup = findViewById(R.id.colorGroup);
+bold = findViewById(R.id.bold);
+italic = findViewById(R.id.italic);
+underline = findViewById(R.id.underline);
+displayBtn = findViewById(R.id.displayBtn);
+clearBtn = findViewById(R.id.clearBtn);
+exitBtn = findViewById(R.id.exitBtn);
+displayBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String name = nameInput.getText().toString();
+resultLabel.setText("Hello " + name);
+if (bold.isChecked() && italic.isChecked()) {
+resultLabel.setTypeface(null, android.graphics.Typeface.BOLD_ITALIC);
+} else if (bold.isChecked()) {
+resultLabel.setTypeface(null, android.graphics.Typeface.BOLD);
+} else if (italic.isChecked()) {
+resultLabel.setTypeface(null, android.graphics.Typeface.ITALIC);
+} else {
+resultLabel.setTypeface(null, android.graphics.Typeface.NORMAL);
+}
+if (underline.isChecked()) {
+resultLabel.setPaintFlags(resultLabel.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+} else {
+resultLabel.setPaintFlags(0);
+}
+int selectedId = colorGroup.getCheckedRadioButtonId();
+if (selectedId == R.id.red) {
+resultLabel.setTextColor(Color.RED);
+} else if (selectedId == R.id.blue) {
+resultLabel.setTextColor(Color.BLUE);
+} else if (selectedId == R.id.green) {
+resultLabel.setTextColor(Color.GREEN);
+}
+}
+});
+clearBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+nameInput.setText("");
+resultLabel.setText("");
+bold.setChecked(false);
+italic.setChecked(false);
+underline.setChecked(false);
+colorGroup.clearCheck();
+}
+});
+exitBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+finish();
+}
+});
+}
+}
+________________________________________________________________________________________________________
+SLIP 6
+Q.1) Java Android Program to demonstrate login form with validation.
+1. XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/email"
+android:hint="Email"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/password"
+android:hint="Password"
+android:inputType="textPassword"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/loginBtn"
+android:text="Login"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.loginapp;
+import android.os.Bundle;
+import android.util.Patterns;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText email, password;
+Button loginBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+email = findViewById(R.id.email);
+password = findViewById(R.id.password);
+loginBtn = findViewById(R.id.loginBtn);
+loginBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+validateLogin();
+}
+});
+}
+private void validateLogin() {
+String emailText = email.getText().toString();
+String passText = password.getText().toString();
+if (emailText.isEmpty()) {
+email.setError("Email is required");
+} else if (!Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
+email.setError("Enter valid email");
+} else if (passText.isEmpty()) {
+password.setError("Password is required");
+} else if (passText.length() < 6) {
+password.setError("Password must be at least 6 characters");
+} else {
+Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+}
+}
+}
+Q.2) Write a program to search a specific location on Google Map.
+Step 1: Add Permission (AndroidManifest.xml)
+<uses-permission android:name="android.permission.INTERNET"/>
+Step 2: activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:padding="20dp">
+<EditText
+android:id="@+id/locationInput"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Enter location (e.g. Pune)"
+android:inputType="text"/>
+<Button
+android:id="@+id/searchBtn"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Search on Map"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+Step 3: MainActivity.java
+package com.example.googlemapapp;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText locationInput;
+Button searchBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+locationInput = findViewById(R.id.locationInput);
+searchBtn = findViewById(R.id.searchBtn);
+searchBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String location = locationInput.getText().toString();
+if (!location.isEmpty()) {
+Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + location);
+Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+mapIntent.setPackage("com.google.android.apps.maps");
+if (mapIntent.resolveActivity(getPackageManager()) != null) {
+startActivity(mapIntent);
+} else {
+Uri browserUri =
+Uri.parse("https://www.google.com/maps/search/?api=1&query=" + location);
+Intent browserIntent = new Intent(Intent.ACTION_VIEW, browserUri);
+startActivity(browserIntent);
+}
+}
+}
+});
+}
+}
+________________________________________________________________________________________________________________________
+SLIP 7
+Q.1] Java Android Program to Demonstrate ProgressBar.
+1. XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:gravity="center"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<ProgressBar
+android:id="@+id/progressBar"
+style="?android:attr/progressBarStyleHorizontal"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:max="100"/>
+<Button
+android:id="@+id/startBtn"
+android:text="Start Progress"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.progressapp;
+import android.os.Bundle;
+import android.os.Handler;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+ProgressBar progressBar;
+Button startBtn;
+int progressStatus = 0;
+Handler handler = new Handler();
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+progressBar = findViewById(R.id.progressBar);
+startBtn = findViewById(R.id.startBtn);
+startBtn.setOnClickListener(v -> {
+progressStatus = 0;
+new Thread(() -> {
+while (progressStatus < 100) {
+progressStatus += 10;
+handler.post(() -> progressBar.setProgress(progressStatus));
+try {
+Thread.sleep(500);
+} catch (InterruptedException e) {
+e.printStackTrace();
+}
+}
+}).start();
+});
+}
+}
+Q.2] Create table Employee (E_id, name, address, ph_no). Create Application for
+performing the following operation on the table. (Using SQLite database).
+i] Insert record of 5 new Employees.
+ii] Show all the details of Employee.
+1. Database Helper Class (DBHelper.java)
+package com.example.employeeapp;
+import android.content.*;
+import android.database.Cursor;
+import android.database.sqlite.*;
+public class DBHelper extends SQLiteOpenHelper {
+public static final String DB_NAME = "EmployeeDB";
+public static final String TABLE_NAME = "Employee";
+public DBHelper(Context context) {
+super(context, DB_NAME, null, 1);
+}
+@Override
+public void onCreate(SQLiteDatabase db) {
+db.execSQL("CREATE TABLE Employee(E_id INTEGER PRIMARY KEY, name TEXT, address TEXT, ph_no TEXT)");
+}
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+db.execSQL("DROP TABLE IF EXISTS Employee");
+onCreate(db);
+}
+public boolean insertEmployee(int id, String name, String address, String phone) {
+SQLiteDatabase db = this.getWritableDatabase();
+ContentValues cv = new ContentValues();
+cv.put("E_id", id);
+cv.put("name", name);
+cv.put("address", address);
+cv.put("ph_no", phone);
+long result = db.insert(TABLE_NAME, null, cv);
+return result != -1;
+}
+public Cursor getAllEmployees() {
+SQLiteDatabase db = this.getReadableDatabase();
+return db.rawQuery("SELECT * FROM Employee", null);
+}
+}
+2. Insert 5 Employee Records (MainActivity.java)
+package com.example.employeeapp;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+DBHelper db;
+TextView result;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+db = new DBHelper(this);
+result = findViewById(R.id.result);
+db.insertEmployee(1, "Amit", "Pune", "9876543210");
+db.insertEmployee(2, "Rahul", "Mumbai", "9123456780");
+db.insertEmployee(3, "Sneha", "Nashik", "9988776655");
+db.insertEmployee(4, "Priya", "Nagpur", "9090909090");
+db.insertEmployee(5, "Kiran", "Solapur", "8888888888");
+Cursor cursor = db.getAllEmployees();
+StringBuilder data = new StringBuilder();
+while (cursor.moveToNext()) {
+data.append("ID: ").append(cursor.getInt(0)).append("\n");
+data.append("Name: ").append(cursor.getString(1)).append("\n");
+data.append("Address: ").append(cursor.getString(2)).append("\n");
+data.append("Phone: ").append(cursor.getString(3)).append("\n\n");
+}
+result.setText(data.toString());
+}
+}
+3. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:id="@+id/result"
+android:text="Employee Data"
+android:textSize="16sp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+___________________________________________________________________________________________________
+SLIP 8
+Q.1] Create a Application which shows Life Cycle of Activity.
+1. Java Code (MainActivity.java)
+package com.example.lifecycleapp;
+import android.os.Bundle;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+private void showMessage(String msg) {
+Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+}
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+showMessage("onCreate() called");
+}
+@Override
+protected void onStart() {
+super.onStart();
+showMessage("onStart() called");
+}
+@Override
+protected void onResume() {
+super.onResume();
+showMessage("onResume() called");
+}
+@Override
+protected void onPause() {
+super.onPause();
+showMessage("onPause() called");
+}
+@Override
+protected void onStop() {
+super.onStop();
+showMessage("onStop() called");
+}
+@Override
+protected void onRestart() {
+super.onRestart();
+showMessage("onRestart() called");
+}
+@Override
+protected void onDestroy() {
+super.onDestroy();
+showMessage("onDestroy() called");
+}
+}
+2. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:gravity="center"
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:text="Activity Life Cycle Demo"
+android:textSize="20sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+Q.2] Create table Customer (id, name, address, ph_no). Create Application for
+performing the following operation on the table. (Using SQLite database).
+i] Insert new customer details (At least 5 records).
+ii] Show all the customer details.
+1. Database Helper Class (DBHelper.java)
+package com.example.customerapp;
+import android.content.*;
+import android.database.Cursor;
+import android.database.sqlite.*;
+public class DBHelper extends SQLiteOpenHelper {
+public static final String DB_NAME = "CustomerDB";
+public static final String TABLE_NAME = "Customer";
+public DBHelper(Context context) {
+super(context, DB_NAME, null, 1);
+}
+@Override
+public void onCreate(SQLiteDatabase db) {
+db.execSQL("CREATE TABLE Customer(id INTEGER PRIMARY KEY, name TEXT, address TEXT, ph_no TEXT)");
+}
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+db.execSQL("DROP TABLE IF EXISTS Customer");
+onCreate(db);
+}
+public boolean insertCustomer(int id, String name, String address, String phone) {
+SQLiteDatabase db = this.getWritableDatabase();
+ContentValues cv = new ContentValues();
+cv.put("id", id);
+cv.put("name", name);
+cv.put("address", address);
+cv.put("ph_no", phone);
+long result = db.insert(TABLE_NAME, null, cv);
+return result != -1;
+}
+public Cursor getAllCustomers() {
+SQLiteDatabase db = this.getReadableDatabase();
+return db.rawQuery("SELECT * FROM Customer", null);
+}
+}
+2. Main Activity (Insert + Display Data).java
+package com.example.customerapp;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+DBHelper db;
+TextView result;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+db = new DBHelper(this);
+result = findViewById(R.id.result);
+db.insertCustomer(1, "Raj", "Pune", "9876543210");
+db.insertCustomer(2, "Neha", "Mumbai", "9123456780");
+db.insertCustomer(3, "Amit", "Nashik", "9988776655");
+db.insertCustomer(4, "Pooja", "Nagpur", "9090909090");
+db.insertCustomer(5, "Ravi", "Solapur", "8888888888");
+Cursor cursor = db.getAllCustomers();
+StringBuilder data = new StringBuilder();
+while (cursor.moveToNext()) {
+data.append("ID: ").append(cursor.getInt(0)).append("\n");
+data.append("Name: ").append(cursor.getString(1)).append("\n");
+data.append("Address: ").append(cursor.getString(2)).append("\n");
+data.append("Phone: ").append(cursor.getString(3)).append("\n\n");
+}
+result.setText(data.toString());
+}
+}
+3. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:id="@+id/result"
+android:text="Customer Data"
+android:textSize="16sp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+__________________________________________________________________________________________________________
+SLIP 9
+Q.1] Create an application that allows the user to enter a number in the textbox named „getnum‟.
+Check whether the number in the textbox „getnum‟ is Palindrome or not.
+Print the message accordingly in the label when the user clicks on the butto „Check‟.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/getnum"
+android:hint="Enter Number"
+android:inputType="number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/checkBtn"
+android:text="Check"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginTop="15dp"/>
+<TextView
+android:id="@+id/result"
+android:text="Result"
+android:textSize="18sp"
+android:layout_marginTop="20dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.palindromeapp;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText getnum;
+Button checkBtn;
+TextView result;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+getnum = findViewById(R.id.getnum);
+checkBtn = findViewById(R.id.checkBtn);
+result = findViewById(R.id.result);
+checkBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String input = getnum.getText().toString();
+if (input.isEmpty()) {
+result.setText("Please enter a number");
+return;
+}
+int num = Integer.parseInt(input);
+int original = num;
+int reverse = 0;
+while (num != 0) {
+int digit = num % 10;
+reverse = reverse * 10 + digit;
+num = num / 10;
+}
+if (original == reverse) {
+result.setText("Palindrome Number");
+} else {
+result.setText("Not a Palindrome");
+}
+}
+});
+}
+}
+Q.2] Java android program to create simple calculator.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/num1"
+android:hint="Enter First Number"
+android:inputType="numberDecimal"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/num2"
+android:hint="Enter Second Number"
+android:inputType="numberDecimal"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<LinearLayout
+android:orientation="horizontal"
+android:layout_marginTop="10dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content">
+<Button
+android:id="@+id/add"
+android:text="+"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/sub"
+android:text="-"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/mul"
+android:text="*"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/div"
+android:text="/"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+<TextView
+android:id="@+id/result"
+android:text="Result"
+android:textSize="18sp"
+android:layout_marginTop="20dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.calculatorapp;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText num1, num2;
+Button add, sub, mul, div;
+TextView result;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+num1 = findViewById(R.id.num1);
+num2 = findViewById(R.id.num2);
+add = findViewById(R.id.add);
+sub = findViewById(R.id.sub);
+mul = findViewById(R.id.mul);
+div = findViewById(R.id.div);
+result = findViewById(R.id.result);
+add.setOnClickListener(v -> calculate('+'));
+sub.setOnClickListener(v -> calculate('-'));
+mul.setOnClickListener(v -> calculate('*'));
+div.setOnClickListener(v -> calculate('/'));
+}
+private void calculate(char op) {
+String n1 = num1.getText().toString();
+String n2 = num2.getText().toString();
+if (n1.isEmpty() || n2.isEmpty()) {
+result.setText("Enter both numbers");
+return;
+}
+double a = Double.parseDouble(n1);
+double b = Double.parseDouble(n2);
+double res = 0;
+switch (op) {
+case '+':
+res = a + b;
+break;
+case '-':
+res = a - b;
+break;
+case '*':
+res = a * b;
+break;
+case '/':
+if (b == 0) {
+result.setText("Cannot divide by zero");
+return;
+}
+res = a / b;
+break;
+}
+result.setText("Result: " + res);
+}
+}
+_____________________________________________________________________________________________________________________
+SLIP 10
+Q.1] Create an application that allows the user to enter a number in the textbox named getnum.
+Check whether the number in the textbox getnum is Armstrong or not.
+Print the message using Toast control when the user clicks on the button Check.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/getnum"
+android:hint="Enter Number"
+android:inputType="number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/checkBtn"
+android:text="Check"
+android:layout_marginTop="15dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.armstrongapp;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText getnum;
+Button checkBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+getnum = findViewById(R.id.getnum);
+checkBtn = findViewById(R.id.checkBtn);
+checkBtn.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String input = getnum.getText().toString();
+if (input.isEmpty()) {
+Toast.makeText(MainActivity.this, "Enter a number", Toast.LENGTH_SHORT).show();
+return;
+}
+int num = Integer.parseInt(input);
+int original = num;
+int sum = 0;
+int digits = input.length();
+while (num != 0) {
+int digit = num % 10;
+sum += Math.pow(digit, digits);
+num = num / 10;
+}
+if (sum == original) {
+Toast.makeText(MainActivity.this, "Armstrong Number", Toast.LENGTH_SHORT).show();
+} else {
+Toast.makeText(MainActivity.this, "Not an Armstrong Number", Toast.LENGTH_SHORT).show();
+}
+}
+});
+}
+}
+Q.2] Write a program to draw GUI by using Spinner, Buttons.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/inputItem"
+android:hint="Enter Item"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/addBtn"
+android:text="Add to Spinner"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginTop="10dp"/>
+<Button
+android:id="@+id/removeBtn"
+android:text="Remove from Spinner"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginTop="10dp"/>
+<Spinner
+android:id="@+id/spinner"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.spinnerapp;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.ArrayList;
+public class MainActivity extends AppCompatActivity {
+EditText inputItem;
+Button addBtn, removeBtn;
+Spinner spinner;
+ArrayList<String> list;
+ArrayAdapter<String> adapter;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+inputItem = findViewById(R.id.inputItem);
+addBtn = findViewById(R.id.addBtn);
+removeBtn = findViewById(R.id.removeBtn);
+spinner = findViewById(R.id.spinner);
+list = new ArrayList<>();
+list.add("Apple"); // default item
+adapter = new ArrayAdapter<>(this,
+android.R.layout.simple_spinner_item, list);
+adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+spinner.setAdapter(adapter);
+addBtn.setOnClickListener(v -> {
+String item = inputItem.getText().toString();
+if (!item.isEmpty()) {
+list.add(item);
+adapter.notifyDataSetChanged();
+inputItem.setText("");
+Toast.makeText(this, "Item Added", Toast.LENGTH_SHORT).show();
+}
+});
+removeBtn.setOnClickListener(v -> {
+String selected = spinner.getSelectedItem().toString();
+list.remove(selected);
+adapter.notifyDataSetChanged();
+Toast.makeText(this, "Item Removed", Toast.LENGTH_SHORT).show();
+});
+}
+}
+________________________________________________________________________________________________________
+SLIP 11
+Q.1] Create an Android Application to accept two numbers to calculate its Power and Average.
+Create two buttons: Power and Average. Display the appropriate result on the next activity on Button click.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/num1"
+android:hint="Enter First Number"
+android:inputType="numberDecimal"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/num2"
+android:hint="Enter Second Number"
+android:inputType="numberDecimal"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/powerBtn"
+android:text="Power"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginTop="10dp"/>
+<Button
+android:id="@+id/avgBtn"
+android:text="Average"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginTop="10dp"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.poweravgapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText num1, num2;
+Button powerBtn, avgBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+num1 = findViewById(R.id.num1);
+num2 = findViewById(R.id.num2);
+powerBtn = findViewById(R.id.powerBtn);
+avgBtn = findViewById(R.id.avgBtn);
+powerBtn.setOnClickListener(v -> calculate("power"));
+avgBtn.setOnClickListener(v -> calculate("avg"));
+}
+private void calculate(String type) {
+double a = Double.parseDouble(num1.getText().toString());
+double b = Double.parseDouble(num2.getText().toString());
+double result;
+if (type.equals("power")) {
+result = Math.pow(a, b);
+} else {
+result = (a + b) / 2;
+}
+Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+intent.putExtra("result", result);
+startActivity(intent);
+}
+}
+3. Second Activity (ResultActivity.java)
+package com.example.poweravgapp;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class ResultActivity extends AppCompatActivity {
+TextView resultView;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_result);
+resultView = findViewById(R.id.resultView);
+double result = getIntent().getDoubleExtra("result", 0);
+resultView.setText("Result: " + result);
+}
+}
+4. XML for Second Activity (activity_result.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:id="@+id/resultView"
+android:textSize="22sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+5. AndroidManifest.xml (Add Activity)
+<activity android:name=".ResultActivity"/>
+Q.2] Create an Android Application to perform following string
+operation according to user selection of radio button.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/inputText"
+android:hint="Enter String"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<RadioGroup
+android:id="@+id/radioGroup"
+android:layout_marginTop="15dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content">
+<RadioButton
+android:id="@+id/upper"
+android:text="Uppercase"/>
+<RadioButton
+android:id="@+id/lower"
+android:text="Lowercase"/>
+<RadioButton
+android:id="@+id/right"
+android:text="Right 5 Characters"/>
+<RadioButton
+android:id="@+id/left"
+android:text="Left 5 Characters"/>
+</RadioGroup>
+<Button
+android:id="@+id/clickBtn"
+android:text="Click"
+android:layout_marginTop="15dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/output"
+android:hint="Output"
+android:layout_marginTop="20dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.stringapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText inputText, output;
+RadioGroup radioGroup;
+Button clickBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+inputText = findViewById(R.id.inputText);
+output = findViewById(R.id.output);
+radioGroup = findViewById(R.id.radioGroup);
+clickBtn = findViewById(R.id.clickBtn);
+clickBtn.setOnClickListener(v -> {
+String text = inputText.getText().toString();
+int selectedId = radioGroup.getCheckedRadioButtonId();
+if (text.isEmpty() || selectedId == -1) {
+Toast.makeText(this, "Enter text and select option", Toast.LENGTH_SHORT).show();
+return;
+}
+String result = "";
+if (selectedId == R.id.upper) {
+result = text.toUpperCase();
+}
+else if (selectedId == R.id.lower) {
+result = text.toLowerCase();
+}
+else if (selectedId == R.id.right) {
+result = text.length() >= 5 ? text.substring(text.length() - 5) : text;
+}
+else if (selectedId == R.id.left) {
+result = text.length() >= 5 ? text.substring(0, 5) : text;
+}
+output.setText(result);
+});
+}
+}
+_______________________________________________________________________________________________________________________
+SLIP 12
+Q.1] Construct an Android app that toggles a light bulb ON and OFF when the user clicks on toggle button.
+1. Add Images
+Place two images in res/drawable folder:
+bulb_on.png (light ON)
+bulb_off.png (light OFF)
+2. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<ImageView
+android:id="@+id/bulbImage"
+android:src="@drawable/bulb_off"
+android:layout_width="200dp"
+android:layout_height="200dp"/>
+<ToggleButton
+android:id="@+id/toggleBtn"
+android:textOn="Light ON"
+android:textOff="Light OFF"
+android:layout_marginTop="20dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+3. Java Code (MainActivity.java)
+package com.example.toggleapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+ImageView bulbImage;
+ToggleButton toggleBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+bulbImage = findViewById(R.id.bulbImage);
+toggleBtn = findViewById(R.id.toggleBtn);
+toggleBtn.setOnCheckedChangeListener((buttonView, isChecked) -> {
+if (isChecked) {
+bulbImage.setImageResource(R.drawable.bulb_on);
+Toast.makeText(this, "Light ON", Toast.LENGTH_SHORT).show();
+} else {
+bulbImage.setImageResource(R.drawable.bulb_off);
+Toast.makeText(this, "Light OFF", Toast.LENGTH_SHORT).show();
+}
+});
+}
+}
+Q.2] Create an Android application which will ask the user to input his / her name. A message should
+display the two items concatenated in a label. Change the format of the label using radio buttons and
+check boxes for selection. The user can make the label text bold, underlined or italic as well as
+change its color. Also include buttons to display the message in the label,
+clear the text boxes as well as label. Finally exit.
+1. XML Layout (activity_main.xml)
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<LinearLayout
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content">
+<EditText
+android:id="@+id/fname"
+android:hint="First Name"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/lname"
+android:hint="Last Name"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<RadioGroup
+android:id="@+id/radioGroup"
+android:layout_marginTop="10dp">
+<RadioButton android:id="@+id/red" android:text="Red"/>
+<RadioButton android:id="@+id/blue" android:text="Blue"/>
+<RadioButton android:id="@+id/green" android:text="Green"/>
+</RadioGroup>
+<CheckBox android:id="@+id/bold" android:text="Bold"/>
+<CheckBox android:id="@+id/italic" android:text="Italic"/>
+<CheckBox android:id="@+id/underline" android:text="Underline"/>
+<Button android:id="@+id/showBtn" android:text="Show"/>
+<Button android:id="@+id/clearBtn" android:text="Clear"/>
+<Button android:id="@+id/exitBtn" android:text="Exit"/>
+<TextView
+android:id="@+id/output"
+android:text="Output"
+android:textSize="20sp"
+android:layout_marginTop="20dp"/>
+</LinearLayout>
+</ScrollView>
+2. Java Code (MainActivity.java)
+package com.example.formatapp;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText fname, lname;
+RadioGroup radioGroup;
+CheckBox bold, italic, underline;
+TextView output;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+fname = findViewById(R.id.fname);
+lname = findViewById(R.id.lname);
+radioGroup = findViewById(R.id.radioGroup);
+bold = findViewById(R.id.bold);
+italic = findViewById(R.id.italic);
+underline = findViewById(R.id.underline);
+output = findViewById(R.id.output);
+Button showBtn = findViewById(R.id.showBtn);
+Button clearBtn = findViewById(R.id.clearBtn);
+Button exitBtn = findViewById(R.id.exitBtn);
+showBtn.setOnClickListener(v -> {
+String name = fname.getText().toString() + " " + lname.getText().toString();
+output.setText("Hello " + name);
+int selectedId = radioGroup.getCheckedRadioButtonId();
+if (selectedId == R.id.red) output.setTextColor(Color.RED);
+else if (selectedId == R.id.blue) output.setTextColor(Color.BLUE);
+else if (selectedId == R.id.green) output.setTextColor(Color.GREEN);
+int style = Typeface.NORMAL;
+if (bold.isChecked() && italic.isChecked())
+style = Typeface.BOLD_ITALIC;
+else if (bold.isChecked())
+style = Typeface.BOLD;
+else if (italic.isChecked())
+style = Typeface.ITALIC;
+output.setTypeface(null, style);
+if (underline.isChecked())
+output.setPaintFlags(output.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+else
+output.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+});
+clearBtn.setOnClickListener(v -> {
+fname.setText("");
+lname.setText("");
+output.setText("");
+});
+exitBtn.setOnClickListener(v -> finish());
+}
+}
+________________________________________________________________________________________________________________________
+SLIP 13
+Q.1] Java android program to demonstrate Registration form with validation.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/name"
+android:hint="Name"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/address"
+android:hint="Address"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/mobile"
+android:hint="Mobile No."
+android:inputType="phone"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/age"
+android:hint="Age"
+android:inputType="number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/registerBtn"
+android:text="Register"
+android:layout_marginTop="15dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.registrationapp;
+import android.os.Bundle;
+import android.util.Patterns;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText name, address, mobile, age;
+Button registerBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+name = findViewById(R.id.name);
+address = findViewById(R.id.address);
+mobile = findViewById(R.id.mobile);
+age = findViewById(R.id.age);
+registerBtn = findViewById(R.id.registerBtn);
+registerBtn.setOnClickListener(v -> validateForm());
+}
+private void validateForm() {
+String n = name.getText().toString();
+String a = address.getText().toString();
+String m = mobile.getText().toString();
+String ag = age.getText().toString();
+if (n.isEmpty()) {
+name.setError("Name required");
+}
+else if (a.isEmpty()) {
+address.setError("Address required");
+}
+else if (m.isEmpty() || m.length() != 10) {
+mobile.setError("Enter valid 10-digit mobile number");
+}
+else if (ag.isEmpty()) {
+age.setError("Age required");
+}
+else {
+int ageVal = Integer.parseInt(ag);
+if (ageVal < 18) {
+age.setError("Age must be 18+");
+} else {
+Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show();
+}
+}
+}
+}
+Q.2] Write a Java Android Program to Demonstrate List View Activity with all operations Such as
+: Insert, Delete, Search
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/input"
+android:hint="Enter Item"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<LinearLayout
+android:orientation="horizontal"
+android:layout_marginTop="10dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content">
+<Button
+android:id="@+id/addBtn"
+android:text="Insert"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/deleteBtn"
+android:text="Delete"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/searchBtn"
+android:text="Search"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+<ListView
+android:id="@+id/listView"
+android:layout_marginTop="20dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.listviewapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.ArrayList;
+public class MainActivity extends AppCompatActivity {
+EditText input;
+Button addBtn, deleteBtn, searchBtn;
+ListView listView;
+ArrayList<String> list;
+ArrayAdapter<String> adapter;
+int selectedIndex = -1;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+input = findViewById(R.id.input);
+addBtn = findViewById(R.id.addBtn);
+deleteBtn = findViewById(R.id.deleteBtn);
+searchBtn = findViewById(R.id.searchBtn);
+listView = findViewById(R.id.listView);
+list = new ArrayList<>();
+adapter = new ArrayAdapter<>(this,
+android.R.layout.simple_list_item_1, list);
+listView.setAdapter(adapter);
+listView.setOnItemClickListener((parent, view, position, id) -> {
+selectedIndex = position;
+input.setText(list.get(position));
+});
+addBtn.setOnClickListener(v -> {
+String item = input.getText().toString();
+if (!item.isEmpty()) {
+list.add(item);
+adapter.notifyDataSetChanged();
+input.setText("");
+Toast.makeText(this, "Item Inserted", Toast.LENGTH_SHORT).show();
+}
+});
+deleteBtn.setOnClickListener(v -> {
+if (selectedIndex != -1) {
+list.remove(selectedIndex);
+adapter.notifyDataSetChanged();
+input.setText("");
+selectedIndex = -1;
+Toast.makeText(this, "Item Deleted", Toast.LENGTH_SHORT).show();
+}
+});
+searchBtn.setOnClickListener(v -> {
+String item = input.getText().toString();
+if (list.contains(item)) {
+Toast.makeText(this, "Item Found", Toast.LENGTH_SHORT).show();
+} else {
+Toast.makeText(this, "Item Not Found", Toast.LENGTH_SHORT).show();
+}
+});
+}
+}
+___________________________________________________________________________________________________________________
+SLIP 14
+Q.1] Construct an Android application to accept a number and
+calculate and display Factorial of a given number in TextView.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/number"
+android:hint="Enter Number"
+android:inputType="number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/calcBtn"
+android:text="Calculate Factorial"
+android:layout_marginTop="15dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+<TextView
+android:id="@+id/result"
+android:text="Result"
+android:textSize="18sp"
+android:layout_marginTop="20dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.factorialapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText number;
+Button calcBtn;
+TextView result;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+number = findViewById(R.id.number);
+calcBtn = findViewById(R.id.calcBtn);
+result = findViewById(R.id.result);
+calcBtn.setOnClickListener(v -> {
+String input = number.getText().toString();
+if (input.isEmpty()) {
+result.setText("Enter a number");
+return;
+}
+int num = Integer.parseInt(input);
+long fact = 1;
+for (int i = 1; i <= num; i++) {
+fact *= i;
+}
+result.setText("Factorial: " + fact);
+});
+}
+}
+Q.2] Create an Android application, which show Login Form. After clicking LOGIN button display the
+“Login Successful…” message if username and password is same else display
+“Invalid Login” message in Toast Control.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:text="Login Form"
+android:textSize="22sp"
+android:textStyle="bold"
+android:layout_marginBottom="20dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/username"
+android:hint="Username"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/password"
+android:hint="Password"
+android:inputType="textPassword"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/loginBtn"
+android:text="LOGIN"
+android:layout_marginTop="15dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.loginapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText username, password;
+Button loginBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+username = findViewById(R.id.username);
+password = findViewById(R.id.password);
+loginBtn = findViewById(R.id.loginBtn);
+loginBtn.setOnClickListener(v -> {
+String user = username.getText().toString();
+String pass = password.getText().toString();
+if (user.equals(pass)) {
+Toast.makeText(this, "Login Successful...", Toast.LENGTH_SHORT).show();
+} else {
+Toast.makeText(this, "Invalid Login", Toast.LENGTH_SHORT).show();
+}
+});
+}
+}
+________________________________________________________________________________________________________________________
+SLIP 15
+Q1] Construct an Android application to accept two numbers in two EditText,
+with four buttons as ADD, SUB, DIV and MULT and display Result using Toast Control.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/num1"
+android:hint="Enter First Number"
+android:inputType="numberDecimal"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/num2"
+android:hint="Enter Second Number"
+android:inputType="numberDecimal"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<LinearLayout
+android:orientation="horizontal"
+android:layout_marginTop="15dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content">
+<Button
+android:id="@+id/addBtn"
+android:text="ADD"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/subBtn"
+android:text="SUB"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/mulBtn"
+android:text="MULT"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/divBtn"
+android:text="DIV"
+android:layout_weight="1"
+android:layout_width="0dp"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.toastcalculator;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText num1, num2;
+Button addBtn, subBtn, mulBtn, divBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+num1 = findViewById(R.id.num1);
+num2 = findViewById(R.id.num2);
+addBtn = findViewById(R.id.addBtn);
+subBtn = findViewById(R.id.subBtn);
+mulBtn = findViewById(R.id.mulBtn);
+divBtn = findViewById(R.id.divBtn);
+addBtn.setOnClickListener(v -> calculate('+'));
+subBtn.setOnClickListener(v -> calculate('-'));
+mulBtn.setOnClickListener(v -> calculate('*'));
+divBtn.setOnClickListener(v -> calculate('/'));
+}
+private void calculate(char op) {
+String n1 = num1.getText().toString();
+String n2 = num2.getText().toString();
+if (n1.isEmpty() || n2.isEmpty()) {
+Toast.makeText(this, "Enter both numbers", Toast.LENGTH_SHORT).show();
+return;
+}
+double a = Double.parseDouble(n1);
+double b = Double.parseDouble(n2);
+double result = 0;
+switch (op) {
+case '+':
+result = a + b;
+break;
+case '-':
+result = a - b;
+break;
+case '*':
+result = a * b;
+break;
+case '/':
+if (b == 0) {
+Toast.makeText(this, "Cannot divide by zero", Toast.LENGTH_SHORT).show();
+return;
+}
+result = a / b;
+break;
+}
+Toast.makeText(this, "Result: " + result, Toast.LENGTH_SHORT).show();
+}
+}
+Q2] Construct a bank app to display different menu like withdraw, deposit etc.
+1. XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:text="Simple Bank Application"
+android:textSize="22sp"
+android:textStyle="bold"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/accNo"
+android:hint="Account Number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<RadioGroup
+android:id="@+id/radioGroup"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content">
+<RadioButton
+android:id="@+id/checking"
+android:text="Checking"/>
+<RadioButton
+android:id="@+id/savings"
+android:text="Savings"/>
+</RadioGroup>
+<EditText
+android:id="@+id/amount"
+android:hint="Enter Amount"
+android:inputType="number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/createBtn"
+android:text="Create"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/depositBtn"
+android:text="Deposit"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/withdrawBtn"
+android:text="Withdraw"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/balanceBtn"
+android:text="Check Balance"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<TextView
+android:id="@+id/result"
+android:text="Balance: 0"
+android:textSize="18sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.bankapp;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText accNo, amount;
+Button createBtn, depositBtn, withdrawBtn, balanceBtn;
+TextView result;
+RadioGroup radioGroup;
+int balance = 0;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+accNo = findViewById(R.id.accNo);
+amount = findViewById(R.id.amount);
+createBtn = findViewById(R.id.createBtn);
+depositBtn = findViewById(R.id.depositBtn);
+withdrawBtn = findViewById(R.id.withdrawBtn);
+balanceBtn = findViewById(R.id.balanceBtn);
+result = findViewById(R.id.result);
+radioGroup = findViewById(R.id.radioGroup);
+createBtn.setOnClickListener(v -> {
+balance = 0;
+result.setText("Account Created\nBalance: " + balance);
+});
+depositBtn.setOnClickListener(v -> {
+int amt = Integer.parseInt(amount.getText().toString());
+balance += amt;
+result.setText("Deposited: " + amt + "\nBalance: " + balance);
+});
+withdrawBtn.setOnClickListener(v -> {
+int amt = Integer.parseInt(amount.getText().toString());
+if (amt <= balance) {
+balance -= amt;
+result.setText("Withdrawn: " + amt + "\nBalance: " + balance);
+} else {
+result.setText("Insufficient Balance");
+}
+});
+balanceBtn.setOnClickListener(v -> {
+result.setText("Current Balance: " + balance);
+});
+}
+}
+____________________________________________________________________________________________________________________________________
 SLIP 16
-Q.1) Write a program to implement to find out solution for 0/1 knapsack problem using
-dynamic programming.
-#include <stdio.h>
-#define MAX 100
-int max(int a, int b) {
-return (a > b) ? a : b;
-}
-int main() {
-int n, W;
-printf("Enter number of items: ");
-scanf("%d", &n);
-int wt[n], val[n];
-printf("Enter weights:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &wt[i]);
-printf("Enter values:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &val[i]);
-printf("Enter knapsack capacity: ");
-scanf("%d", &W);
-int dp[n + 1][W + 1];
-for (int i = 0; i <= n; i++) {
-for (int w = 0; w <= W; w++) {
-if (i == 0 || w == 0)
-dp[i][w] = 0;
-else if (wt[i - 1] <= w)
-dp[i][w] = max(val[i - 1] + dp[i - 1][w - wt[i - 1]],
-dp[i - 1][w]);
-else
-dp[i][w] = dp[i - 1][w];
-}
-}
-printf("Maximum value = %d\n", dp[n][W]);
-return 0;
-}
-Q.2) Write a program to determine if a given graph is a Hamiltonian cycle or not.
-#include <stdio.h>
-#define MAX 100
-int graph[MAX][MAX];
-int path[MAX];
-int V;
-int isSafe(int v, int pos) {
-if (graph[path[pos - 1]][v] == 0)
-return 0;
-for (int i = 0; i < pos; i++) {
-if (path[i] == v)
-return 0;
-}
-return 1;
-}
-int hamCycleUtil(int pos) {
-if (pos == V) {
-return graph[path[pos - 1]][path[0]] == 1;
-}
-for (int v = 1; v < V; v++) {
-if (isSafe(v, pos)) {
-path[pos] = v;
-if (hamCycleUtil(pos + 1))
-return 1;
-path[pos] = -1;
+Q1] Create a Simple Android Application Which Send ―Hello message from‖
+one activity to another with help of Button (Use Intent).
+(A) XML Layout – First Activity (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<Button
+android:id="@+id/btnSend"
+android:text="Send Hello"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Java Code – MainActivity.java
+package com.example.helloapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+Button btnSend;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+btnSend = findViewById(R.id.btnSend);
+btnSend.setOnClickListener(v -> {
+Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+intent.putExtra("msg", "Hello");
+startActivity(intent);
+});
 }
 }
-return 0;
+(C) XML Layout – Second Activity (activity_second.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:id="@+id/txtMessage"
+android:textSize="24sp"
+android:text="Message will appear here"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(D) Java Code – SecondActivity.java
+package com.example.helloapp;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class SecondActivity extends AppCompatActivity {
+TextView txtMessage;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_second);
+txtMessage = findViewById(R.id.txtMessage);
+String message = getIntent().getStringExtra("msg");
+txtMessage.setText(message);
 }
-void hamCycle() {
-for (int i = 0; i < V; i++)
-path[i] = -1;
-path[0] = 0;
-if (!hamCycleUtil(1)) {
-printf("No Hamiltonian Cycle exists\n");
-return;
 }
-printf("Hamiltonian Cycle:\n");
-for (int i = 0; i < V; i++)
-printf("%d ", path[i]);
-printf("%d\n", path[0]);
+(E) AndroidManifest.xml (Important)
+<application ... >
+<activity android:name=".SecondActivity"></activity>
+<activity android:name=".MainActivity">
+<intent-filter>
+<action android:name="android.intent.action.MAIN"/>
+<category android:name="android.intent.category.LAUNCHER"/>
+</intent-filter>
+</activity>
+</application>
+Q2] Create an Android application, with two activity first activity will have an EditText
+and a Button where the user can enter player name and after clicking on button the entered
+name will be display in another Activity. Second activity has the BACK button to transition
+to first activity (Using Intent).
+(A) activity_main.xml (First Activity UI)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/editName"
+android:hint="Enter Player Name"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnSend"
+android:text="Submit"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) MainActivity.java
+package com.example.playerapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText editName;
+Button btnSend;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+editName = findViewById(R.id.editName);
+btnSend = findViewById(R.id.btnSend);
+btnSend.setOnClickListener(v -> {
+String name = editName.getText().toString();
+Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+intent.putExtra("playerName", name);
+startActivity(intent);
+});
 }
-int main() {
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
+}
+(C) activity_second.xml (Second Activity UI)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:gravity="center"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:id="@+id/txtName"
+android:textSize="22sp"
+android:text="Player Name"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnBack"
+android:text="Back"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(D) SecondActivity.java
+package com.example.playerapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class SecondActivity extends AppCompatActivity {
+TextView txtName;
+Button btnBack;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_second);
+txtName = findViewById(R.id.txtName);
+btnBack = findViewById(R.id.btnBack);
+// Receive data
+String name = getIntent().getStringExtra("playerName");
+txtName.setText("Player: " + name);
+// Back Button
+btnBack.setOnClickListener(v -> {
+finish(); // go back to first activity
+});
 }
 }
-hamCycle();
-return 0;
-}
-____________________________________________________________________________
+(E) AndroidManifest.xml
+<application ... >
+<activity android:name=".SecondActivity"></activity>
+<activity android:name=".MainActivity">
+<intent-filter>
+<action android:name="android.intent.action.MAIN"/>
+<category android:name="android.intent.category.LAUNCHER"/>
+</intent-filter>
+</activity>
+</application>
+________________________________________________________________________________________________________________
 SLIP 17
-Q.1) Write a program to implement solve âNâ Queens Problem using Backtracking.
-#include <stdio.h>
-#define MAX 20
-int board[MAX][MAX];
-int N;
-int isSafe(int row, int col) {
-int i, j;
-for (i = 0; i < row; i++)
-if (board[i][col])
-return 0;
-for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
-if (board[i][j])
-return 0;
-for (i = row, j = col; i >= 0 && j < N; i--, j++)
-if (board[i][j])
-return 0;
-return 1;
+Q1] Write an Android Program to demonstrate Activity life Cycle.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:gravity="center"
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:text="Activity Life Cycle Demo"
+android:textSize="20sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Java Code (MainActivity.java)
+package com.example.lifecycleapp;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+String TAG = "LIFECYCLE";
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+Toast.makeText(this, "onCreate()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onCreate()");
 }
-int solve(int row) {
-if (row == N)
-return 1;
-for (int col = 0; col < N; col++) {
-if (isSafe(row, col)) {
-board[row][col] = 1;
-if (solve(row + 1))
-return 1;
-board[row][col] = 0;
+@Override
+protected void onStart() {
+super.onStart();
+Toast.makeText(this, "onStart()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onStart()");
 }
+@Override
+protected void onResume() {
+super.onResume();
+Toast.makeText(this, "onResume()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onResume()");
 }
-return 0;
+@Override
+protected void onPause() {
+super.onPause();
+Toast.makeText(this, "onPause()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onPause()");
 }
-void printSolution() {
-printf("Solution:\n");
-for (int i = 0; i < N; i++) {
-for (int j = 0; j < N; j++) {
-printf("%d ", board[i][j]);
+@Override
+protected void onStop() {
+super.onStop();
+Toast.makeText(this, "onStop()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onStop()");
 }
-printf("\n");
+@Override
+protected void onRestart() {
+super.onRestart();
+Toast.makeText(this, "onRestart()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onRestart()");
 }
-}
-int main() {
-printf("Enter value of N: ");
-scanf("%d", &N);
-for (int i = 0; i < N; i++)
-for (int j = 0; j < N; j++)
-board[i][j] = 0;
-if (solve(0))
-printSolution();
-else
-printf("No solution exists\n");
-return 0;
-}
-Q.2) Write a program to find out solution for 0/1 knapsack problem.
-#include <stdio.h>
-#define MAX 100
-int max(int a, int b) {
-return (a > b) ? a : b;
-}
-int main() {
-int n, W;
-printf("Enter number of items: ");
-scanf("%d", &n);
-int wt[n], val[n];
-printf("Enter weights:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &wt[i]);
-printf("Enter values:\n");
-for (int i = 0; i < n; i++)
-scanf("%d", &val[i]);
-printf("Enter knapsack capacity: ");
-scanf("%d", &W);
-int dp[n + 1][W + 1];
-for (int i = 0; i <= n; i++) {
-for (int w = 0; w <= W; w++) {
-if (i == 0 || w == 0)
-dp[i][w] = 0;
-else if (wt[i - 1] <= w)
-dp[i][w] = max(val[i - 1] + dp[i - 1][w - wt[i - 1]],
-dp[i - 1][w]);
-else
-dp[i][w] = dp[i - 1][w];
+@Override
+protected void onDestroy() {
+super.onDestroy();
+Toast.makeText(this, "onDestroy()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onDestroy()");
 }
 }
-printf("Maximum value = %d\n", dp[n][W]);
-return 0;
+Q2] Write a PhoneGap application to create a contact.
+Options are:
+• Searching for Contacts
+• Cloning Contacts
+• Removing Contacts.
+Install Apache Cordova
+Add Contacts Plugin:
+cordova plugin add cordova-plugin-contacts
+3. HTML + JavaScript Code (index.html)
+<!DOCTYPE html>
+<html>
+<head>
+<title>Contact App</title>
+</head>
+<body>
+<h2>PhoneGap Contact Application</h2>
+<button onclick="createContact()">Create Contact</button>
+<button onclick="searchContact()">Search Contact</button>
+<button onclick="deleteContact()">Delete Contact</button>
+<button onclick="cloneContact()">Clone Contact</button>
+<p id="output"></p>
+<script>
+function createContact() {
+var contact = navigator.contacts.create();
+contact.displayName = "John Doe";
+var phoneNumbers = [];
+phoneNumbers[0] = new ContactField('mobile', '9999999999', true);
+contact.phoneNumbers = phoneNumbers;
+contact.save(
+function() { document.getElementById("output").innerHTML = "Contact Created"; },
+function(err) { document.getElementById("output").innerHTML = "Error: " + err.code; }
+);
 }
-_____________________________________________________________________________
+function searchContact() {
+var options = new ContactFindOptions();
+options.filter = "John";
+options.multiple = true;
+var fields = ["displayName", "phoneNumbers"];
+navigator.contacts.find(fields, function(contacts) {
+var result = "";
+for (var i = 0; i < contacts.length; i++) {
+result += contacts[i].displayName + "<br>";
+}
+document.getElementById("output").innerHTML = result;
+}, function(err) {
+document.getElementById("output").innerHTML = "Search Error";
+}, options);
+}
+function deleteContact() {
+var options = new ContactFindOptions();
+options.filter = "John";
+options.multiple = false;
+navigator.contacts.find(["displayName"], function(contacts) {
+if (contacts.length > 0) {
+contacts[0].remove(function() {
+document.getElementById("output").innerHTML = "Contact Deleted";
+});
+}
+}, function(err) {
+document.getElementById("output").innerHTML = "Delete Error";
+}, options);
+}
+function cloneContact() {
+var options = new ContactFindOptions();
+options.filter = "John";
+options.multiple = false;
+navigator.contacts.find(["displayName", "phoneNumbers"], function(contacts) {
+if (contacts.length > 0) {
+var newContact = contacts[0].clone();
+newContact.displayName = "John Clone";
+newContact.save(function() {
+document.getElementById("output").innerHTML = "Contact Cloned";
+});
+}
+}, function(err) {
+document.getElementById("output").innerHTML = "Clone Error";
+}, options);
+}
+</script>
+</body>
+</html>
+________________________________________________________________________________________________________________
 SLIP 18
-Q.1) Write a program to implement Graph Coloring Algorithm
-#include <stdio.h>
-#define MAX 100
-int graph[MAX][MAX];
-int color[MAX];
-int V, m;
-int isSafe(int v, int c) {
-for (int i = 0; i < V; i++) {
-if (graph[v][i] == 1 && color[i] == c)
-return 0;
+Q1] Create an Android Application that will change color of the screen
+and change the font size of text view using xml.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="#ADD8E6"> <!-- Light Blue Background -->
+<TextView
+android:id="@+id/textView"
+android:text="Hello Android"
+android:textSize="30sp" <!-- Font Size Changed -->
+android:textColor="#000000"
+android:textStyle="bold"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+Q2] Create table Project (id, name, dept, city). Create Application to perform the following operations.
+(using SQLite database)
+i] Add at least 5 records.
+ii] Display all the records.
+(A) Database Helper Class (DBHelper.java)
+package com.example.projectdb;
+import android.content.*;
+import android.database.Cursor;
+import android.database.sqlite.*;
+public class DBHelper extends SQLiteOpenHelper {
+public static final String DB_NAME = "ProjectDB";
+public static final int DB_VERSION = 1;
+public DBHelper(Context context) {
+super(context, DB_NAME, null, DB_VERSION);
 }
-return 1;
+@Override
+public void onCreate(SQLiteDatabase db) {
+db.execSQL("CREATE TABLE Project(id INTEGER PRIMARY KEY, name TEXT, dept TEXT, city TEXT)");
 }
-int solve(int v) {
-if (v == V)
-return 1;
-for (int c = 1; c <= m; c++) {
-if (isSafe(v, c)) {
-color[v] = c;
-if (solve(v + 1))
-return 1;
-color[v] = 0;
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+db.execSQL("DROP TABLE IF EXISTS Project");
+onCreate(db);
 }
+public void insertData(int id, String name, String dept, String city) {
+SQLiteDatabase db = this.getWritableDatabase();
+ContentValues cv = new ContentValues();
+cv.put("id", id);
+cv.put("name", name);
+cv.put("dept", dept);
+cv.put("city", city);
+db.insert("Project", null, cv);
 }
-return 0;
-}
-int main() {
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-printf("Enter number of colors: ");
-scanf("%d", &m);
-for (int i = 0; i < V; i++)
-color[i] = 0;
-if (solve(0)) {
-printf("Solution exists:\n");
-for (int i = 0; i < V; i++) {
-printf("Vertex %d -> Color %d\n", i, color[i]);
-}
-} else {
-printf("No solution exists\n");
-}
-return 0;
-}
-Q.2) Write a program to find out live node, E node and dead node from a given graph.
-#include <stdio.h>
-#define MAX 10
-int graph[MAX][MAX], visited[MAX];
-int queue[MAX];
-int front = 0, rear = -1;
-void enqueue(int x) {
-queue[++rear] = x;
-}
-int dequeue() {
-return queue[front++];
-}
-int isEmpty() {
-return front > rear;
-}
-int main() {
-int V, start;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++)
-for (int j = 0; j < V; j++)
-scanf("%d", &graph[i][j]);
-printf("Enter starting node: ");
-scanf("%d", &start);
-// Initialize
-for (int i = 0; i < V; i++)
-visited[i] = 0;
-enqueue(start);
-visited[start] = 1;
-printf("\nTraversal with Node Types:\n");
-while (!isEmpty()) {
-int node = dequeue();
-printf("E-node (Expanding): %d\n", node);
-int isLeaf = 1;
-for (int i = 0; i < V; i++) {
-if (graph[node][i] == 1 && !visited[i]) {
-enqueue(i);
-visited[i] = 1;
-printf("Live node: %d\n", i);
-isLeaf = 0;
+public Cursor getData() {
+SQLiteDatabase db = this.getReadableDatabase();
+return db.rawQuery("SELECT * FROM Project", null);
 }
 }
-if (isLeaf) {
-printf("Dead node: %d\n", node);
+(B) XML Layout (activity_main.xml)
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<Button
+android:id="@+id/btnInsert"
+android:text="Insert Records"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnDisplay"
+android:text="Display Records"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<TextView
+android:id="@+id/txtResult"
+android:text="Output"
+android:textSize="16sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(C) MainActivity.java
+package com.example.projectdb;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+DBHelper db;
+Button btnInsert, btnDisplay;
+TextView txtResult;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+db = new DBHelper(this);
+btnInsert = findViewById(R.id.btnInsert);
+btnDisplay = findViewById(R.id.btnDisplay);
+txtResult = findViewById(R.id.txtResult);
+btnInsert.setOnClickListener(v -> {
+db.insertData(1, "Project A", "IT", "Pune");
+db.insertData(2, "Project B", "HR", "Mumbai");
+db.insertData(3, "Project C", "Finance", "Delhi");
+db.insertData(4, "Project D", "Sales", "Chennai");
+db.insertData(5, "Project E", "Admin", "Bangalore");
+txtResult.setText("5 Records Inserted");
+});
+btnDisplay.setOnClickListener(v -> {
+Cursor c = db.getData();
+StringBuilder data = new StringBuilder();
+while (c.moveToNext()) {
+data.append("ID: ").append(c.getInt(0)).append("\n");
+data.append("Name: ").append(c.getString(1)).append("\n");
+data.append("Dept: ").append(c.getString(2)).append("\n");
+data.append("City: ").append(c.getString(3)).append("\n\n");
 }
-printf("\n");
+txtResult.setText(data.toString());
+});
 }
-return 0;
 }
-____________________________________________________________________________
+___________________________________________________________________________________________________________________________
 SLIP 19
-Q.1) Write a program to determine if a given graph is a Hamiltonian cycle or not.
-#include <stdio.h>
-#define MAX 100
-int graph[MAX][MAX];
-int path[MAX];
-int V;
-int isSafe(int v, int pos) {
-if (graph[path[pos - 1]][v] == 0)
-return 0;
-for (int i = 0; i < pos; i++) {
-if (path[i] == v)
-return 0;
-}
-return 1;
-}
-int hamCycleUtil(int pos) {
-if (pos == V) {
-return graph[path[pos - 1]][path[0]] == 1;
-}
-for (int v = 1; v < V; v++) {
-if (isSafe(v, pos)) {
-path[pos] = v;
-if (hamCycleUtil(pos + 1))
-return 1;
-path[pos] = -1;
-}
-}
-return 0;
-}
-void hamCycle() {
-for (int i = 0; i < V; i++)
-path[i] = -1;
-path[0] = 0;
-if (!hamCycleUtil(1)) {
-printf("No Hamiltonian Cycle exists\n");
-return;
-}
-printf("Hamiltonian Cycle:\n");
-for (int i = 0; i < V; i++)
-printf("%d ", path[i]);
-printf("%d\n", path[0]);
-}
-int main() {
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-hamCycle();
-return 0;
-}
-Q.2) Write a program to show board configuration of 4 queensâ problem.
-#include <stdio.h>
-#define N 4
-int board[N][N];
-int isSafe(int row, int col) {
-int i, j;
-for (i = 0; i < col; i++)
-if (board[row][i])
-return 0;
-for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
-if (board[i][j])
-return 0;
-for (i = row, j = col; i < N && j >= 0; i++, j--)
-if (board[i][j])
-return 0;
-return 1;
-}
-int solve(int col) {
-if (col >= N)
-return 1;
-for (int i = 0; i < N; i++) {
-if (isSafe(i, col)) {
-board[i][col] = 1;
-if (solve(col + 1))
-return 1;
-board[i][col] = 0;
-}
-}
-return 0;
-}
-void printBoard() {
-printf("Board Configuration (1 = Queen, 0 = Empty):\n");
-for (int i = 0; i < N; i++) {
-for (int j = 0; j < N; j++) {
-printf("%d ", board[i][j]);
-}
-printf("\n");
-}
-}
-int main() {
-for (int i = 0; i < N; i++)
-for (int j = 0; j < N; j++)
-board[i][j] = 0;
-if (solve(0)) {
-printBoard();
+Q1] Write an Android Program to Change the Image Displayed on the Screen.
+Add Images
+Place two images in:
+res → drawable
+image1.jpg
+image2.jpg
+(B) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<ImageView
+android:id="@+id/imageView"
+android:src="@drawable/image1"
+android:layout_width="200dp"
+android:layout_height="200dp"/>
+<Button
+android:id="@+id/btnChange"
+android:text="Change Image"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(C) Java Code (MainActivity.java)
+package com.example.imagechange;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+ImageView imageView;
+Button btnChange;
+boolean isFirst = true;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+imageView = findViewById(R.id.imageView);
+btnChange = findViewById(R.id.btnChange);
+btnChange.setOnClickListener(v -> {
+if (isFirst) {
+imageView.setImageResource(R.drawable.image2);
 } else {
-printf("No solution exists\n");
+imageView.setImageResource(R.drawable.image1);
 }
-return 0;
+isFirst = !isFirst;
+});
 }
-_____________________________________________________________________________-
+}
+Q2] Construct an Android Application to create two option menu as Find Factorial
+and Find Sum of Digits. Accept a number and calculate Factorial and Sum of Digits
+of a given number by clicking Menu.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/editNumber"
+android:hint="Enter Number"
+android:inputType="number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<TextView
+android:id="@+id/txtResult"
+android:text="Result"
+android:textSize="20sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Menu Resource File (menu_main.xml)
+res → menu → menu_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+android:id="@+id/menuFactorial"
+android:title="Find Factorial"/>
+<item
+android:id="@+id/menuSum"
+android:title="Find Sum of Digits"/>
+</menu>
+(C) Java Code (MainActivity.java)
+package com.example.menudemo;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText editNumber;
+TextView txtResult;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+editNumber = findViewById(R.id.editNumber);
+txtResult = findViewById(R.id.txtResult);
+}
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+getMenuInflater().inflate(R.menu.menu_main, menu);
+return true;
+}
+@Override
+public boolean onOptionsItemSelected(MenuItem item) {
+int num = Integer.parseInt(editNumber.getText().toString());
+switch (item.getItemId()) {
+case R.id.menuFactorial:
+int fact = 1;
+for (int i = 1; i <= num; i++) {
+fact *= i;
+}
+txtResult.setText("Factorial: " + fact);
+return true;
+case R.id.menuSum:
+int sum = 0;
+while (num > 0) {
+sum += num % 10;
+num /= 10;
+}
+txtResult.setText("Sum of Digits: " + sum);
+return true;
+}
+return super.onOptionsItemSelected(item);
+}
+}
+___________________________________________________________________________________________________________________
 SLIP 20
-Q.1) Write a program to implement for finding Topological sorting and determine the time
-complexity for the same.
-#include <stdio.h>
-#define MAX 100
-int graph[MAX][MAX];
-int indegree[MAX];
-int queue[MAX], front = 0, rear = -1;
-void enqueue(int x) {
-queue[++rear] = x;
+Q1] Write an application to accept two numbers from the user and displays them.
+But Reject input if both numbers are greater than 20 and asks for two new numbers.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/num1"
+android:hint="Enter First Number"
+android:inputType="number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/num2"
+android:hint="Enter Second Number"
+android:inputType="number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnCheck"
+android:text="Submit"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+<TextView
+android:id="@+id/result"
+android:text="Result"
+android:textSize="18sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Java Code (MainActivity.java)
+package com.example.numbercheck;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText num1, num2;
+Button btnCheck;
+TextView result;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+num1 = findViewById(R.id.num1);
+num2 = findViewById(R.id.num2);
+btnCheck = findViewById(R.id.btnCheck);
+result = findViewById(R.id.result);
+btnCheck.setOnClickListener(v -> {
+int n1 = Integer.parseInt(num1.getText().toString());
+int n2 = Integer.parseInt(num2.getText().toString());
+if (n1 > 20 && n2 > 20) {
+result.setText("Invalid Input! Both numbers > 20. Enter again.");
+num1.setText("");
+num2.setText("");
+} else {
+result.setText("Numbers are: " + n1 + " and " + n2);
 }
-int dequeue() {
-return queue[front++];
-}
-int isEmpty() {
-return front > rear;
-}
-int main() {
-int V;
-printf("Enter number of vertices: ");
-scanf("%d", &V);
-printf("Enter adjacency matrix:\n");
-for (int i = 0; i < V; i++) {
-for (int j = 0; j < V; j++) {
-scanf("%d", &graph[i][j]);
-}
-}
-for (int i = 0; i < V; i++) {
-indegree[i] = 0;
-for (int j = 0; j < V; j++) {
-if (graph[j][i] == 1)
-indegree[i]++;
-}
-}
-for (int i = 0; i < V; i++) {
-if (indegree[i] == 0)
-enqueue(i);
-}
-printf("Topological Order: ");
-int count = 0;
-while (!isEmpty()) {
-int v = dequeue();
-printf("%d ", v);
-count++;
-for (int i = 0; i < V; i++) {
-if (graph[v][i] == 1) {
-indegree[i]--;
-if (indegree[i] == 0)
-enqueue(i);
-}
-}
-}
-if (count != V) {
-printf("\nGraph is not a DAG (cycle exists)\n");
-}
-return 0;
-}
-Q.2) Write a program to solve N Queens Problem using Backtracking.
-#include <stdio.h>
-#define MAX 20
-int board[MAX][MAX];
-int N;
-int isSafe(int row, int col) {
-int i, j;
-for (i = 0; i < row; i++)
-if (board[i][col])
-return 0;
-for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
-if (board[i][j])
-return 0;
-for (i = row, j = col; i >= 0 && j < N; i--, j++)
-if (board[i][j])
-return 0;
-return 1;
-}
-int solve(int row) {
-if (row == N)
-return 1;
-for (int col = 0; col < N; col++) {
-if (isSafe(row, col)) {
-board[row][col] = 1;
-if (solve(row + 1))
-return 1;
-board[row][col] = 0;
+});
 }
 }
-return 0;
+Q2] Java Android Program to send email with attachment.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/email"
+android:hint="Recipient Email"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/subject"
+android:hint="Subject"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/message"
+android:hint="Message"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnSend"
+android:text="Send Email"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Java Code (MainActivity.java)
+package com.example.emailapp;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText email, subject, message;
+Button btnSend;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+email = findViewById(R.id.email);
+subject = findViewById(R.id.subject);
+message = findViewById(R.id.message);
+btnSend = findViewById(R.id.btnSend);
+btnSend.setOnClickListener(v -> {
+String to = email.getText().toString();
+String sub = subject.getText().toString();
+String msg = message.getText().toString();
+Intent intent = new Intent(Intent.ACTION_SEND);
+intent.setType("*/*");
+intent.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
+intent.putExtra(Intent.EXTRA_SUBJECT, sub);
+intent.putExtra(Intent.EXTRA_TEXT, msg);
+Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.sample);
+intent.putExtra(Intent.EXTRA_STREAM, uri);
+startActivity(Intent.createChooser(intent, "Send Email"));
+});
 }
-void printSolution() {
-printf("Solution:\n");
-for (int i = 0; i < N; i++) {
-for (int j = 0; j < N; j++) {
-printf("%d ", board[i][j]);
 }
-printf("\n");
+_____________________________________________________________________________________________________________
+SLIP 21
+Q.1] Write an Android Program to demonstrate Activity life Cycle.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:gravity="center"
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:text="Activity Life Cycle Demo"
+android:textSize="20sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Java Code (MainActivity.java)
+package com.example.lifecycledemo;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+String TAG = "LifecycleDemo";
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+Toast.makeText(this, "onCreate()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onCreate()");
+}
+@Override
+protected void onStart() {
+super.onStart();
+Toast.makeText(this, "onStart()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onStart()");
+}
+@Override
+protected void onResume() {
+super.onResume();
+Toast.makeText(this, "onResume()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onResume()");
+}
+@Override
+protected void onPause() {
+super.onPause();
+Toast.makeText(this, "onPause()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onPause()");
+}
+@Override
+protected void onStop() {
+super.onStop();
+Toast.makeText(this, "onStop()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onStop()");
+}
+@Override
+protected void onRestart() {
+super.onRestart();
+Toast.makeText(this, "onRestart()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onRestart()");
+}
+@Override
+protected void onDestroy() {
+super.onDestroy();
+Toast.makeText(this, "onDestroy()", Toast.LENGTH_SHORT).show();
+Log.d(TAG, "onDestroy()");
 }
 }
-int main() {
-printf("Enter value of N: ");
-scanf("%d", &N);
-for (int i = 0; i < N; i++)
-for (int j = 0; j < N; j++)
-board[i][j] = 0;
-if (solve(0))
-printSolution();
+Q.2] Create an Android Application that writes data to the SD Card
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/editText"
+android:hint="Enter Data"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnWrite"
+android:text="WRITE DATA"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnClear"
+android:text="CLEAR"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<TextView
+android:id="@+id/txtStatus"
+android:text=""
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) AndroidManifest.xml (Permission)
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+(C) Java Code (MainActivity.java)
+package com.example.sdcardapp;
+import android.os.Bundle;
+import android.os.Environment;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import java.io.File;
+import java.io.FileOutputStream;
+public class MainActivity extends AppCompatActivity {
+EditText editText;
+Button btnWrite, btnClear;
+TextView txtStatus;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+editText = findViewById(R.id.editText);
+btnWrite = findViewById(R.id.btnWrite);
+btnClear = findViewById(R.id.btnClear);
+txtStatus = findViewById(R.id.txtStatus);
+btnWrite.setOnClickListener(v -> {
+try {
+String data = editText.getText().toString();
+File path = Environment.getExternalStorageDirectory();
+File file = new File(path, "myfile.txt");
+FileOutputStream fos = new FileOutputStream(file);
+fos.write(data.getBytes());
+fos.close();
+txtStatus.setText("Data Written in SD Card");
+} catch (Exception e) {
+txtStatus.setText("Error: " + e.getMessage());
+}
+});
+btnClear.setOnClickListener(v -> {
+editText.setText("");
+txtStatus.setText("");
+});
+}
+}
+__________________________________________________________________________________________________________________________
+SLIP 22
+Q.1] Write an Java Android Program to Change the Image on the Screen.
+(A) Add Images
+Place images in: res → drawable
+image1.jpg
+image2.jpg
+(B) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<ImageView
+android:id="@+id/imageView"
+android:src="@drawable/image1"
+android:layout_width="200dp"
+android:layout_height="200dp"/>
+<Button
+android:id="@+id/btnChange"
+android:text="Change Image"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(C) Java Code (MainActivity.java)
+package com.example.imagechange;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+ImageView imageView;
+Button btnChange;
+boolean isFirst = true;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+imageView = findViewById(R.id.imageView);
+btnChange = findViewById(R.id.btnChange);
+btnChange.setOnClickListener(v -> {
+if (isFirst) {
+imageView.setImageResource(R.drawable.image2);
+} else {
+imageView.setImageResource(R.drawable.image1);
+}
+isFirst = !isFirst;
+});
+}
+}
+Q.2] Perform following numeric operation according to user selection of radio button.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/editNumber"
+android:hint="Enter Number"
+android:inputType="number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<RadioGroup
+android:id="@+id/radioGroup"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content">
+<RadioButton
+android:id="@+id/rbOddEven"
+android:text="Odd or Even"/>
+<RadioButton
+android:id="@+id/rbPosNeg"
+android:text="Positive or Negative"/>
+<RadioButton
+android:id="@+id/rbSquare"
+android:text="Square"/>
+</RadioGroup>
+<Button
+android:id="@+id/btnCheck"
+android:text="Click"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+<TextView
+android:id="@+id/txtResult"
+android:text="Ans:"
+android:textSize="18sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Java Code (MainActivity.java)
+package com.example.radiodemo;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText editNumber;
+RadioGroup radioGroup;
+RadioButton rbOddEven, rbPosNeg, rbSquare;
+Button btnCheck;
+TextView txtResult;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+editNumber = findViewById(R.id.editNumber);
+radioGroup = findViewById(R.id.radioGroup);
+rbOddEven = findViewById(R.id.rbOddEven);
+rbPosNeg = findViewById(R.id.rbPosNeg);
+rbSquare = findViewById(R.id.rbSquare);
+btnCheck = findViewById(R.id.btnCheck);
+txtResult = findViewById(R.id.txtResult);
+btnCheck.setOnClickListener(v -> {
+int num = Integer.parseInt(editNumber.getText().toString());
+if (rbOddEven.isChecked()) {
+if (num % 2 == 0)
+txtResult.setText("Ans: Number is Even");
 else
-printf("No solution exists\n");
-return 0;
+txtResult.setText("Ans: Number is Odd");
 }
-________________________________ *****_____________________________________________
-    </pre>
+else if (rbPosNeg.isChecked()) {
+if (num >= 0)
+txtResult.setText("Ans: Positive Number");
+else
+txtResult.setText("Ans: Negative Number");
+}
+else if (rbSquare.isChecked()) {
+int square = num * num;
+txtResult.setText("Ans: Square = " + square);
+}
+});
+}
+}
+____________________________________________________________________________________________________________________________
+SLIP 23
+Q. 1] Write a Java android program to demonstrate implicit intent.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<Button
+android:id="@+id/btnWeb"
+android:text="Open Website"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnCall"
+android:text="Dial Number"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Java Code (MainActivity.java)
+package com.example.implicitintent;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+Button btnWeb, btnCall;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+btnWeb = findViewById(R.id.btnWeb);
+btnCall = findViewById(R.id.btnCall);
+btnWeb.setOnClickListener(v -> {
+Intent intent = new Intent(Intent.ACTION_VIEW);
+intent.setData(Uri.parse("https://www.google.com"));
+startActivity(intent);
+});
+btnCall.setOnClickListener(v -> {
+Intent intent = new Intent(Intent.ACTION_DIAL);
+intent.setData(Uri.parse("tel:1234567890"));
+startActivity(intent);
+});
+}
+}
+Q.2] Create an Android application which will ask the user to input his / her name.
+A message should display the two items concatenated in a label. Change the format of
+the label using radio buttons and check boxes for selection. The user can make the
+label text bold, underlined or italic as well as change its color. Also include
+buttons to display the message in the label, clear the text boxes as well as label. Finally exit.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<LinearLayout
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content">
+<EditText
+android:id="@+id/editName"
+android:hint="Enter Your Name"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<CheckBox
+android:id="@+id/cbBold"
+android:text="Bold"/>
+<CheckBox
+android:id="@+id/cbItalic"
+android:text="Italic"/>
+<CheckBox
+android:id="@+id/cbUnderline"
+android:text="Underline"/>
+<RadioGroup
+android:id="@+id/radioGroup">
+<RadioButton
+android:id="@+id/rbRed"
+android:text="Red"/>
+<RadioButton
+android:id="@+id/rbBlue"
+android:text="Blue"/>
+<RadioButton
+android:id="@+id/rbGreen"
+android:text="Green"/>
+</RadioGroup>
+<Button
+android:id="@+id/btnDisplay"
+android:text="Display"/>
+<Button
+android:id="@+id/btnClear"
+android:text="Clear"/>
+<Button
+android:id="@+id/btnExit"
+android:text="Exit"/>
+<TextView
+android:id="@+id/txtResult"
+android:text="Result will appear here"
+android:textSize="20sp"
+android:padding="10dp"/>
+</LinearLayout>
+</ScrollView>
+(B) Java Code (MainActivity.java)
+package com.example.formatapp;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText editName;
+CheckBox cbBold, cbItalic, cbUnderline;
+RadioGroup radioGroup;
+RadioButton rbRed, rbBlue, rbGreen;
+Button btnDisplay, btnClear, btnExit;
+TextView txtResult;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+editName = findViewById(R.id.editName);
+cbBold = findViewById(R.id.cbBold);
+cbItalic = findViewById(R.id.cbItalic);
+cbUnderline = findViewById(R.id.cbUnderline);
+radioGroup = findViewById(R.id.radioGroup);
+rbRed = findViewById(R.id.rbRed);
+rbBlue = findViewById(R.id.rbBlue);
+rbGreen = findViewById(R.id.rbGreen);
+btnDisplay = findViewById(R.id.btnDisplay);
+btnClear = findViewById(R.id.btnClear);
+btnExit = findViewById(R.id.btnExit);
+txtResult = findViewById(R.id.txtResult);
+btnDisplay.setOnClickListener(v -> {
+String name = editName.getText().toString();
+txtResult.setText("Hello " + name);
+if (cbBold.isChecked() && cbItalic.isChecked()) {
+txtResult.setTypeface(null, Typeface.BOLD_ITALIC);
+} else if (cbBold.isChecked()) {
+txtResult.setTypeface(null, Typeface.BOLD);
+} else if (cbItalic.isChecked()) {
+txtResult.setTypeface(null, Typeface.ITALIC);
+} else {
+txtResult.setTypeface(null, Typeface.NORMAL);
+}
+if (cbUnderline.isChecked()) {
+txtResult.setPaintFlags(txtResult.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+} else {
+txtResult.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+}
+if (rbRed.isChecked()) {
+txtResult.setTextColor(Color.RED);
+} else if (rbBlue.isChecked()) {
+txtResult.setTextColor(Color.BLUE);
+} else if (rbGreen.isChecked()) {
+txtResult.setTextColor(Color.GREEN);
+}
+});
+btnClear.setOnClickListener(v -> {
+editName.setText("");
+txtResult.setText("");
+});
+btnExit.setOnClickListener(v -> {
+finish();
+});
+}
+}
+_______________________________________________________________________________________________________________________
+SLIP 24
+Q.1] Write an application to accept a string from the user.
+With two buttons to display the string in Uppercase and Lowercase using the toast message
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/editText"
+android:hint="Enter String"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnLower"
+android:text="LowerCase"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnUpper"
+android:text="UpperCase"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Java Code (MainActivity.java)
+package com.example.stringapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText editText;
+Button btnLower, btnUpper;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+editText = findViewById(R.id.editText);
+btnLower = findViewById(R.id.btnLower);
+btnUpper = findViewById(R.id.btnUpper);
+btnLower.setOnClickListener(v -> {
+String text = editText.getText().toString();
+Toast.makeText(this, text.toLowerCase(), Toast.LENGTH_SHORT).show();
+});
+btnUpper.setOnClickListener(v -> {
+String text = editText.getText().toString();
+Toast.makeText(this, text.toUpperCase(), Toast.LENGTH_SHORT).show();
+});
+}
+}
+Q.2] Create table Car (id, name, type, color). Create Java Android Application for
+performing the following operation on the table. (Using SQLite database)
+i) Insert 5 New Car Details.
+ii) Show All the Car Details
+(A) Database Helper Class (DBHelper.java)
+package com.example.cardb;
+import android.content.*;
+import android.database.Cursor;
+import android.database.sqlite.*;
+public class DBHelper extends SQLiteOpenHelper {
+public static final String DB_NAME = "CarDB";
+public static final int DB_VERSION = 1;
+public DBHelper(Context context) {
+super(context, DB_NAME, null, DB_VERSION);
+}
+@Override
+public void onCreate(SQLiteDatabase db) {
+db.execSQL("CREATE TABLE Car(id INTEGER PRIMARY KEY, name TEXT, type TEXT, color TEXT)");
+}
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+db.execSQL("DROP TABLE IF EXISTS Car");
+onCreate(db);
+}
+public void insertData(int id, String name, String type, String color) {
+SQLiteDatabase db = this.getWritableDatabase();
+ContentValues cv = new ContentValues();
+cv.put("id", id);
+cv.put("name", name);
+cv.put("type", type);
+cv.put("color", color);
+db.insert("Car", null, cv);
+}
+public Cursor getData() {
+SQLiteDatabase db = this.getReadableDatabase();
+return db.rawQuery("SELECT * FROM Car", null);
+}
+}
+(B) XML Layout (activity_main.xml)
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<Button
+android:id="@+id/btnInsert"
+android:text="Insert 5 Cars"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnDisplay"
+android:text="Show All Cars"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<TextView
+android:id="@+id/txtResult"
+android:text="Output"
+android:textSize="16sp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(C) MainActivity.java
+package com.example.cardb;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+DBHelper db;
+Button btnInsert, btnDisplay;
+TextView txtResult;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+db = new DBHelper(this);
+btnInsert = findViewById(R.id.btnInsert);
+btnDisplay = findViewById(R.id.btnDisplay);
+txtResult = findViewById(R.id.txtResult);
+btnInsert.setOnClickListener(v -> {
+db.insertData(1, "Swift", "Hatchback", "Red");
+db.insertData(2, "Creta", "SUV", "White");
+db.insertData(3, "City", "Sedan", "Black");
+db.insertData(4, "Thar", "SUV", "Green");
+db.insertData(5, "i20", "Hatchback", "Blue");
+txtResult.setText("5 Car Records Inserted");
+});
+btnDisplay.setOnClickListener(v -> {
+Cursor c = db.getData();
+StringBuilder data = new StringBuilder();
+while (c.moveToNext()) {
+data.append("ID: ").append(c.getInt(0)).append("\n");
+data.append("Name: ").append(c.getString(1)).append("\n");
+data.append("Type: ").append(c.getString(2)).append("\n");
+data.append("Color: ").append(c.getString(3)).append("\n\n");
+}
+txtResult.setText(data.toString());
+});
+}
+}
+_________________________________________________________________________________________________________________
+SLIP 25
+Q.1] Create an android application for SMS activity.
+(A) XML Layout (activity_main.xml)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<EditText
+android:id="@+id/phone"
+android:hint="Enter Phone Number"
+android:inputType="phone"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/message"
+android:hint="Enter Message"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/btnSend"
+android:text="Send SMS"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+(B) Java Code (MainActivity.java)
+package com.example.smsapp;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText phone, message;
+Button btnSend;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+phone = findViewById(R.id.phone);
+message = findViewById(R.id.message);
+btnSend = findViewById(R.id.btnSend);
+btnSend.setOnClickListener(v -> {
+String num = phone.getText().toString();
+String msg = message.getText().toString();
+Intent intent = new Intent(Intent.ACTION_SENDTO);
+intent.setData(Uri.parse("smsto:" + num));
+intent.putExtra("sms_body", msg);
+startActivity(intent);
+});
+}
+}
+4. Alternative (Direct SMS using SmsManager) (Needs Permission)⚠️⚠️
+Permission in AndroidManifest.xml
+<uses-permission android:name="android.permission.SEND_SMS"/>
+Code Snippet
+SmsManager smsManager = SmsManager.getDefault();
+smsManager.sendTextMessage(num, null, msg, null, null);
+Toast.makeText(this, "SMS Sent", Toast.LENGTH_SHORT).show();
+Q.2] Create an Android application, which show Login Form. After clicking LOGIN button display the
+“Login Successful…” message if username and password is same else display
+“Invalid Login” message in Toast Control.
+1. XML Layout (activity_main.xml)
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="20dp"
+android:gravity="center"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+<TextView
+android:text="Login Form"
+android:textSize="22sp"
+android:textStyle="bold"
+android:layout_marginBottom="20dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/username"
+android:hint="Username"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<EditText
+android:id="@+id/password"
+android:hint="Password"
+android:inputType="textPassword"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
+<Button
+android:id="@+id/loginBtn"
+android:text="LOGIN"
+android:layout_marginTop="15dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"/>
+</LinearLayout>
+2. Java Code (MainActivity.java)
+package com.example.loginapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+EditText username, password;
+Button loginBtn;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+username = findViewById(R.id.username);
+password = findViewById(R.id.password);
+loginBtn = findViewById(R.id.loginBtn);
+loginBtn.setOnClickListener(v -> {
+String user = username.getText().toString();
+String pass = password.getText().toString();
+if (user.equals(pass)) {
+Toast.makeText(this, "Login Successful...", Toast.LENGTH_SHORT).show();
+} else {
+Toast.makeText(this, "Invalid Login", Toast.LENGTH_SHORT).show();
+}
+});
+}
+}
 
+</code>
+</pre>
+        
     <!-- <div>
         <!DOCTYPE html>
         <html lang="en">
