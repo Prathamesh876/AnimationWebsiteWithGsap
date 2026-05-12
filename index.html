@@ -12,3897 +12,1668 @@
 
 <body>
 <pre>
-    <code>
-    Mobile App Development Technologies
-_________________________________________________________________________________
+    Full Stack Development-I
+_____________________________________________________________________________
 SLIP 1
-Q.1) Write an application to create a splash screen.
-Step 1: Create New Project
-Open Android Studio
-Click New Project → Empty Activity
-Name: SplashApp
-Step 2: Create Splash Activity
-Create a new Activity:
-Right click → New → Activity → Empty Activity
-Name: SplashActivity
-Step 3: SplashActivity.java (Java Code)
-package com.example.splashapp;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import androidx.appcompat.app.AppCompatActivity;
-public class SplashActivity extends AppCompatActivity {
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_splash);
-new Handler().postDelayed(new Runnable() {
-@Override
-public void run() {
-Intent i = new Intent(SplashActivity.this, MainActivity.class);
-startActivity(i);
-finish();
-}
-}, 3000);
-}
-}
-Step 4: activity_splash.xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:gravity="center"
-android:orientation="vertical"
-android:background="#FFFFFF">
-<ImageView
-android:layout_width="150dp"
-android:layout_height="150dp"
-android:src="@mipmap/ic_launcher" />
-<TextView
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="My Splash Screen"
-android:textSize="20sp"
-android:paddingTop="20dp"/>
-</LinearLayout>
-Step 5: MainActivity.java
-package com.example.splashapp;
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-}
-}
-Q.2) Create table Student (roll_no, name, address, percentage). Create Application
-for performing the following operation on the table. (Using SQLite database).
-i] Insert record of 5 new student details.
-ii] Show all the student details.
-Step 1: Create Database Helper Class
-DatabaseHelper.java
-package com.example.studentapp;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-public class DatabaseHelper extends SQLiteOpenHelper {
-public static final String DB_NAME = "StudentDB";
-public static final String TABLE_NAME = "Student";
-public DatabaseHelper(Context context) {
-super(context, DB_NAME, null, 1);
-}
-@Override
-public void onCreate(SQLiteDatabase db) {
-db.execSQL("CREATE TABLE " + TABLE_NAME +
-"(roll_no INTEGER PRIMARY KEY, name TEXT, address TEXT, percentage REAL)");
-}
-@Override
-public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-onCreate(db);
-}
-public boolean insertStudent(int roll, String name, String address, float
-percentage) {
-SQLiteDatabase db = this.getWritableDatabase();
-ContentValues values = new ContentValues();
-values.put("roll_no", roll);
-values.put("name", name);
-values.put("address", address);
-values.put("percentage", percentage);
-long result = db.insert(TABLE_NAME, null, values);
-return result != -1;
-}
-public Cursor getAllStudents() {
-SQLiteDatabase db = this.getReadableDatabase();
-return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-}
-}
-Step 2: MainActivity.java
-package com.example.studentapp;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-DatabaseHelper db;
-Button insertBtn, showBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-db = new DatabaseHelper(this);
-insertBtn = findViewById(R.id.insertBtn);
-showBtn = findViewById(R.id.showBtn);
-insertBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-db.insertStudent(1, "Amit", "Pune", 85.5f);
-db.insertStudent(2, "Ravi", "Mumbai", 78.2f);
-db.insertStudent(3, "Sneha", "Nashik", 91.0f);
-db.insertStudent(4, "Pooja", "Nagpur", 88.3f);
-db.insertStudent(5, "Vikas", "Solapur", 76.4f);
-Toast.makeText(MainActivity.this, "5 Students Inserted", Toast.LENGTH_SHORT).show();
-}
-});
-showBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-Cursor cursor = db.getAllStudents();
-StringBuilder buffer = new StringBuilder();
-while (cursor.moveToNext()) {
-buffer.append("Roll No: ").append(cursor.getInt(0)).append("\n");
-buffer.append("Name: ").append(cursor.getString(1)).append("\n");
-buffer.append("Address: ").append(cursor.getString(2)).append("\n");
-buffer.append("Percentage: ").append(cursor.getFloat(3)).append("\n\n");
-}
-Toast.makeText(MainActivity.this, buffer.toString(), Toast.LENGTH_LONG).show();
-}
-});
-}
-}
-Step 3: activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="20dp">
-<Button
-android:id="@+id/insertBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Insert 5 Students"/>
-<Button
-android:id="@+id/showBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Show Students"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-_________________________________________________________________________________________________________________
-SLIP 2
-Q.1) Create an application that allows the user to enter a number in the textbox.
-Check whether the number in the textbox is perfect number or not. Print the
-message using Toast control.
-Step 1: activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="20dp">
-<EditText
-android:id="@+id/numberInput"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:hint="Enter a number"
-android:inputType="number" />
-<Button
-android:id="@+id/checkBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Check Perfect Number"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-Step 2: MainActivity.java
-package com.example.perfectnumber;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText numberInput;
-Button checkBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-numberInput = findViewById(R.id.numberInput);
-checkBtn = findViewById(R.id.checkBtn);
-checkBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-String value = numberInput.getText().toString();
-if (value.isEmpty()) {
-Toast.makeText(MainActivity.this, "Enter a number", Toast.LENGTH_SHORT).show();
-return;
-}
-int num = Integer.parseInt(value);
-int sum = 0;
-for (int i = 1; i < num; i++) {
-if (num % i == 0) {
-sum += i;
-}
-}
-if (sum == num) {
-Toast.makeText(MainActivity.this,
-num + " is a Perfect Number", Toast.LENGTH_LONG).show();
-} else {
-Toast.makeText(MainActivity.this,
-num + " is NOT a Perfect Number", Toast.LENGTH_LONG).show();
-}
-}
-});
-}
-}
-2) Java Android Program to perform all arithmetic Operations using Calculator.
-Step 1: activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="20dp">
-<EditText
-android:id="@+id/num1"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:hint="Enter First Number"
-android:inputType="numberDecimal"/>
-<EditText
-android:id="@+id/num2"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:hint="Enter Second Number"
-android:inputType="numberDecimal"
-android:layout_marginTop="10dp"/>
-<Button
-android:id="@+id/addBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Add"/>
-<Button
-android:id="@+id/subBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Subtract"/>
-<Button
-android:id="@+id/mulBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Multiply"/>
-<Button
-android:id="@+id/divBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Divide"/>
-<TextView
-android:id="@+id/resultText"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Result:"
-android:textSize="18sp"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-Step 2: MainActivity.java
-package com.example.calculatorapp;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText num1, num2;
-Button addBtn, subBtn, mulBtn, divBtn;
-TextView resultText;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-num1 = findViewById(R.id.num1);
-num2 = findViewById(R.id.num2);
-addBtn = findViewById(R.id.addBtn);
-subBtn = findViewById(R.id.subBtn);
-mulBtn = findViewById(R.id.mulBtn);
-divBtn = findViewById(R.id.divBtn);
-resultText = findViewById(R.id.resultText);
-addBtn.setOnClickListener(v -> calculate('+'));
-subBtn.setOnClickListener(v -> calculate('-'));
-mulBtn.setOnClickListener(v -> calculate('*'));
-divBtn.setOnClickListener(v -> calculate('/'));
-}
-private void calculate(char op) {
-double n1 = Double.parseDouble(num1.getText().toString());
-double n2 = Double.parseDouble(num2.getText().toString());
-double result = 0;
-switch (op) {
-case '+':
-result = n1 + n2;
-break;
-case '-':
-result = n1 - n2;
-break;
-case '*':
-result = n1 * n2;
-break;
-case '/':
-if (n2 != 0)
-result = n1 / n2;
-else {
-resultText.setText("Cannot divide by zero");
-return;
-}
-break;
-}
-resultText.setText("Result: " + result);
-}
-}
-____________________________________________________________________________________
-SLIP 3
-Q.1) Create an application that allows the user to enter a number in the textbox.
-Check whether the number in the textbox is Armstrong or not. Print the message
-accordingly in the label control.
-Step 1: activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="20dp">
-<EditText
-android:id="@+id/inputNumber"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:hint="Enter a number"
-android:inputType="number"/>
-<Button
-android:id="@+id/checkButton"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Check Armstrong"
-android:layout_marginTop="20dp"/>
-<TextView
-android:id="@+id/resultLabel"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Result will be shown here"
-android:textSize="18sp"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-Step 2: MainActivity.java
-package com.example.armstrongapp;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText inputNumber;
-Button checkButton;
-TextView resultLabel;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-inputNumber = findViewById(R.id.inputNumber);
-checkButton = findViewById(R.id.checkButton);
-resultLabel = findViewById(R.id.resultLabel);
-checkButton.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-String value = inputNumber.getText().toString();
-if (value.isEmpty()) {
-resultLabel.setText("Please enter a number");
-return;
-}
-int num = Integer.parseInt(value);
-int temp = num;
-int sum = 0;
-while (temp != 0) {
-int digit = temp % 10;
-sum += digit * digit * digit;
-temp = temp / 10;
-}
-if (sum == num) {
-resultLabel.setText(num + " is an Armstrong Number");
-} else {
-resultLabel.setText(num + " is NOT an Armstrong Number");
-}
-}
-});
-}
-}
-Q.2) Create an Android application which examine a phone number entered by a
-user with the given format.
-• Area code should be one of the following: 040, 041, 050, 0400, 044
-• There should 6 - 8 numbers in telephone number (+ area code).
-Step 1: activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="20dp">
-<EditText
-android:id="@+id/phoneInput"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:hint="Enter Phone Number (e.g. 0401234567)"
-android:inputType="phone"/>
-<Button
-android:id="@+id/validateBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Validate Number"
-android:layout_marginTop="20dp"/>
-<TextView
-android:id="@+id/resultText"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Result will appear here"
-android:textSize="18sp"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-Step 2: MainActivity.java
-package com.example.phonevalidation;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText phoneInput;
-Button validateBtn;
-TextView resultText;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-phoneInput = findViewById(R.id.phoneInput);
-validateBtn = findViewById(R.id.validateBtn);
-resultText = findViewById(R.id.resultText);
-validateBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-String phone = phoneInput.getText().toString().trim();
-String[] validCodes = {"040", "041", "050", "0400", "044"};
-boolean validCode = false;
-String matchedCode = "";
-for (String code : validCodes) {
-if (phone.startsWith(code)) {
-validCode = true;
-matchedCode = code;
-break;
-}
-}
-if (!validCode) {
-resultText.setText("Invalid Area Code");
-return;
-}
-String numberPart = phone.substring(matchedCode.length());
-if (numberPart.length() >= 6 && numberPart.length() <= 8) {
-resultText.setText("Valid Phone Number");
-} else {
-resultText.setText("Invalid Number: Must have 6 to 8 digits after area code");
-}
-}
-});
-}
-}
-____________________________________________________________________________________________________
-SLIP 4
-Q.1) Construct image switcher using setFactory().
-Step 1: activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:gravity="center"
-android:padding="20dp">
-<ImageSwitcher
-android:id="@+id/imageSwitcher"
-android:layout_width="300dp"
-android:layout_height="300dp"
-android:layout_marginBottom="20dp"/>
-<Button
-android:id="@+id/nextBtn"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Next Image"/>
-</LinearLayout>
-Step 2: MainActivity.java
-package com.example.imageswitcherapp;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageSwitcher;
-import android.widget.ImageView;
-import android.widget.ViewSwitcher;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-ImageSwitcher imageSwitcher;
-Button nextBtn;
-int[] images = {android.R.drawable.ic_menu_camera,
-android.R.drawable.ic_menu_compass,
-android.R.drawable.ic_menu_gallery};
-int index = 0;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-imageSwitcher = findViewById(R.id.imageSwitcher);
-nextBtn = findViewById(R.id.nextBtn);
-imageSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
-@Override
-public View makeView() {
-ImageView imageView = new ImageView(getApplicationContext());
-imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-imageView.setLayoutParams(
-new ImageSwitcher.LayoutParams(
-ImageSwitcher.LayoutParams.MATCH_PARENT,
-ImageSwitcher.LayoutParams.MATCH_PARENT
-)
-);
-return imageView;
-}
-});
-imageSwitcher.setImageResource(images[index]);
-nextBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-index++;
-if (index == images.length) {
-index = 0;
-}
-imageSwitcher.setImageResource(images[index]);
-}
-});
-}
-}
-Q.2) Write a program to search a specific location on Google Map.
-Step 1: Add Permission (AndroidManifest.xml)
-<uses-permission android:name="android.permission.INTERNET"/>
-Step 2: activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="20dp">
-<EditText
-android:id="@+id/locationInput"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:hint="Enter location (e.g. Pune)"
-android:inputType="text"/>
-<Button
-android:id="@+id/searchBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Search on Map"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-Step 3: MainActivity.java
-package com.example.googlemapapp;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText locationInput;
-Button searchBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-locationInput = findViewById(R.id.locationInput);
-searchBtn = findViewById(R.id.searchBtn);
-searchBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-String location = locationInput.getText().toString();
-if (!location.isEmpty()) {
-Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + location);
-Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-mapIntent.setPackage("com.google.android.apps.maps");
-if (mapIntent.resolveActivity(getPackageManager()) != null) {
-startActivity(mapIntent);
-} else {
-Uri browserUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + location);
-Intent browserIntent = new Intent(Intent.ACTION_VIEW, browserUri);
-startActivity(browserIntent);
-}
-}
-}
-});
-}
-}
-________________________________________________________________________________________________________________________
-SLIP 5
-Q.1) Java Android Program to Demonstrate Alert Dialog Box.
-activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:gravity="center"
-android:orientation="vertical">
-<Button
-android:id="@+id/showDialog"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Show Alert" />
-</LinearLayout>
-MainActivity.java
-package com.example.alertdialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-Button showDialog;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-showDialog = findViewById(R.id.showDialog);
-showDialog.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-builder.setTitle("Alert");
-builder.setMessage("Do you want to continue?");
-builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-@Override
-public void onClick(DialogInterface dialog, int which) {
-dialog.dismiss();
-}
-});
-builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-@Override
-public void onClick(DialogInterface dialog, int which) {
-dialog.cancel();
-}
-});
-AlertDialog alertDialog = builder.create();
-alertDialog.show();
-}
-});
-}
-}
-Q.2) Create an Android application which will ask the user to input his / her name.
-A message should display the two items concatenated in a label. Change the format
-of the label using radio buttons and check boxes for selection. The user can make
-the label text bold, underlined or italic as well as change its color. Also include
-buttons to display the message in the label, clear the text boxes as well as label.
-Finally exit.
-activity_main.xml
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<LinearLayout
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:orientation="vertical"
-android:padding="20dp">
-<EditText
-android:id="@+id/nameInput"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:hint="Enter Name"/>
-<TextView
-android:id="@+id/resultLabel"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Result"
-android:textSize="18sp"
-android:padding="10dp"/>
-<RadioGroup
-android:id="@+id/colorGroup"
-android:layout_width="match_parent"
-android:layout_height="wrap_content">
-<RadioButton
-android:id="@+id/red"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Red"/>
-<RadioButton
-android:id="@+id/blue"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Blue"/>
-<RadioButton
-android:id="@+id/green"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Green"/>
-</RadioGroup>
-<CheckBox
-android:id="@+id/bold"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Bold"/>
-<CheckBox
-android:id="@+id/italic"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Italic"/>
-<CheckBox
-android:id="@+id/underline"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Underline"/>
-<Button
-android:id="@+id/displayBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Display"/>
-<Button
-android:id="@+id/clearBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Clear"/>
-<Button
-android:id="@+id/exitBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Exit"/>
-</LinearLayout>
-</ScrollView>
-MainActivity.java
-package com.example.nameformatapp;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText nameInput;
-TextView resultLabel;
-RadioGroup colorGroup;
-CheckBox bold, italic, underline;
-Button displayBtn, clearBtn, exitBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-nameInput = findViewById(R.id.nameInput);
-resultLabel = findViewById(R.id.resultLabel);
-colorGroup = findViewById(R.id.colorGroup);
-bold = findViewById(R.id.bold);
-italic = findViewById(R.id.italic);
-underline = findViewById(R.id.underline);
-displayBtn = findViewById(R.id.displayBtn);
-clearBtn = findViewById(R.id.clearBtn);
-exitBtn = findViewById(R.id.exitBtn);
-displayBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-String name = nameInput.getText().toString();
-resultLabel.setText("Hello " + name);
-if (bold.isChecked() && italic.isChecked()) {
-resultLabel.setTypeface(null, android.graphics.Typeface.BOLD_ITALIC);
-} else if (bold.isChecked()) {
-resultLabel.setTypeface(null, android.graphics.Typeface.BOLD);
-} else if (italic.isChecked()) {
-resultLabel.setTypeface(null, android.graphics.Typeface.ITALIC);
-} else {
-resultLabel.setTypeface(null, android.graphics.Typeface.NORMAL);
-}
-if (underline.isChecked()) {
-resultLabel.setPaintFlags(resultLabel.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-} else {
-resultLabel.setPaintFlags(0);
-}
-int selectedId = colorGroup.getCheckedRadioButtonId();
-if (selectedId == R.id.red) {
-resultLabel.setTextColor(Color.RED);
-} else if (selectedId == R.id.blue) {
-resultLabel.setTextColor(Color.BLUE);
-} else if (selectedId == R.id.green) {
-resultLabel.setTextColor(Color.GREEN);
-}
-}
-});
-clearBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-nameInput.setText("");
-resultLabel.setText("");
-bold.setChecked(false);
-italic.setChecked(false);
-underline.setChecked(false);
-colorGroup.clearCheck();
-}
-});
-exitBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-finish();
-}
-});
-}
-}
-________________________________________________________________________________________________________
-SLIP 6
-Q.1) Java Android Program to demonstrate login form with validation.
-1. XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/email"
-android:hint="Email"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/password"
-android:hint="Password"
-android:inputType="textPassword"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/loginBtn"
-android:text="Login"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.loginapp;
-import android.os.Bundle;
-import android.util.Patterns;
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText email, password;
-Button loginBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-email = findViewById(R.id.email);
-password = findViewById(R.id.password);
-loginBtn = findViewById(R.id.loginBtn);
-loginBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-validateLogin();
-}
-});
-}
-private void validateLogin() {
-String emailText = email.getText().toString();
-String passText = password.getText().toString();
-if (emailText.isEmpty()) {
-email.setError("Email is required");
-} else if (!Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
-email.setError("Enter valid email");
-} else if (passText.isEmpty()) {
-password.setError("Password is required");
-} else if (passText.length() < 6) {
-password.setError("Password must be at least 6 characters");
-} else {
-Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-}
-}
-}
-Q.2) Write a program to search a specific location on Google Map.
-Step 1: Add Permission (AndroidManifest.xml)
-<uses-permission android:name="android.permission.INTERNET"/>
-Step 2: activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="20dp">
-<EditText
-android:id="@+id/locationInput"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:hint="Enter location (e.g. Pune)"
-android:inputType="text"/>
-<Button
-android:id="@+id/searchBtn"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Search on Map"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-Step 3: MainActivity.java
-package com.example.googlemapapp;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText locationInput;
-Button searchBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-locationInput = findViewById(R.id.locationInput);
-searchBtn = findViewById(R.id.searchBtn);
-searchBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-String location = locationInput.getText().toString();
-if (!location.isEmpty()) {
-Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + location);
-Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-mapIntent.setPackage("com.google.android.apps.maps");
-if (mapIntent.resolveActivity(getPackageManager()) != null) {
-startActivity(mapIntent);
-} else {
-Uri browserUri =
-Uri.parse("https://www.google.com/maps/search/?api=1&query=" + location);
-Intent browserIntent = new Intent(Intent.ACTION_VIEW, browserUri);
-startActivity(browserIntent);
-}
-}
-}
-});
-}
-}
-________________________________________________________________________________________________________________________
-SLIP 7
-Q.1] Java Android Program to Demonstrate ProgressBar.
-1. XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:gravity="center"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<ProgressBar
-android:id="@+id/progressBar"
-style="?android:attr/progressBarStyleHorizontal"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:max="100"/>
-<Button
-android:id="@+id/startBtn"
-android:text="Start Progress"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.progressapp;
-import android.os.Bundle;
-import android.os.Handler;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-ProgressBar progressBar;
-Button startBtn;
-int progressStatus = 0;
-Handler handler = new Handler();
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-progressBar = findViewById(R.id.progressBar);
-startBtn = findViewById(R.id.startBtn);
-startBtn.setOnClickListener(v -> {
-progressStatus = 0;
-new Thread(() -> {
-while (progressStatus < 100) {
-progressStatus += 10;
-handler.post(() -> progressBar.setProgress(progressStatus));
-try {
-Thread.sleep(500);
-} catch (InterruptedException e) {
-e.printStackTrace();
-}
-}
-}).start();
-});
-}
-}
-Q.2] Create table Employee (E_id, name, address, ph_no). Create Application for
-performing the following operation on the table. (Using SQLite database).
-i] Insert record of 5 new Employees.
-ii] Show all the details of Employee.
-1. Database Helper Class (DBHelper.java)
-package com.example.employeeapp;
-import android.content.*;
-import android.database.Cursor;
-import android.database.sqlite.*;
-public class DBHelper extends SQLiteOpenHelper {
-public static final String DB_NAME = "EmployeeDB";
-public static final String TABLE_NAME = "Employee";
-public DBHelper(Context context) {
-super(context, DB_NAME, null, 1);
-}
-@Override
-public void onCreate(SQLiteDatabase db) {
-db.execSQL("CREATE TABLE Employee(E_id INTEGER PRIMARY KEY, name TEXT, address TEXT, ph_no TEXT)");
-}
-@Override
-public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-db.execSQL("DROP TABLE IF EXISTS Employee");
-onCreate(db);
-}
-public boolean insertEmployee(int id, String name, String address, String phone) {
-SQLiteDatabase db = this.getWritableDatabase();
-ContentValues cv = new ContentValues();
-cv.put("E_id", id);
-cv.put("name", name);
-cv.put("address", address);
-cv.put("ph_no", phone);
-long result = db.insert(TABLE_NAME, null, cv);
-return result != -1;
-}
-public Cursor getAllEmployees() {
-SQLiteDatabase db = this.getReadableDatabase();
-return db.rawQuery("SELECT * FROM Employee", null);
-}
-}
-2. Insert 5 Employee Records (MainActivity.java)
-package com.example.employeeapp;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-DBHelper db;
-TextView result;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-db = new DBHelper(this);
-result = findViewById(R.id.result);
-db.insertEmployee(1, "Amit", "Pune", "9876543210");
-db.insertEmployee(2, "Rahul", "Mumbai", "9123456780");
-db.insertEmployee(3, "Sneha", "Nashik", "9988776655");
-db.insertEmployee(4, "Priya", "Nagpur", "9090909090");
-db.insertEmployee(5, "Kiran", "Solapur", "8888888888");
-Cursor cursor = db.getAllEmployees();
-StringBuilder data = new StringBuilder();
-while (cursor.moveToNext()) {
-data.append("ID: ").append(cursor.getInt(0)).append("\n");
-data.append("Name: ").append(cursor.getString(1)).append("\n");
-data.append("Address: ").append(cursor.getString(2)).append("\n");
-data.append("Phone: ").append(cursor.getString(3)).append("\n\n");
-}
-result.setText(data.toString());
-}
-}
-3. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:id="@+id/result"
-android:text="Employee Data"
-android:textSize="16sp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-___________________________________________________________________________________________________
-SLIP 8
-Q.1] Create a Application which shows Life Cycle of Activity.
-1. Java Code (MainActivity.java)
-package com.example.lifecycleapp;
-import android.os.Bundle;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-private void showMessage(String msg) {
-Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-}
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-showMessage("onCreate() called");
-}
-@Override
-protected void onStart() {
-super.onStart();
-showMessage("onStart() called");
-}
-@Override
-protected void onResume() {
-super.onResume();
-showMessage("onResume() called");
-}
-@Override
-protected void onPause() {
-super.onPause();
-showMessage("onPause() called");
-}
-@Override
-protected void onStop() {
-super.onStop();
-showMessage("onStop() called");
-}
-@Override
-protected void onRestart() {
-super.onRestart();
-showMessage("onRestart() called");
-}
-@Override
-protected void onDestroy() {
-super.onDestroy();
-showMessage("onDestroy() called");
-}
-}
-2. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:gravity="center"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:text="Activity Life Cycle Demo"
-android:textSize="20sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-Q.2] Create table Customer (id, name, address, ph_no). Create Application for
-performing the following operation on the table. (Using SQLite database).
-i] Insert new customer details (At least 5 records).
-ii] Show all the customer details.
-1. Database Helper Class (DBHelper.java)
-package com.example.customerapp;
-import android.content.*;
-import android.database.Cursor;
-import android.database.sqlite.*;
-public class DBHelper extends SQLiteOpenHelper {
-public static final String DB_NAME = "CustomerDB";
-public static final String TABLE_NAME = "Customer";
-public DBHelper(Context context) {
-super(context, DB_NAME, null, 1);
-}
-@Override
-public void onCreate(SQLiteDatabase db) {
-db.execSQL("CREATE TABLE Customer(id INTEGER PRIMARY KEY, name TEXT, address TEXT, ph_no TEXT)");
-}
-@Override
-public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-db.execSQL("DROP TABLE IF EXISTS Customer");
-onCreate(db);
-}
-public boolean insertCustomer(int id, String name, String address, String phone) {
-SQLiteDatabase db = this.getWritableDatabase();
-ContentValues cv = new ContentValues();
-cv.put("id", id);
-cv.put("name", name);
-cv.put("address", address);
-cv.put("ph_no", phone);
-long result = db.insert(TABLE_NAME, null, cv);
-return result != -1;
-}
-public Cursor getAllCustomers() {
-SQLiteDatabase db = this.getReadableDatabase();
-return db.rawQuery("SELECT * FROM Customer", null);
-}
-}
-2. Main Activity (Insert + Display Data).java
-package com.example.customerapp;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-DBHelper db;
-TextView result;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-db = new DBHelper(this);
-result = findViewById(R.id.result);
-db.insertCustomer(1, "Raj", "Pune", "9876543210");
-db.insertCustomer(2, "Neha", "Mumbai", "9123456780");
-db.insertCustomer(3, "Amit", "Nashik", "9988776655");
-db.insertCustomer(4, "Pooja", "Nagpur", "9090909090");
-db.insertCustomer(5, "Ravi", "Solapur", "8888888888");
-Cursor cursor = db.getAllCustomers();
-StringBuilder data = new StringBuilder();
-while (cursor.moveToNext()) {
-data.append("ID: ").append(cursor.getInt(0)).append("\n");
-data.append("Name: ").append(cursor.getString(1)).append("\n");
-data.append("Address: ").append(cursor.getString(2)).append("\n");
-data.append("Phone: ").append(cursor.getString(3)).append("\n\n");
-}
-result.setText(data.toString());
-}
-}
-3. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:id="@+id/result"
-android:text="Customer Data"
-android:textSize="16sp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-__________________________________________________________________________________________________________
-SLIP 9
-Q.1] Create an application that allows the user to enter a number in the textbox named „getnum‟.
-Check whether the number in the textbox „getnum‟ is Palindrome or not.
-Print the message accordingly in the label when the user clicks on the butto „Check‟.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/getnum"
-android:hint="Enter Number"
-android:inputType="number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/checkBtn"
-android:text="Check"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_marginTop="15dp"/>
-<TextView
-android:id="@+id/result"
-android:text="Result"
-android:textSize="18sp"
-android:layout_marginTop="20dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.palindromeapp;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText getnum;
-Button checkBtn;
-TextView result;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-getnum = findViewById(R.id.getnum);
-checkBtn = findViewById(R.id.checkBtn);
-result = findViewById(R.id.result);
-checkBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-String input = getnum.getText().toString();
-if (input.isEmpty()) {
-result.setText("Please enter a number");
-return;
-}
-int num = Integer.parseInt(input);
-int original = num;
-int reverse = 0;
-while (num != 0) {
-int digit = num % 10;
-reverse = reverse * 10 + digit;
-num = num / 10;
-}
-if (original == reverse) {
-result.setText("Palindrome Number");
-} else {
-result.setText("Not a Palindrome");
-}
-}
-});
-}
-}
-Q.2] Java android program to create simple calculator.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/num1"
-android:hint="Enter First Number"
-android:inputType="numberDecimal"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/num2"
-android:hint="Enter Second Number"
-android:inputType="numberDecimal"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<LinearLayout
-android:orientation="horizontal"
-android:layout_marginTop="10dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content">
-<Button
-android:id="@+id/add"
-android:text="+"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/sub"
-android:text="-"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/mul"
-android:text="*"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/div"
-android:text="/"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-<TextView
-android:id="@+id/result"
-android:text="Result"
-android:textSize="18sp"
-android:layout_marginTop="20dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.calculatorapp;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText num1, num2;
-Button add, sub, mul, div;
-TextView result;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-num1 = findViewById(R.id.num1);
-num2 = findViewById(R.id.num2);
-add = findViewById(R.id.add);
-sub = findViewById(R.id.sub);
-mul = findViewById(R.id.mul);
-div = findViewById(R.id.div);
-result = findViewById(R.id.result);
-add.setOnClickListener(v -> calculate('+'));
-sub.setOnClickListener(v -> calculate('-'));
-mul.setOnClickListener(v -> calculate('*'));
-div.setOnClickListener(v -> calculate('/'));
-}
-private void calculate(char op) {
-String n1 = num1.getText().toString();
-String n2 = num2.getText().toString();
-if (n1.isEmpty() || n2.isEmpty()) {
-result.setText("Enter both numbers");
-return;
-}
-double a = Double.parseDouble(n1);
-double b = Double.parseDouble(n2);
-double res = 0;
-switch (op) {
-case '+':
-res = a + b;
-break;
-case '-':
-res = a - b;
-break;
-case '*':
-res = a * b;
-break;
-case '/':
-if (b == 0) {
-result.setText("Cannot divide by zero");
-return;
-}
-res = a / b;
-break;
-}
-result.setText("Result: " + res);
-}
-}
-_____________________________________________________________________________________________________________________
-SLIP 10
-Q.1] Create an application that allows the user to enter a number in the textbox named getnum.
-Check whether the number in the textbox getnum is Armstrong or not.
-Print the message using Toast control when the user clicks on the button Check.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/getnum"
-android:hint="Enter Number"
-android:inputType="number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/checkBtn"
-android:text="Check"
-android:layout_marginTop="15dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.armstrongapp;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText getnum;
-Button checkBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-getnum = findViewById(R.id.getnum);
-checkBtn = findViewById(R.id.checkBtn);
-checkBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-String input = getnum.getText().toString();
-if (input.isEmpty()) {
-Toast.makeText(MainActivity.this, "Enter a number", Toast.LENGTH_SHORT).show();
-return;
-}
-int num = Integer.parseInt(input);
-int original = num;
-int sum = 0;
-int digits = input.length();
-while (num != 0) {
-int digit = num % 10;
-sum += Math.pow(digit, digits);
-num = num / 10;
-}
-if (sum == original) {
-Toast.makeText(MainActivity.this, "Armstrong Number", Toast.LENGTH_SHORT).show();
-} else {
-Toast.makeText(MainActivity.this, "Not an Armstrong Number", Toast.LENGTH_SHORT).show();
-}
-}
-});
-}
-}
-Q.2] Write a program to draw GUI by using Spinner, Buttons.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/inputItem"
-android:hint="Enter Item"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/addBtn"
-android:text="Add to Spinner"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_marginTop="10dp"/>
-<Button
-android:id="@+id/removeBtn"
-android:text="Remove from Spinner"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_marginTop="10dp"/>
-<Spinner
-android:id="@+id/spinner"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.spinnerapp;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-import java.util.ArrayList;
-public class MainActivity extends AppCompatActivity {
-EditText inputItem;
-Button addBtn, removeBtn;
-Spinner spinner;
-ArrayList<String> list;
-ArrayAdapter<String> adapter;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-inputItem = findViewById(R.id.inputItem);
-addBtn = findViewById(R.id.addBtn);
-removeBtn = findViewById(R.id.removeBtn);
-spinner = findViewById(R.id.spinner);
-list = new ArrayList<>();
-list.add("Apple"); // default item
-adapter = new ArrayAdapter<>(this,
-android.R.layout.simple_spinner_item, list);
-adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-spinner.setAdapter(adapter);
-addBtn.setOnClickListener(v -> {
-String item = inputItem.getText().toString();
-if (!item.isEmpty()) {
-list.add(item);
-adapter.notifyDataSetChanged();
-inputItem.setText("");
-Toast.makeText(this, "Item Added", Toast.LENGTH_SHORT).show();
-}
-});
-removeBtn.setOnClickListener(v -> {
-String selected = spinner.getSelectedItem().toString();
-list.remove(selected);
-adapter.notifyDataSetChanged();
-Toast.makeText(this, "Item Removed", Toast.LENGTH_SHORT).show();
-});
-}
-}
-________________________________________________________________________________________________________
-SLIP 11
-Q.1] Create an Android Application to accept two numbers to calculate its Power and Average.
-Create two buttons: Power and Average. Display the appropriate result on the next activity on Button click.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/num1"
-android:hint="Enter First Number"
-android:inputType="numberDecimal"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/num2"
-android:hint="Enter Second Number"
-android:inputType="numberDecimal"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/powerBtn"
-android:text="Power"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_marginTop="10dp"/>
-<Button
-android:id="@+id/avgBtn"
-android:text="Average"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_marginTop="10dp"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.poweravgapp;
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText num1, num2;
-Button powerBtn, avgBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-num1 = findViewById(R.id.num1);
-num2 = findViewById(R.id.num2);
-powerBtn = findViewById(R.id.powerBtn);
-avgBtn = findViewById(R.id.avgBtn);
-powerBtn.setOnClickListener(v -> calculate("power"));
-avgBtn.setOnClickListener(v -> calculate("avg"));
-}
-private void calculate(String type) {
-double a = Double.parseDouble(num1.getText().toString());
-double b = Double.parseDouble(num2.getText().toString());
-double result;
-if (type.equals("power")) {
-result = Math.pow(a, b);
-} else {
-result = (a + b) / 2;
-}
-Intent intent = new Intent(MainActivity.this, ResultActivity.class);
-intent.putExtra("result", result);
-startActivity(intent);
-}
-}
-3. Second Activity (ResultActivity.java)
-package com.example.poweravgapp;
-import android.os.Bundle;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-public class ResultActivity extends AppCompatActivity {
-TextView resultView;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_result);
-resultView = findViewById(R.id.resultView);
-double result = getIntent().getDoubleExtra("result", 0);
-resultView.setText("Result: " + result);
-}
-}
-4. XML for Second Activity (activity_result.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:id="@+id/resultView"
-android:textSize="22sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-5. AndroidManifest.xml (Add Activity)
-<activity android:name=".ResultActivity"/>
-Q.2] Create an Android Application to perform following string
-operation according to user selection of radio button.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/inputText"
-android:hint="Enter String"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<RadioGroup
-android:id="@+id/radioGroup"
-android:layout_marginTop="15dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content">
-<RadioButton
-android:id="@+id/upper"
-android:text="Uppercase"/>
-<RadioButton
-android:id="@+id/lower"
-android:text="Lowercase"/>
-<RadioButton
-android:id="@+id/right"
-android:text="Right 5 Characters"/>
-<RadioButton
-android:id="@+id/left"
-android:text="Left 5 Characters"/>
-</RadioGroup>
-<Button
-android:id="@+id/clickBtn"
-android:text="Click"
-android:layout_marginTop="15dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/output"
-android:hint="Output"
-android:layout_marginTop="20dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.stringapp;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText inputText, output;
-RadioGroup radioGroup;
-Button clickBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-inputText = findViewById(R.id.inputText);
-output = findViewById(R.id.output);
-radioGroup = findViewById(R.id.radioGroup);
-clickBtn = findViewById(R.id.clickBtn);
-clickBtn.setOnClickListener(v -> {
-String text = inputText.getText().toString();
-int selectedId = radioGroup.getCheckedRadioButtonId();
-if (text.isEmpty() || selectedId == -1) {
-Toast.makeText(this, "Enter text and select option", Toast.LENGTH_SHORT).show();
-return;
-}
-String result = "";
-if (selectedId == R.id.upper) {
-result = text.toUpperCase();
-}
-else if (selectedId == R.id.lower) {
-result = text.toLowerCase();
-}
-else if (selectedId == R.id.right) {
-result = text.length() >= 5 ? text.substring(text.length() - 5) : text;
-}
-else if (selectedId == R.id.left) {
-result = text.length() >= 5 ? text.substring(0, 5) : text;
-}
-output.setText(result);
-});
-}
-}
-_______________________________________________________________________________________________________________________
-SLIP 12
-Q.1] Construct an Android app that toggles a light bulb ON and OFF when the user clicks on toggle button.
-1. Add Images
-Place two images in res/drawable folder:
-bulb_on.png (light ON)
-bulb_off.png (light OFF)
-2. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<ImageView
-android:id="@+id/bulbImage"
-android:src="@drawable/bulb_off"
-android:layout_width="200dp"
-android:layout_height="200dp"/>
-<ToggleButton
-android:id="@+id/toggleBtn"
-android:textOn="Light ON"
-android:textOff="Light OFF"
-android:layout_marginTop="20dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-3. Java Code (MainActivity.java)
-package com.example.toggleapp;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-ImageView bulbImage;
-ToggleButton toggleBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-bulbImage = findViewById(R.id.bulbImage);
-toggleBtn = findViewById(R.id.toggleBtn);
-toggleBtn.setOnCheckedChangeListener((buttonView, isChecked) -> {
-if (isChecked) {
-bulbImage.setImageResource(R.drawable.bulb_on);
-Toast.makeText(this, "Light ON", Toast.LENGTH_SHORT).show();
-} else {
-bulbImage.setImageResource(R.drawable.bulb_off);
-Toast.makeText(this, "Light OFF", Toast.LENGTH_SHORT).show();
-}
-});
-}
-}
-Q.2] Create an Android application which will ask the user to input his / her name. A message should
-display the two items concatenated in a label. Change the format of the label using radio buttons and
-check boxes for selection. The user can make the label text bold, underlined or italic as well as
-change its color. Also include buttons to display the message in the label,
-clear the text boxes as well as label. Finally exit.
-1. XML Layout (activity_main.xml)
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<LinearLayout
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content">
-<EditText
-android:id="@+id/fname"
-android:hint="First Name"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/lname"
-android:hint="Last Name"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<RadioGroup
-android:id="@+id/radioGroup"
-android:layout_marginTop="10dp">
-<RadioButton android:id="@+id/red" android:text="Red"/>
-<RadioButton android:id="@+id/blue" android:text="Blue"/>
-<RadioButton android:id="@+id/green" android:text="Green"/>
-</RadioGroup>
-<CheckBox android:id="@+id/bold" android:text="Bold"/>
-<CheckBox android:id="@+id/italic" android:text="Italic"/>
-<CheckBox android:id="@+id/underline" android:text="Underline"/>
-<Button android:id="@+id/showBtn" android:text="Show"/>
-<Button android:id="@+id/clearBtn" android:text="Clear"/>
-<Button android:id="@+id/exitBtn" android:text="Exit"/>
-<TextView
-android:id="@+id/output"
-android:text="Output"
-android:textSize="20sp"
-android:layout_marginTop="20dp"/>
-</LinearLayout>
-</ScrollView>
-2. Java Code (MainActivity.java)
-package com.example.formatapp;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText fname, lname;
-RadioGroup radioGroup;
-CheckBox bold, italic, underline;
-TextView output;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-fname = findViewById(R.id.fname);
-lname = findViewById(R.id.lname);
-radioGroup = findViewById(R.id.radioGroup);
-bold = findViewById(R.id.bold);
-italic = findViewById(R.id.italic);
-underline = findViewById(R.id.underline);
-output = findViewById(R.id.output);
-Button showBtn = findViewById(R.id.showBtn);
-Button clearBtn = findViewById(R.id.clearBtn);
-Button exitBtn = findViewById(R.id.exitBtn);
-showBtn.setOnClickListener(v -> {
-String name = fname.getText().toString() + " " + lname.getText().toString();
-output.setText("Hello " + name);
-int selectedId = radioGroup.getCheckedRadioButtonId();
-if (selectedId == R.id.red) output.setTextColor(Color.RED);
-else if (selectedId == R.id.blue) output.setTextColor(Color.BLUE);
-else if (selectedId == R.id.green) output.setTextColor(Color.GREEN);
-int style = Typeface.NORMAL;
-if (bold.isChecked() && italic.isChecked())
-style = Typeface.BOLD_ITALIC;
-else if (bold.isChecked())
-style = Typeface.BOLD;
-else if (italic.isChecked())
-style = Typeface.ITALIC;
-output.setTypeface(null, style);
-if (underline.isChecked())
-output.setPaintFlags(output.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-else
-output.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-});
-clearBtn.setOnClickListener(v -> {
-fname.setText("");
-lname.setText("");
-output.setText("");
-});
-exitBtn.setOnClickListener(v -> finish());
-}
-}
-________________________________________________________________________________________________________________________
-SLIP 13
-Q.1] Java android program to demonstrate Registration form with validation.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/name"
-android:hint="Name"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/address"
-android:hint="Address"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/mobile"
-android:hint="Mobile No."
-android:inputType="phone"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/age"
-android:hint="Age"
-android:inputType="number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/registerBtn"
-android:text="Register"
-android:layout_marginTop="15dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.registrationapp;
-import android.os.Bundle;
-import android.util.Patterns;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText name, address, mobile, age;
-Button registerBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-name = findViewById(R.id.name);
-address = findViewById(R.id.address);
-mobile = findViewById(R.id.mobile);
-age = findViewById(R.id.age);
-registerBtn = findViewById(R.id.registerBtn);
-registerBtn.setOnClickListener(v -> validateForm());
-}
-private void validateForm() {
-String n = name.getText().toString();
-String a = address.getText().toString();
-String m = mobile.getText().toString();
-String ag = age.getText().toString();
-if (n.isEmpty()) {
-name.setError("Name required");
-}
-else if (a.isEmpty()) {
-address.setError("Address required");
-}
-else if (m.isEmpty() || m.length() != 10) {
-mobile.setError("Enter valid 10-digit mobile number");
-}
-else if (ag.isEmpty()) {
-age.setError("Age required");
-}
-else {
-int ageVal = Integer.parseInt(ag);
-if (ageVal < 18) {
-age.setError("Age must be 18+");
-} else {
-Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show();
-}
-}
-}
-}
-Q.2] Write a Java Android Program to Demonstrate List View Activity with all operations Such as
-: Insert, Delete, Search
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/input"
-android:hint="Enter Item"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<LinearLayout
-android:orientation="horizontal"
-android:layout_marginTop="10dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content">
-<Button
-android:id="@+id/addBtn"
-android:text="Insert"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/deleteBtn"
-android:text="Delete"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/searchBtn"
-android:text="Search"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-<ListView
-android:id="@+id/listView"
-android:layout_marginTop="20dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.listviewapp;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-import java.util.ArrayList;
-public class MainActivity extends AppCompatActivity {
-EditText input;
-Button addBtn, deleteBtn, searchBtn;
-ListView listView;
-ArrayList<String> list;
-ArrayAdapter<String> adapter;
-int selectedIndex = -1;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-input = findViewById(R.id.input);
-addBtn = findViewById(R.id.addBtn);
-deleteBtn = findViewById(R.id.deleteBtn);
-searchBtn = findViewById(R.id.searchBtn);
-listView = findViewById(R.id.listView);
-list = new ArrayList<>();
-adapter = new ArrayAdapter<>(this,
-android.R.layout.simple_list_item_1, list);
-listView.setAdapter(adapter);
-listView.setOnItemClickListener((parent, view, position, id) -> {
-selectedIndex = position;
-input.setText(list.get(position));
-});
-addBtn.setOnClickListener(v -> {
-String item = input.getText().toString();
-if (!item.isEmpty()) {
-list.add(item);
-adapter.notifyDataSetChanged();
-input.setText("");
-Toast.makeText(this, "Item Inserted", Toast.LENGTH_SHORT).show();
-}
-});
-deleteBtn.setOnClickListener(v -> {
-if (selectedIndex != -1) {
-list.remove(selectedIndex);
-adapter.notifyDataSetChanged();
-input.setText("");
-selectedIndex = -1;
-Toast.makeText(this, "Item Deleted", Toast.LENGTH_SHORT).show();
-}
-});
-searchBtn.setOnClickListener(v -> {
-String item = input.getText().toString();
-if (list.contains(item)) {
-Toast.makeText(this, "Item Found", Toast.LENGTH_SHORT).show();
-} else {
-Toast.makeText(this, "Item Not Found", Toast.LENGTH_SHORT).show();
-}
-});
-}
-}
-___________________________________________________________________________________________________________________
-SLIP 14
-Q.1] Construct an Android application to accept a number and
-calculate and display Factorial of a given number in TextView.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/number"
-android:hint="Enter Number"
-android:inputType="number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/calcBtn"
-android:text="Calculate Factorial"
-android:layout_marginTop="15dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-<TextView
-android:id="@+id/result"
-android:text="Result"
-android:textSize="18sp"
-android:layout_marginTop="20dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.factorialapp;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText number;
-Button calcBtn;
-TextView result;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-number = findViewById(R.id.number);
-calcBtn = findViewById(R.id.calcBtn);
-result = findViewById(R.id.result);
-calcBtn.setOnClickListener(v -> {
-String input = number.getText().toString();
-if (input.isEmpty()) {
-result.setText("Enter a number");
-return;
-}
-int num = Integer.parseInt(input);
-long fact = 1;
-for (int i = 1; i <= num; i++) {
-fact *= i;
-}
-result.setText("Factorial: " + fact);
-});
-}
-}
-Q.2] Create an Android application, which show Login Form. After clicking LOGIN button display the
-“Login Successful…” message if username and password is same else display
-“Invalid Login” message in Toast Control.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:text="Login Form"
-android:textSize="22sp"
-android:textStyle="bold"
-android:layout_marginBottom="20dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/username"
-android:hint="Username"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/password"
-android:hint="Password"
-android:inputType="textPassword"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/loginBtn"
-android:text="LOGIN"
-android:layout_marginTop="15dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.loginapp;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText username, password;
-Button loginBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-username = findViewById(R.id.username);
-password = findViewById(R.id.password);
-loginBtn = findViewById(R.id.loginBtn);
-loginBtn.setOnClickListener(v -> {
-String user = username.getText().toString();
-String pass = password.getText().toString();
-if (user.equals(pass)) {
-Toast.makeText(this, "Login Successful...", Toast.LENGTH_SHORT).show();
-} else {
-Toast.makeText(this, "Invalid Login", Toast.LENGTH_SHORT).show();
-}
-});
-}
-}
-________________________________________________________________________________________________________________________
-SLIP 15
-Q1] Construct an Android application to accept two numbers in two EditText,
-with four buttons as ADD, SUB, DIV and MULT and display Result using Toast Control.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/num1"
-android:hint="Enter First Number"
-android:inputType="numberDecimal"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/num2"
-android:hint="Enter Second Number"
-android:inputType="numberDecimal"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<LinearLayout
-android:orientation="horizontal"
-android:layout_marginTop="15dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content">
-<Button
-android:id="@+id/addBtn"
-android:text="ADD"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/subBtn"
-android:text="SUB"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/mulBtn"
-android:text="MULT"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/divBtn"
-android:text="DIV"
-android:layout_weight="1"
-android:layout_width="0dp"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.toastcalculator;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText num1, num2;
-Button addBtn, subBtn, mulBtn, divBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-num1 = findViewById(R.id.num1);
-num2 = findViewById(R.id.num2);
-addBtn = findViewById(R.id.addBtn);
-subBtn = findViewById(R.id.subBtn);
-mulBtn = findViewById(R.id.mulBtn);
-divBtn = findViewById(R.id.divBtn);
-addBtn.setOnClickListener(v -> calculate('+'));
-subBtn.setOnClickListener(v -> calculate('-'));
-mulBtn.setOnClickListener(v -> calculate('*'));
-divBtn.setOnClickListener(v -> calculate('/'));
-}
-private void calculate(char op) {
-String n1 = num1.getText().toString();
-String n2 = num2.getText().toString();
-if (n1.isEmpty() || n2.isEmpty()) {
-Toast.makeText(this, "Enter both numbers", Toast.LENGTH_SHORT).show();
-return;
-}
-double a = Double.parseDouble(n1);
-double b = Double.parseDouble(n2);
-double result = 0;
-switch (op) {
-case '+':
-result = a + b;
-break;
-case '-':
-result = a - b;
-break;
-case '*':
-result = a * b;
-break;
-case '/':
-if (b == 0) {
-Toast.makeText(this, "Cannot divide by zero", Toast.LENGTH_SHORT).show();
-return;
-}
-result = a / b;
-break;
-}
-Toast.makeText(this, "Result: " + result, Toast.LENGTH_SHORT).show();
-}
-}
-Q2] Construct a bank app to display different menu like withdraw, deposit etc.
-1. XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:text="Simple Bank Application"
-android:textSize="22sp"
-android:textStyle="bold"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/accNo"
-android:hint="Account Number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<RadioGroup
-android:id="@+id/radioGroup"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content">
-<RadioButton
-android:id="@+id/checking"
-android:text="Checking"/>
-<RadioButton
-android:id="@+id/savings"
-android:text="Savings"/>
-</RadioGroup>
-<EditText
-android:id="@+id/amount"
-android:hint="Enter Amount"
-android:inputType="number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/createBtn"
-android:text="Create"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/depositBtn"
-android:text="Deposit"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/withdrawBtn"
-android:text="Withdraw"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/balanceBtn"
-android:text="Check Balance"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<TextView
-android:id="@+id/result"
-android:text="Balance: 0"
-android:textSize="18sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.bankapp;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText accNo, amount;
-Button createBtn, depositBtn, withdrawBtn, balanceBtn;
-TextView result;
-RadioGroup radioGroup;
-int balance = 0;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-accNo = findViewById(R.id.accNo);
-amount = findViewById(R.id.amount);
-createBtn = findViewById(R.id.createBtn);
-depositBtn = findViewById(R.id.depositBtn);
-withdrawBtn = findViewById(R.id.withdrawBtn);
-balanceBtn = findViewById(R.id.balanceBtn);
-result = findViewById(R.id.result);
-radioGroup = findViewById(R.id.radioGroup);
-createBtn.setOnClickListener(v -> {
-balance = 0;
-result.setText("Account Created\nBalance: " + balance);
-});
-depositBtn.setOnClickListener(v -> {
-int amt = Integer.parseInt(amount.getText().toString());
-balance += amt;
-result.setText("Deposited: " + amt + "\nBalance: " + balance);
-});
-withdrawBtn.setOnClickListener(v -> {
-int amt = Integer.parseInt(amount.getText().toString());
-if (amt <= balance) {
-balance -= amt;
-result.setText("Withdrawn: " + amt + "\nBalance: " + balance);
-} else {
-result.setText("Insufficient Balance");
-}
-});
-balanceBtn.setOnClickListener(v -> {
-result.setText("Current Balance: " + balance);
-});
-}
-}
-____________________________________________________________________________________________________________________________________
-SLIP 16
-Q1] Create a Simple Android Application Which Send ―Hello message from‖
-one activity to another with help of Button (Use Intent).
-(A) XML Layout – First Activity (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<Button
-android:id="@+id/btnSend"
-android:text="Send Hello"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Java Code – MainActivity.java
-package com.example.helloapp;
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.Button;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-Button btnSend;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-btnSend = findViewById(R.id.btnSend);
-btnSend.setOnClickListener(v -> {
-Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-intent.putExtra("msg", "Hello");
-startActivity(intent);
-});
-}
-}
-(C) XML Layout – Second Activity (activity_second.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:id="@+id/txtMessage"
-android:textSize="24sp"
-android:text="Message will appear here"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(D) Java Code – SecondActivity.java
-package com.example.helloapp;
-import android.os.Bundle;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-public class SecondActivity extends AppCompatActivity {
-TextView txtMessage;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_second);
-txtMessage = findViewById(R.id.txtMessage);
-String message = getIntent().getStringExtra("msg");
-txtMessage.setText(message);
-}
-}
-(E) AndroidManifest.xml (Important)
-<application ... >
-<activity android:name=".SecondActivity"></activity>
-<activity android:name=".MainActivity">
-<intent-filter>
-<action android:name="android.intent.action.MAIN"/>
-<category android:name="android.intent.category.LAUNCHER"/>
-</intent-filter>
-</activity>
-</application>
-Q2] Create an Android application, with two activity first activity will have an EditText
-and a Button where the user can enter player name and after clicking on button the entered
-name will be display in another Activity. Second activity has the BACK button to transition
-to first activity (Using Intent).
-(A) activity_main.xml (First Activity UI)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/editName"
-android:hint="Enter Player Name"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnSend"
-android:text="Submit"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) MainActivity.java
-package com.example.playerapp;
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText editName;
-Button btnSend;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-editName = findViewById(R.id.editName);
-btnSend = findViewById(R.id.btnSend);
-btnSend.setOnClickListener(v -> {
-String name = editName.getText().toString();
-Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-intent.putExtra("playerName", name);
-startActivity(intent);
-});
-}
-}
-(C) activity_second.xml (Second Activity UI)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:gravity="center"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:id="@+id/txtName"
-android:textSize="22sp"
-android:text="Player Name"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnBack"
-android:text="Back"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(D) SecondActivity.java
-package com.example.playerapp;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class SecondActivity extends AppCompatActivity {
-TextView txtName;
-Button btnBack;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_second);
-txtName = findViewById(R.id.txtName);
-btnBack = findViewById(R.id.btnBack);
-// Receive data
-String name = getIntent().getStringExtra("playerName");
-txtName.setText("Player: " + name);
-// Back Button
-btnBack.setOnClickListener(v -> {
-finish(); // go back to first activity
-});
-}
-}
-(E) AndroidManifest.xml
-<application ... >
-<activity android:name=".SecondActivity"></activity>
-<activity android:name=".MainActivity">
-<intent-filter>
-<action android:name="android.intent.action.MAIN"/>
-<category android:name="android.intent.category.LAUNCHER"/>
-</intent-filter>
-</activity>
-</application>
-________________________________________________________________________________________________________________
-SLIP 17
-Q1] Write an Android Program to demonstrate Activity life Cycle.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:gravity="center"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:text="Activity Life Cycle Demo"
-android:textSize="20sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Java Code (MainActivity.java)
-package com.example.lifecycleapp;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-String TAG = "LIFECYCLE";
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-Toast.makeText(this, "onCreate()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onCreate()");
-}
-@Override
-protected void onStart() {
-super.onStart();
-Toast.makeText(this, "onStart()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onStart()");
-}
-@Override
-protected void onResume() {
-super.onResume();
-Toast.makeText(this, "onResume()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onResume()");
-}
-@Override
-protected void onPause() {
-super.onPause();
-Toast.makeText(this, "onPause()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onPause()");
-}
-@Override
-protected void onStop() {
-super.onStop();
-Toast.makeText(this, "onStop()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onStop()");
-}
-@Override
-protected void onRestart() {
-super.onRestart();
-Toast.makeText(this, "onRestart()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onRestart()");
-}
-@Override
-protected void onDestroy() {
-super.onDestroy();
-Toast.makeText(this, "onDestroy()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onDestroy()");
-}
-}
-Q2] Write a PhoneGap application to create a contact.
-Options are:
-• Searching for Contacts
-• Cloning Contacts
-• Removing Contacts.
-Install Apache Cordova
-Add Contacts Plugin:
-cordova plugin add cordova-plugin-contacts
-3. HTML + JavaScript Code (index.html)
+Q.1) Create an HTML form for Login and write a JavaScript to
+validate email ID and Password using Regular Expression.
 <!DOCTYPE html>
 <html>
 <head>
-<title>Contact App</title>
+<title>Login Form</title>
+<script>
+function validateForm() {
+let email = document.getElementById("email").value;
+let password = document.getElementById("password").value;
+let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+let passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+if (!emailPattern.test(email)) {
+alert("Invalid Email ID");
+return false;
+}
+if (!passwordPattern.test(password)) {
+alert("Password must be at least 8 characters long and include:
+\n- 1 uppercase\n- 1 lowercase\n- 1 number\n- 1 special character");
+return false;
+}
+alert("Login Successful!");
+return true;
+}
+</script>
 </head>
 <body>
-<h2>PhoneGap Contact Application</h2>
-<button onclick="createContact()">Create Contact</button>
-<button onclick="searchContact()">Search Contact</button>
-<button onclick="deleteContact()">Delete Contact</button>
-<button onclick="cloneContact()">Clone Contact</button>
-<p id="output"></p>
+<h2>Login Form</h2>
+<form onsubmit="return validateForm()">
+<label>Email:</label><br>
+<input type="text" id="email" required><br><br>
+<label>Password:</label><br>
+<input type="password" id="password" required><br><br>
+<input type="submit" value="Login">
+</form>
+</body>
+</html>
+Q.2) Create an HTML form that contain the Student Registration details and write a
+JavaScript to validate Student first and last name as it should not contain other
+than alphabets and age should be between 18 to 50.
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Registration Form</title>
 <script>
-function createContact() {
-var contact = navigator.contacts.create();
-contact.displayName = "John Doe";
-var phoneNumbers = [];
-phoneNumbers[0] = new ContactField('mobile', '9999999999', true);
-contact.phoneNumbers = phoneNumbers;
-contact.save(
-function() { document.getElementById("output").innerHTML = "Contact Created"; },
-function(err) { document.getElementById("output").innerHTML = "Error: " + err.code; }
-);
+function validateForm() {
+let fname = document.getElementById("fname").value;
+let lname = document.getElementById("lname").value;
+let age = document.getElementById("age").value;
+let namePattern = /^[A-Za-z]+$/;
+if (!namePattern.test(fname)) {
+alert("First Name should contain only alphabets.");
+return false;
 }
-function searchContact() {
-var options = new ContactFindOptions();
-options.filter = "John";
-options.multiple = true;
-var fields = ["displayName", "phoneNumbers"];
-navigator.contacts.find(fields, function(contacts) {
-var result = "";
-for (var i = 0; i < contacts.length; i++) {
-result += contacts[i].displayName + "<br>";
+if (!namePattern.test(lname)) {
+alert("Last Name should contain only alphabets.");
+return false;
 }
-document.getElementById("output").innerHTML = result;
-}, function(err) {
-document.getElementById("output").innerHTML = "Search Error";
-}, options);
+if (age < 18 || age > 50) {
+alert("Age must be between 18 and 50.");
+return false;
 }
-function deleteContact() {
-var options = new ContactFindOptions();
-options.filter = "John";
-options.multiple = false;
-navigator.contacts.find(["displayName"], function(contacts) {
-if (contacts.length > 0) {
-contacts[0].remove(function() {
-document.getElementById("output").innerHTML = "Contact Deleted";
+alert("Registration Successful!");
+return true;
+}
+</script>
+</head>
+<body>
+<h2>Student Registration Form</h2>
+<form onsubmit="return validateForm()">
+<label>First Name:</label><br>
+<input type="text" id="fname" required><br><br>
+<label>Last Name:</label><br>
+<input type="text" id="lname" required><br><br>
+<label>Age:</label><br>
+<input type="number" id="age" required><br><br>
+<input type="submit" value="Register">
+</form>
+</body>
+</html>
+___________________________________________________________________________________________
+SLIP 2
+Q.1) Create a Node.js file that will convert the output "Full Stack!" into reverse string.
+let str = "Full Stack!";
+let reversed = str.split("").reverse().join("");
+console.log("Original String:", str);
+console.log("Reversed String:", reversed);
+Q.2) Using node js create a web page to read two file names from user
+and append contents of first file into second file.
+<!DOCTYPE html>
+<html>
+<head>
+<title>File Append</title>
+</head>
+<body>
+<h2>Append File Content</h2>
+<form action="/append" method="post">
+<label>First File Name:</label><br>
+<input type="text" name="file1" required><br><br>
+<label>Second File Name:</label><br>
+<input type="text" name="file2" required><br><br>
+<input type="submit" value="Append">
+</form>
+</body>
+</html>
+__First install required modules:
+npm init -y
+npm install express body-parser
+__Server Code:
+const express = require("express");
+const fs = require("fs");
+const bodyParser = require("body-parser");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.get("/", (req, res) => {
+res.sendFile(__dirname + "/index.html");
 });
+app.post("/append", (req, res) => {
+const file1 = req.body.file1;
+const file2 = req.body.file2;
+fs.readFile(file1, "utf8", (err, data) => {
+if (err) {
+return res.send("Error reading first file: " + err.message);
 }
-}, function(err) {
-document.getElementById("output").innerHTML = "Delete Error";
-}, options);
+fs.appendFile(file2, data, (err) => {
+if (err) {
+return res.send("Error appending to second file: " + err.message);
 }
-function cloneContact() {
-var options = new ContactFindOptions();
-options.filter = "John";
-options.multiple = false;
-navigator.contacts.find(["displayName", "phoneNumbers"], function(contacts) {
-if (contacts.length > 0) {
-var newContact = contacts[0].clone();
-newContact.displayName = "John Clone";
-newContact.save(function() {
-document.getElementById("output").innerHTML = "Contact Cloned";
+res.send("Content successfully appended!");
 });
+});
+});
+app.listen(3000, () => {
+console.log("Server running at http://localhost:3000");
+});
+_____________________________________________________________________________
+SLIP 3
+Q.1) Using node js create a User Login System.
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Login</title>
+</head>
+<body>
+<h2>Login Form</h2>
+<form action="/login" method="post">
+<label>Username:</label><br>
+<input type="text" name="username" required><br><br>
+<label>Password:</label><br>
+<input type="password" name="password" required><br><br>
+<input type="submit" value="Login">
+</form>
+</body>
+</html>
+__. Node.js File (app.js)
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+const validUser = {
+username: "admin",
+password: "admin123"
+};
+app.get("/", (req, res) => {
+res.sendFile(__dirname + "/index.html");
+});
+app.post("/login", (req, res) => {
+const username = req.body.username;
+const password = req.body.password;
+if (username === validUser.username && password === validUser.password) {
+res.send("<h2>Login Successful â</h2>");
+} else {
+res.send("<h2>Invalid Username or Password â</h2>");
 }
-}, function(err) {
-document.getElementById("output").innerHTML = "Clone Error";
-}, options);
+});
+app.listen(3000, () => {
+console.log("Server running at http://localhost:3000");
+});
+__Steps to Run
+npm init -y
+npm install express body-parser
+node app.js
+Open browser â http://localhost:3000
+Q.2) Create a node.js file that Select all records from the "Teacher" table,
+and find the Teachers whose salary is greater than 20,000.
+const mysql = require("mysql");
+const con = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: "",
+database: "your_database_name"
+});
+con.connect(function(err) {
+if (err) throw err;
+con.query("SELECT * FROM Teacher", function(err, result) {
+if (err) throw err;
+console.log("All Records:");
+console.log(result);
+});
+con.query("SELECT * FROM Teacher WHERE salary > 20000", function(err, result) {
+if (err) throw err;
+console.log("Teachers with salary > 20000:");
+console.log(result);
+});
+});
+__To Run
+npm install mysql
+node app.js
+__________________________________________________________________________________
+SLIP 4
+Q.1) Using node js create an eLearning System.
+<!DOCTYPE html>
+<html>
+<head>
+<title>eLearning System</title>
+</head>
+<body>
+<h2>Available Courses</h2>
+<form action="/enroll" method="post">
+<label>Name:</label><br>
+<input type="text" name="name" required><br><br>
+<label>Select Course:</label><br>
+<select name="course">
+<option value="Full Stack Development">Full Stack Development</option>
+<option value="Data Science">Data Science</option>
+<option value="Machine Learning">Machine Learning</option>
+</select><br><br>
+<input type="submit" value="Enroll">
+</form>
+</body>
+</html>
+__ Node.js File (app.js)
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.get("/", (req, res) => {
+res.sendFile(__dirname + "/index.html");
+});
+app.post("/enroll", (req, res) => {
+const name = req.body.name;
+const course = req.body.course;
+res.send("<h2>" + name + " enrolled in " + course + " successfully!</h2>");
+});
+app.listen(3000, () => {
+console.log("Server running at http://localhost:3000");
+});
+__Steps to Run
+npm init -y
+npm install express body-parser
+node app.js
+Q.2) Create an HTML form using AngularJS that contain the Student Registration details
+and validate Student first and last name as it should not contain other than alphabets
+and age should be between 18 to 50 and display greeting message depending on current
+time using ng-show (e.g. Good Morning, Good Afternoon, etc.)(Use AJAX).
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>Student Registration</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>Student Registration Form</h2>
+<form name="regForm" ng-submit="submitForm()">
+First Name:<br>
+<input type="text" ng-model="fname" required>
+<span ng-show="regForm.$submitted && !fname.match(namePattern)">
+Only alphabets allowed
+</span><br><br>
+Last Name:<br>
+<input type="text" ng-model="lname" required>
+<span ng-show="regForm.$submitted && !lname.match(namePattern)">
+Only alphabets allowed
+</span><br><br>
+Age:<br>
+<input type="number" ng-model="age" required>
+<span ng-show="regForm.$submitted && (age < 18 || age > 50)">
+Age must be between 18 and 50
+</span><br><br>
+<input type="submit" value="Register">
+</form>
+<br>
+<h3 ng-show="greeting">{{greeting}}, {{fname}}!</h3>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope, $http) {
+$scope.namePattern = /^[A-Za-z]+$/;
+$scope.submitForm = function() {
+if (!$scope.namePattern.test($scope.fname) ||
+!$scope.namePattern.test($scope.lname) ||
+$scope.age < 18 || $scope.age > 50) {
+return;
 }
+let hour = new Date().getHours();
+if (hour < 12)
+$scope.greeting = "Good Morning";
+else if (hour < 17)
+$scope.greeting = "Good Afternoon";
+else
+$scope.greeting = "Good Evening";
+$http({
+method: "GET",
+url: "https://jsonplaceholder.typicode.com/posts/1"
+}).then(function(response) {
+console.log("AJAX call success");
+}, function(error) {
+console.log("AJAX call failed");
+});
+};
+});
 </script>
 </body>
 </html>
-________________________________________________________________________________________________________________
-SLIP 18
-Q1] Create an Android Application that will change color of the screen
-and change the font size of text view using xml.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="#ADD8E6"> <!-- Light Blue Background -->
-<TextView
-android:id="@+id/textView"
-android:text="Hello Android"
-android:textSize="30sp" <!-- Font Size Changed -->
-android:textColor="#000000"
-android:textStyle="bold"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-Q2] Create table Project (id, name, dept, city). Create Application to perform the following operations.
-(using SQLite database)
-i] Add at least 5 records.
-ii] Display all the records.
-(A) Database Helper Class (DBHelper.java)
-package com.example.projectdb;
-import android.content.*;
-import android.database.Cursor;
-import android.database.sqlite.*;
-public class DBHelper extends SQLiteOpenHelper {
-public static final String DB_NAME = "ProjectDB";
-public static final int DB_VERSION = 1;
-public DBHelper(Context context) {
-super(context, DB_NAME, null, DB_VERSION);
-}
-@Override
-public void onCreate(SQLiteDatabase db) {
-db.execSQL("CREATE TABLE Project(id INTEGER PRIMARY KEY, name TEXT, dept TEXT, city TEXT)");
-}
-@Override
-public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-db.execSQL("DROP TABLE IF EXISTS Project");
-onCreate(db);
-}
-public void insertData(int id, String name, String dept, String city) {
-SQLiteDatabase db = this.getWritableDatabase();
-ContentValues cv = new ContentValues();
-cv.put("id", id);
-cv.put("name", name);
-cv.put("dept", dept);
-cv.put("city", city);
-db.insert("Project", null, cv);
-}
-public Cursor getData() {
-SQLiteDatabase db = this.getReadableDatabase();
-return db.rawQuery("SELECT * FROM Project", null);
-}
-}
-(B) XML Layout (activity_main.xml)
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<Button
-android:id="@+id/btnInsert"
-android:text="Insert Records"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnDisplay"
-android:text="Display Records"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<TextView
-android:id="@+id/txtResult"
-android:text="Output"
-android:textSize="16sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(C) MainActivity.java
-package com.example.projectdb;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-DBHelper db;
-Button btnInsert, btnDisplay;
-TextView txtResult;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-db = new DBHelper(this);
-btnInsert = findViewById(R.id.btnInsert);
-btnDisplay = findViewById(R.id.btnDisplay);
-txtResult = findViewById(R.id.txtResult);
-btnInsert.setOnClickListener(v -> {
-db.insertData(1, "Project A", "IT", "Pune");
-db.insertData(2, "Project B", "HR", "Mumbai");
-db.insertData(3, "Project C", "Finance", "Delhi");
-db.insertData(4, "Project D", "Sales", "Chennai");
-db.insertData(5, "Project E", "Admin", "Bangalore");
-txtResult.setText("5 Records Inserted");
+______________________________________________________________________
+SLIP 5
+Q.1) Create a Node.js file that writes an HTML form, with an upload field.
+__Node.js
+const http = require("http");
+const fs = require("fs");
+const formidable = require("formidable");
+http.createServer(function (req, res) {
+if (req.url == "/upload") {
+const form = new formidable.IncomingForm();
+form.parse(req, function (err, fields, files) {
+const oldPath = files.file.filepath;
+const newPath = __dirname + "/" + files.file.originalFilename;
+fs.rename(oldPath, newPath, function (err) {
+if (err) throw err;
+res.write("File uploaded successfully!");
+res.end();
 });
-btnDisplay.setOnClickListener(v -> {
-Cursor c = db.getData();
-StringBuilder data = new StringBuilder();
-while (c.moveToNext()) {
-data.append("ID: ").append(c.getInt(0)).append("\n");
-data.append("Name: ").append(c.getString(1)).append("\n");
-data.append("Dept: ").append(c.getString(2)).append("\n");
-data.append("City: ").append(c.getString(3)).append("\n\n");
-}
-txtResult.setText(data.toString());
 });
+} else {
+res.writeHead(200, { "Content-Type": "text/html" });
+res.write(`
+<html>
+<body>
+<h2>File Upload Form</h2>
+<form action="/upload" method="post" enctype="multipart/form-data">
+<input type="file" name="file"><br><br>
+<input type="submit" value="Upload">
+</form>
+</body>
+</html>
+`);
+res.end();
 }
+}).listen(3000);
+__ Run Steps
+npm init -y
+npm install formidable
+node app.js
+Open browser â http://localhost:3000
+Q.2) Using angular js create a SPA to carry out validation for a username entered
+in a textbox. If the textbox is blank, alert âEnter usernameâ. If the number of
+characters is less than three, alert â Username is too shortâ. If value entered
+is appropriate the print âValid usernameâ and password should be minimum 8 characters.
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>Username Validation SPA</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>User Validation Form</h2>
+<form ng-submit="validate()">
+Username:<br>
+<input type="text" ng-model="username"><br><br>
+Password:<br>
+<input type="password" ng-model="password"><br><br>
+<input type="submit" value="Submit">
+</form>
+<h3>{{message}}</h3>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope) {
+$scope.validate = function() {
+if (!$scope.username || $scope.username.trim() === "") {
+alert("Enter username");
+return;
 }
-___________________________________________________________________________________________________________________________
+if ($scope.username.length < 3) {
+alert("Username is too short");
+return;
+}
+if (!$scope.password || $scope.password.length < 8) {
+alert("Password should be minimum 8 characters");
+return;
+}
+$scope.message = "Valid username";
+};
+});
+</script>
+</body>
+</html>
+_____________________________________________________________________
+SLIP 6
+Q.1) Write angular JS by using ng-click directive to display an alert
+message after clicking the element.
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>ng-click Example</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>ng-click Demo</h2>
+<button ng-click="showAlert()">Click Me</button>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope) {
+$scope.showAlert = function() {
+alert("Button clicked successfully!");
+};
+});
+</script>
+</body>
+</html>
+Q.2) Create a Node.js file that opens the requested file and returns the
+content to the client. If anything goes wrong, throw a 404 error.
+const http = require("http");
+const fs = require("fs");
+const url = require("url");
+http.createServer(function (req, res) {
+const q = url.parse(req.url, true);
+const filename = "." + q.pathname;
+fs.readFile(filename, function(err, data) {
+if (err) {
+res.writeHead(404, {"Content-Type": "text/html"});
+res.write("404 Not Found");
+return res.end();
+}
+res.writeHead(200, {"Content-Type": "text/html"});
+res.write(data);
+return res.end();
+});
+}).listen(3000);
+__Run
+node app.js
+http://localhost:3000/index.html
+_______________________________________________________________________________
+SLIP 7
+Q.1) Create angular JS Application that show the current Date
+and Time of the System (Use Interval Service)
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>Date & Time</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>Current Date and Time</h2>
+<h3>{{currentDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</h3>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope, $interval) {
+$scope.currentDateTime = new Date();
+$interval(function() {
+$scope.currentDateTime = new Date();
+}, 1000);
+});
+</script>
+</body>
+</html>
+Q.2) Create a node js file named main.js for event-driven application.
+There should be a main loop that listens for events, and then triggers
+a callback function when one of those events is detected.
+__main.js
+const EventEmitter = require("events");
+const eventEmitter = new EventEmitter();
+eventEmitter.on("greet", function(name) {
+console.log("Hello " + name);
+});
+eventEmitter.on("bye", function() {
+console.log("Goodbye!");
+});
+console.log("Waiting for events...");
+setTimeout(function() {
+eventEmitter.emit("greet", "Student");
+}, 2000);
+setTimeout(function() {
+eventEmitter.emit("bye");
+}, 4000);
+__Run
+node main.js
+____________________________________________________________________________
+SLIP 8
+Q.1) Create a Simple Web Server using node js
+__(app.js)
+const http = require("http");
+const server = http.createServer(function(req, res) {
+res.writeHead(200, { "Content-Type": "text/html" });
+res.write("<h2>Welcome to Simple Node.js Web Server</h2>");
+res.end();
+});
+server.listen(3000);
+____Run
+node app.js
+____Open browser:
+http://localhost:3000
+Q.2) Using angular js display the 10 student details in Table format
+(using ng-repeat directive use Array to store data)
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>Student Table</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>Student Details</h2>
+<table border="1" cellpadding="10">
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Age</th>
+</tr>
+<tr ng-repeat="student in students">
+<td>{{student.id}}</td>
+<td>{{student.name}}</td>
+<td>{{student.age}}</td>
+</tr>
+</table>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope) {
+$scope.students = [
+{id: 1, name: "Amit", age: 20},
+{id: 2, name: "Rahul", age: 21},
+{id: 3, name: "Sneha", age: 19},
+{id: 4, name: "Priya", age: 22},
+{id: 5, name: "Kiran", age: 20},
+{id: 6, name: "Neha", age: 21},
+{id: 7, name: "Rohit", age: 23},
+{id: 8, name: "Pooja", age: 20},
+{id: 9, name: "Vikas", age: 22},
+{id: 10, name: "Anjali", age: 19}
+];
+});
+</script>
+</body>
+</html>
+__________________________________________________________________________________
+SLIP 9
+Q.1) Create a Node.js file that writes an HTML form, with a concatenate two string.
+__ Node.js File (app.js)
+const http = require("http");
+const querystring = require("querystring");
+http.createServer(function(req, res) {
+if (req.method === "POST") {
+let body = "";
+req.on("data", function(chunk) {
+body += chunk;
+});
+req.on("end", function() {
+const data = querystring.parse(body);
+const result = data.str1 + data.str2;
+res.writeHead(200, {"Content-Type": "text/html"});
+res.write("<h2>Concatenated String: " + result + "</h2>");
+res.end();
+});
+} else {
+res.writeHead(200, {"Content-Type": "text/html"});
+res.write(`
+<html>
+<body>
+<h2>Concatenate Two Strings</h2>
+<form method="post">
+Enter String 1: <input type="text" name="str1"><br><br>
+Enter String 2: <input type="text" name="str2"><br><br>
+<input type="submit" value="Concatenate">
+</form>
+</body>
+</html>
+`);
+res.end();
+}
+}).listen(3000);
+__Run
+node app.js
+__Open:
+http://localhost:3000
+Q.2) Create a Node.js file that opens the requested file and returns the content to the client
+If anything goes wrong, throw a 404 error
+__Node.js File (app.js)
+const http = require("http");
+const fs = require("fs");
+const url = require("url");
+http.createServer(function(req, res) {
+const q = url.parse(req.url, true);
+const filename = "." + q.pathname;
+fs.readFile(filename, function(err, data) {
+if (err) {
+res.writeHead(404, {"Content-Type": "text/html"});
+res.end("404 Not Found");
+} else {
+res.writeHead(200, {"Content-Type": "text/html"});
+res.end(data);
+}
+});
+}).listen(3000);
+__Run
+node app.js
+Open in browser:
+http://localhost:3000/index.html
+_________________________________________________________________________
+SLIP 10
+Q.1) Create a Node.js file that demonstrate create college database and table in MySQL
+__Node.js File (app.js)
+const mysql = require("mysql");
+const con = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: ""
+});
+con.connect(function(err) {
+if (err) throw err;
+con.query("CREATE DATABASE college", function(err, result) {
+if (err) throw err;
+console.log("Database created");
+});
+const con2 = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: "",
+database: "college"
+});
+con2.connect(function(err) {
+if (err) throw err;
+const sql = "CREATE TABLE student (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), age INT)";
+con2.query(sql, function(err, result) {
+if (err) throw err;
+console.log("Table created");
+});
+});
+});
+__Run
+npm install mysql
+node app.js
+Q.2) Write node js script to build Your Own Node.js Module. Use require (âhttpâ)
+module is a built-in Node module that invokes the functionality of the HTTP library
+to create a local server. Also use the export statement to make functions in
+your
+module available externally. Create a new text file to contain the functions in your
+module called, âmodules.jsâ and add this function to return todayâs date and time.
+__modules.js
+exports.getDateTime = function () {
+return new Date();
+};
+__app.js
+const http = require("http");
+const myModule = require("./modules");
+http.createServer(function (req, res) {
+res.writeHead(200, { "Content-Type": "text/html" });
+res.write("Current Date and Time: " + myModule.getDateTime());
+res.end();
+}).listen(3000);
+__Run
+node app.js
+Open:
+http://localhost:3000
+________________________________________________________________________________
+SLIP 11
+Q.1) Create a Node.js file that demonstrates create Movie database and table in MySQL.
+__app.js
+const mysql = require("mysql");
+const con = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: ""
+});
+con.connect(function(err) {
+if (err) throw err;
+con.query("CREATE DATABASE movie", function(err, result) {
+if (err) throw err;
+console.log("Database created");
+});
+const con2 = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: "",
+database: "movie"
+});
+con2.connect(function(err) {
+if (err) throw err;
+const sql = "CREATE TABLE movies (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100), year INT)";
+con2.query(sql, function(err, result) {
+if (err) throw err;
+console.log("Table created");
+});
+});
+});
+__Run
+npm install mysql
+node app.js
+Q.2) Write node js application that transfer a file as an attachment on web and enables
+browser to prompt the user to download file using express js
+__app.js
+const express = require("express");
+const path = require("path");
+const app = express();
+app.get("/download", function(req, res) {
+const file = path.join(__dirname, "sample.txt");
+res.download(file);
+});
+app.listen(3000);
+__Run
+npm install express
+node app.js
+Open:
+http://localhost:3000/download
+_________________________________________________________________________________
+SLIP 12
+Q.1) Create a node.js file that Select all records from the "customers" table,
+and display the result object on console.
+__app.js
+const mysql = require("mysql");
+const con = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: "",
+database: "your_database_name"
+});
+con.connect(function(err) {
+if (err) throw err;
+con.query("SELECT * FROM customers", function(err, result) {
+if (err) throw err;
+console.log(result);
+});
+});
+__Run
+npm install mysql
+node app.js
+Q.2) Create an HTML form for Student Feedback Form with Name, Email ID, Mobile No.,
+feedback (Not good, good, very good, excellent) and write a
+JavaScript to validate all field using Regular Expression.
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Feedback Form</title>
+<script>
+function validateForm() {
+let name = document.getElementById("name").value.trim();
+let email = document.getElementById("email").value.trim();
+let mobile = document.getElementById("mobile").value.trim();
+let feedback = document.querySelector('input[name="feedback"]:checked');
+let namePattern = /^[A-Za-z ]+$/;
+let emailPattern = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+let mobilePattern = /^[0-9]{10}$/;
+if (!namePattern.test(name)) {
+alert("Enter valid name (alphabets only)");
+return false;
+}
+if (!emailPattern.test(email)) {
+alert("Enter valid email");
+return false;
+}
+if (!mobilePattern.test(mobile)) {
+alert("Enter valid 10-digit mobile number");
+return false;
+}
+if (!feedback) {
+alert("Please select feedback");
+return false;
+}
+alert("Feedback submitted successfully!");
+return true;
+}
+</script>
+</head>
+<body>
+<h2>Student Feedback Form</h2>
+<form onsubmit="return validateForm()">
+Name:<br>
+<input type="text" id="name" required><br><br>
+Email ID:<br>
+<input type="text" id="email" required><br><br>
+Mobile No:<br>
+<input type="text" id="mobile" required><br><br>
+Feedback:<br>
+<input type="radio" name="feedback" value="Not good"> Not good<br>
+<input type="radio" name="feedback" value="Good"> Good<br>
+<input type="radio" name="feedback" value="Very good"> Very good<br>
+<input type="radio" name="feedback" value="Excellent"> Excellent<br><br>
+<input type="submit" value="Submit">
+</form>
+</body>
+</html>
+_______________________________________________________________________________
+SLIP 13
+Q.1) Create a Node.js file that will convert the output "HELLO WORLD!" into lower-case letters.
+__app.js
+let str = "HELLO WORLD!";
+let lower = str.toLowerCase();
+console.log("Original String:", str);
+console.log("Lowercase String:", lower);
+__Run
+node app.js
+Q.2) Create an HTML form that contain the Student Registration details and write a
+JavaScript to validate Student first and last name as it should not contain other
+than alphabets and age should be between 18 to 50.
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Registration</title>
+<script>
+function validateForm() {
+let fname = document.getElementById("fname").value.trim();
+let lname = document.getElementById("lname").value.trim();
+let age = parseInt(document.getElementById("age").value);
+let namePattern = /^[A-Za-z]+$/;
+if (!namePattern.test(fname)) {
+alert("First Name should contain only alphabets");
+return false;
+}
+if (!namePattern.test(lname)) {
+alert("Last Name should contain only alphabets");
+return false;
+}
+if (age < 18 || age > 50) {
+alert("Age must be between 18 and 50");
+return false;
+}
+alert("Registration Successful!");
+return true;
+}
+</script>
+</head>
+<body>
+<h2>Student Registration Form</h2>
+<form onsubmit="return validateForm()">
+First Name:<br>
+<input type="text" id="fname" required><br><br>
+Last Name:<br>
+<input type="text" id="lname" required><br><br>
+Age:<br>
+<input type="number" id="age" required><br><br>
+<input type="submit" value="Register">
+</form>
+</body>
+</html>
+__________________________________________________________________________________
+SLIP 14
+Q.1) Create a Simple Web Server using node js.
+__app.js
+const http = require("http");
+http.createServer(function(req, res) {
+res.writeHead(200, { "Content-Type": "text/html" });
+res.write("<h2>Simple Node.js Web Server Running</h2>");
+res.end();
+}).listen(3000);
+__Run
+node app.js
+Open in browser:
+http://localhost:3000
+Q.2) Create an HTML form that contain the Employee Registration details and
+write a JavaScript to validate DOB, Joining Date, and Salary.
+<!DOCTYPE html>
+<html>
+<head>
+<title>Employee Registration</title>
+<script>
+function validateForm() {
+let dob = document.getElementById("dob").value;
+let join = document.getElementById("join").value;
+let salary = document.getElementById("salary").value;
+let dobDate = new Date(dob);
+let joinDate = new Date(join);
+let today = new Date();
+if (dobDate >= today) {
+alert("DOB must be in the past");
+return false;
+}
+if (joinDate <= dobDate) {
+alert("Joining Date must be after DOB");
+return false;
+}
+if (joinDate > today) {
+alert("Joining Date cannot be in future");
+return false;
+}
+let salaryPattern = /^[0-9]+$/;
+if (!salaryPattern.test(salary) || salary <= 0) {
+alert("Enter valid salary");
+return false;
+}
+alert("Registration Successful!");
+return true;
+}
+</script>
+</head>
+<body>
+_____________________________________________________________________________
+SLIP 15
+Q.1) Create a node.js file that Select all records from the "students" table,
+and display the result object on console.
+__app.js
+const mysql = require("mysql");
+const con = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: "",
+database: "your_database_name"
+});
+con.connect(function(err) {
+if (err) throw err;
+con.query("SELECT * FROM students", function(err, result) {
+if (err) throw err;
+console.log(result);
+});
+});
+__Run
+npm install mysql
+node app.js
+Q.2) Create an HTML form for Employee and write a JavaScript to validate name,
+email ID, mobile number, department, joining date using Regular Expression.
+<!DOCTYPE html>
+<html>
+<head>
+<title>Employee Form</title>
+<script>
+function validateForm() {
+let name = document.getElementById("name").value.trim();
+let email = document.getElementById("email").value.trim();
+let mobile = document.getElementById("mobile").value.trim();
+let dept = document.getElementById("dept").value.trim();
+let join = document.getElementById("join").value;
+let namePattern = /^[A-Za-z ]+$/;
+let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+let mobilePattern = /^[0-9]{10}$/;
+let deptPattern = /^[A-Za-z ]+$/;
+if (!namePattern.test(name)) {
+alert("Enter valid name");
+return false;
+}
+if (!emailPattern.test(email)) {
+alert("Enter valid email");
+return false;
+}
+if (!mobilePattern.test(mobile)) {
+alert("Enter valid 10-digit mobile number");
+return false;
+}
+if (!deptPattern.test(dept)) {
+alert("Enter valid department");
+return false;
+}
+if (join === "") {
+alert("Select joining date");
+return false;
+}
+alert("Form submitted successfully!");
+return true;
+}
+</script>
+</head>
+<body>
+<h2>Employee Registration Form</h2>
+<form onsubmit="return validateForm()">
+Name:<br>
+<input type="text" id="name" required><br><br>
+Email ID:<br>
+<input type="text" id="email" required><br><br>
+Mobile No:<br>
+<input type="text" id="mobile" required><br><br>
+Department:<br>
+<input type="text" id="dept" required><br><br>
+Joining Date:<br>
+<input type="date" id="join" required><br><br>
+<input type="submit" value="Submit">
+</form>
+</body>
+</html>
+_______________________________________________________________________________
+SLIP 16
+Q.1) Using node js create a Recipe Book.
+__(app.js)
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+let recipes = [];
+app.get("/", function(req, res) {
+let html = `
+<h2>Recipe Book</h2>
+<form method="post" action="/add">
+Recipe Name:<br>
+<input type="text" name="name"><br><br>
+Ingredients:<br>
+<input type="text" name="ingredients"><br><br>
+<input type="submit" value="Add Recipe">
+</form>
+<h3>Recipes:</h3>
+<ul>
+`;
+recipes.forEach(function(r) {
+html += `<li><b>${r.name}</b>: ${r.ingredients}</li>`;
+});
+html += "</ul>";
+res.send(html);
+});
+app.post("/add", function(req, res) {
+recipes.push({
+name: req.body.name,
+ingredients: req.body.ingredients
+});
+res.redirect("/");
+});
+app.listen(3000);
+__Run
+npm init -y
+npm install express body-parser
+node app.js
+Open:
+http://localhost:3000
+Q.2) Create a js file named main.js for event-driven application. There should be a main
+loop that listens for events, and then triggers a call-back function when one of those events is detected.
+__main.js
+const EventEmitter = require("events");
+const emitter = new EventEmitter();
+emitter.on("start", function() {
+console.log("Start event triggered");
+});
+emitter.on("process", function(data) {
+console.log("Processing:", data);
+});
+emitter.on("end", function() {
+console.log("End event triggered");
+});
+console.log("Main loop listening for events...");
+setTimeout(function() {
+emitter.emit("start");
+}, 1000);
+setTimeout(function() {
+emitter.emit("process", "Sample Data");
+}, 2000);
+setTimeout(function() {
+emitter.emit("end");
+}, 3000);
+__Run
+node main.js
+___________________________________________________________________________________
+SLIN 17
+Q.1) Using angular js Create a SPA that show Syllabus content of all subjects
+of M.Sc (CS) Sem-II (use ng-view)
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>MSc CS Sem-II Syllabus</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+</head>
+<body>
+<h2>M.Sc (CS) Sem-II Syllabus</h2>
+<a href="#!ds">Data Science</a> |
+<a href="#!os">Operating System</a> |
+<a href="#!java">Java</a>
+<div ng-view></div>
+<script>
+var app = angular.module("myApp", ["ngRoute"]);
+app.config(function($routeProvider) {
+$routeProvider
+.when("/ds", {
+template: "<h3>Data Science</h3><p>Data preprocessing, visualization, ML basics</p>"
+})
+.when("/os", {
+template: "<h3>Operating System</h3><p>Processes, scheduling, memory
+management</p>"
+})
+.when("/java", {
+template: "<h3>Java</h3><p>OOP concepts, collections, exception handling</p>"
+})
+.otherwise({
+template: "<h3>Welcome</h3><p>Select a subject to view syllabus</p>"
+});
+});
+</script>
+</body>
+</html>
+Q.2) Using angular js display the 10 student details in Table format
+(using ng-repeat directive use Array to store data)
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>Student Table</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>Student Details</h2>
+<table border="1" cellpadding="10">
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Age</th>
+</tr>
+<tr ng-repeat="s in students">
+<td>{{s.id}}</td>
+<td>{{s.name}}</td>
+<td>{{s.age}}</td>
+</tr>
+</table>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope) {
+$scope.students = [
+{id: 1, name: "Amit", age: 20},
+{id: 2, name: "Rahul", age: 21},
+{id: 3, name: "Sneha", age: 19},
+{id: 4, name: "Priya", age: 22},
+{id: 5, name: "Kiran", age: 20},
+{id: 6, name: "Neha", age: 21},
+{id: 7, name: "Rohit", age: 23},
+{id: 8, name: "Pooja", age: 20},
+{id: 9, name: "Vikas", age: 22},
+{id: 10, name: "Anjali", age: 19}
+];
+});
+</script>
+</body>
+</html>
+_________________________________________________________________________________
+SLIUP 18
+Q.1) Using node js create a User Login System
+__1. index.html
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+</head>
+<body>
+<h2>User Login</h2>
+<form action="/login" method="post">
+Username:<br>
+<input type="text" name="username" required><br><br>
+Password:<br>
+<input type="password" name="password" required><br><br>
+<input type="submit" value="Login">
+</form>
+</body>
+</html>
+__2. app.js
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+const user = {
+username: "admin",
+password: "1234"
+};
+app.get("/", function(req, res) {
+res.sendFile(__dirname + "/index.html");
+});
+app.post("/login", function(req, res) {
+const { username, password } = req.body;
+if (username === user.username && password === user.password) {
+res.send("<h2>Login Successful</h2>");
+} else {
+res.send("<h2>Invalid Username or Password</h2>");
+}
+});
+app.listen(3000);
+__Run
+npm init -y
+npm install express body-parser
+node app.js
+Open:
+http://localhost:3000
+Q.2) Create a node.js file that Select all records from the "customers" table,
+and find the customers whose name starts from âAâ.
+__app.js
+const mysql = require("mysql");
+const con = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: "",
+database: "your_database_name"
+});
+con.connect(function(err) {
+if (err) throw err;
+con.query("SELECT * FROM customers", function(err, result) {
+if (err) throw err;
+console.log("All Customers:");
+console.log(result);
+});
+con.query("SELECT * FROM customers WHERE name LIKE 'A%'", function(err, result) {
+if (err) throw err;
+console.log("Customers whose name starts with A:");
+console.log(result);
+});
+});
+__Run
+npm install mysql
+node app.js
+________________________________________________________________________________________
 SLIP 19
-Q1] Write an Android Program to Change the Image Displayed on the Screen.
-Add Images
-Place two images in:
-res → drawable
-image1.jpg
-image2.jpg
-(B) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<ImageView
-android:id="@+id/imageView"
-android:src="@drawable/image1"
-android:layout_width="200dp"
-android:layout_height="200dp"/>
-<Button
-android:id="@+id/btnChange"
-android:text="Change Image"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(C) Java Code (MainActivity.java)
-package com.example.imagechange;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-ImageView imageView;
-Button btnChange;
-boolean isFirst = true;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-imageView = findViewById(R.id.imageView);
-btnChange = findViewById(R.id.btnChange);
-btnChange.setOnClickListener(v -> {
-if (isFirst) {
-imageView.setImageResource(R.drawable.image2);
-} else {
-imageView.setImageResource(R.drawable.image1);
+Q.1) Create a Node.js file that will convert the output "Hello World!" into upper-case letters.
+__app.js
+let str = "Hello World!";
+let upper = str.toUpperCase();
+console.log("Original String:", str);
+console.log("Uppercase String:", upper);
+__Run
+node app.js
+Q.2) Using angular js create a SPA to accept the details such as name, mobile number,
+pin code and email address and make validation. Name should contain character only,
+address should contain SPPU M.Sc. Computer Science Syllabus 2023-24, mobile number
+should contain only 10 digit, Pin code should contain only 6 digit, email id should contain only one @, . Symbol.
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>Student Details SPA</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>Student Details Form</h2>
+<form ng-submit="validate()">
+Name:<br>
+<input type="text" ng-model="name"><br><br>
+Address:<br>
+<input type="text" ng-model="address"><br><br>
+Mobile:<br>
+<input type="text" ng-model="mobile"><br><br>
+Pin Code:<br>
+<input type="text" ng-model="pincode"><br><br>
+Email:<br>
+<input type="text" ng-model="email"><br><br>
+<input type="submit" value="Submit">
+</form>
+<h3>{{message}}</h3>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope) {
+$scope.validate = function() {
+let namePattern = /^[A-Za-z ]+$/;
+let mobilePattern = /^[0-9]{10}$/;
+let pinPattern = /^[0-9]{6}$/;
+let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if (!namePattern.test($scope.name)) {
+alert("Name should contain only characters");
+return;
 }
-isFirst = !isFirst;
+if ($scope.address !== "SPPU M.Sc. Computer Science Syllabus 2023-24") {
+alert("Address must be exactly: SPPU M.Sc. Computer Science Syllabus 2023-24");
+return;
+}
+if (!mobilePattern.test($scope.mobile)) {
+alert("Mobile number must be 10 digits");
+return;
+}
+if (!pinPattern.test($scope.pincode)) {
+alert("Pin code must be 6 digits");
+return;
+}
+if (!emailPattern.test($scope.email)) {
+alert("Enter valid email");
+return;
+}
+$scope.message = "All details are valid!";
+};
 });
-}
-}
-Q2] Construct an Android Application to create two option menu as Find Factorial
-and Find Sum of Digits. Accept a number and calculate Factorial and Sum of Digits
-of a given number by clicking Menu.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/editNumber"
-android:hint="Enter Number"
-android:inputType="number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<TextView
-android:id="@+id/txtResult"
-android:text="Result"
-android:textSize="20sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Menu Resource File (menu_main.xml)
-res → menu → menu_main.xml
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-<item
-android:id="@+id/menuFactorial"
-android:title="Find Factorial"/>
-<item
-android:id="@+id/menuSum"
-android:title="Find Sum of Digits"/>
-</menu>
-(C) Java Code (MainActivity.java)
-package com.example.menudemo;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText editNumber;
-TextView txtResult;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-editNumber = findViewById(R.id.editNumber);
-txtResult = findViewById(R.id.txtResult);
-}
-@Override
-public boolean onCreateOptionsMenu(Menu menu) {
-getMenuInflater().inflate(R.menu.menu_main, menu);
-return true;
-}
-@Override
-public boolean onOptionsItemSelected(MenuItem item) {
-int num = Integer.parseInt(editNumber.getText().toString());
-switch (item.getItemId()) {
-case R.id.menuFactorial:
-int fact = 1;
-for (int i = 1; i <= num; i++) {
-fact *= i;
-}
-txtResult.setText("Factorial: " + fact);
-return true;
-case R.id.menuSum:
-int sum = 0;
-while (num > 0) {
-sum += num % 10;
-num /= 10;
-}
-txtResult.setText("Sum of Digits: " + sum);
-return true;
-}
-return super.onOptionsItemSelected(item);
-}
-}
-___________________________________________________________________________________________________________________
+</script>
+</body>
+</html>
+______________________________________________________________________________________
 SLIP 20
-Q1] Write an application to accept two numbers from the user and displays them.
-But Reject input if both numbers are greater than 20 and asks for two new numbers.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/num1"
-android:hint="Enter First Number"
-android:inputType="number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/num2"
-android:hint="Enter Second Number"
-android:inputType="number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnCheck"
-android:text="Submit"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-<TextView
-android:id="@+id/result"
-android:text="Result"
-android:textSize="18sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Java Code (MainActivity.java)
-package com.example.numbercheck;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText num1, num2;
-Button btnCheck;
-TextView result;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-num1 = findViewById(R.id.num1);
-num2 = findViewById(R.id.num2);
-btnCheck = findViewById(R.id.btnCheck);
-result = findViewById(R.id.result);
-btnCheck.setOnClickListener(v -> {
-int n1 = Integer.parseInt(num1.getText().toString());
-int n2 = Integer.parseInt(num2.getText().toString());
-if (n1 > 20 && n2 > 20) {
-result.setText("Invalid Input! Both numbers > 20. Enter again.");
-num1.setText("");
-num2.setText("");
-} else {
-result.setText("Numbers are: " + n1 + " and " + n2);
-}
+Q.1) Create a Node.js file that demonstrate create student database and table in MySQL
+__app.js
+const mysql = require("mysql");
+const con = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: ""
 });
-}
-}
-Q2] Java Android Program to send email with attachment.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/email"
-android:hint="Recipient Email"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/subject"
-android:hint="Subject"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/message"
-android:hint="Message"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnSend"
-android:text="Send Email"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Java Code (MainActivity.java)
-package com.example.emailapp;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText email, subject, message;
-Button btnSend;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-email = findViewById(R.id.email);
-subject = findViewById(R.id.subject);
-message = findViewById(R.id.message);
-btnSend = findViewById(R.id.btnSend);
-btnSend.setOnClickListener(v -> {
-String to = email.getText().toString();
-String sub = subject.getText().toString();
-String msg = message.getText().toString();
-Intent intent = new Intent(Intent.ACTION_SEND);
-intent.setType("*/*");
-intent.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
-intent.putExtra(Intent.EXTRA_SUBJECT, sub);
-intent.putExtra(Intent.EXTRA_TEXT, msg);
-Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.sample);
-intent.putExtra(Intent.EXTRA_STREAM, uri);
-startActivity(Intent.createChooser(intent, "Send Email"));
+con.connect(function(err) {
+if (err) throw err;
+con.query("CREATE DATABASE studentdb", function(err, result) {
+if (err) throw err;
+console.log("Database created");
 });
+const con2 = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: "",
+database: "studentdb"
+});
+con2.connect(function(err) {
+if (err) throw err;
+const sql = "CREATE TABLE students (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), age INT)";
+con2.query(sql, function(err, result) {
+if (err) throw err;
+console.log("Table created");
+});
+});
+});
+__Run
+npm install mysql
+node app.js
+Q.2) Using angular js create a SPA to carry out validation for a username entered in a textbox.
+If the textbox is blank, alert âEnter usernameâ. If the number of characters is less than three,
+alert â Username is too shortâ. If value entered is appropriate the print âValid usernameâ
+and password should be minimum 8 characters
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>Username Validation</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>User Validation Form</h2>
+<form ng-submit="validate()">
+Username:<br>
+<input type="text" ng-model="username"><br><br>
+Password:<br>
+<input type="password" ng-model="password"><br><br>
+<input type="submit" value="Submit">
+</form>
+<h3>{{message}}</h3>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope) {
+$scope.validate = function() {
+if (!$scope.username || $scope.username.trim() === "") {
+alert("Enter username");
+return;
 }
+if ($scope.username.length < 3) {
+alert("Username is too short");
+return;
 }
-_____________________________________________________________________________________________________________
+if (!$scope.password || $scope.password.length < 8) {
+alert("Password should be minimum 8 characters");
+return;
+}
+$scope.message = "Valid username";
+};
+});
+</script>
+</body>
+</html>
+_________________________________________________________________________________________
 SLIP 21
-Q.1] Write an Android Program to demonstrate Activity life Cycle.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:gravity="center"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:text="Activity Life Cycle Demo"
-android:textSize="20sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Java Code (MainActivity.java)
-package com.example.lifecycledemo;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-String TAG = "LifecycleDemo";
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-Toast.makeText(this, "onCreate()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onCreate()");
-}
-@Override
-protected void onStart() {
-super.onStart();
-Toast.makeText(this, "onStart()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onStart()");
-}
-@Override
-protected void onResume() {
-super.onResume();
-Toast.makeText(this, "onResume()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onResume()");
-}
-@Override
-protected void onPause() {
-super.onPause();
-Toast.makeText(this, "onPause()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onPause()");
-}
-@Override
-protected void onStop() {
-super.onStop();
-Toast.makeText(this, "onStop()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onStop()");
-}
-@Override
-protected void onRestart() {
-super.onRestart();
-Toast.makeText(this, "onRestart()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onRestart()");
-}
-@Override
-protected void onDestroy() {
-super.onDestroy();
-Toast.makeText(this, "onDestroy()", Toast.LENGTH_SHORT).show();
-Log.d(TAG, "onDestroy()");
-}
-}
-Q.2] Create an Android Application that writes data to the SD Card
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/editText"
-android:hint="Enter Data"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnWrite"
-android:text="WRITE DATA"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnClear"
-android:text="CLEAR"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<TextView
-android:id="@+id/txtStatus"
-android:text=""
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) AndroidManifest.xml (Permission)
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-(C) Java Code (MainActivity.java)
-package com.example.sdcardapp;
-import android.os.Bundle;
-import android.os.Environment;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-import java.io.File;
-import java.io.FileOutputStream;
-public class MainActivity extends AppCompatActivity {
-EditText editText;
-Button btnWrite, btnClear;
-TextView txtStatus;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-editText = findViewById(R.id.editText);
-btnWrite = findViewById(R.id.btnWrite);
-btnClear = findViewById(R.id.btnClear);
-txtStatus = findViewById(R.id.txtStatus);
-btnWrite.setOnClickListener(v -> {
-try {
-String data = editText.getText().toString();
-File path = Environment.getExternalStorageDirectory();
-File file = new File(path, "myfile.txt");
-FileOutputStream fos = new FileOutputStream(file);
-fos.write(data.getBytes());
-fos.close();
-txtStatus.setText("Data Written in SD Card");
-} catch (Exception e) {
-txtStatus.setText("Error: " + e.getMessage());
-}
+Q.1) Create a Node.js file that demonstrate create Movie database and table in MySQL
+__app.js
+const mysql = require("mysql");
+const con = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: ""
 });
-btnClear.setOnClickListener(v -> {
-editText.setText("");
-txtStatus.setText("");
+con.connect(function(err) {
+if (err) throw err;
+con.query("CREATE DATABASE movie_db", function(err, result) {
+if (err) throw err;
+console.log("Database created");
 });
-}
-}
-__________________________________________________________________________________________________________________________
+const con2 = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: "",
+database: "movie_db"
+});
+con2.connect(function(err) {
+if (err) throw err;
+const sql = "CREATE TABLE movies (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(100), year INT)";
+con2.query(sql, function(err, result) {
+if (err) throw err;
+console.log("Table created");
+});
+});
+});
+__Run
+npm install mysql
+node app.js
+Q.2) Write node js application that transfer a file as an attachment on web and
+enables browser to prompt the user to download file using express js.
+__app.js
+const express = require("express");
+const path = require("path");
+const app = express();
+app.get("/download", function(req, res) {
+const filePath = path.join(__dirname, "file.txt");
+res.download(filePath);
+});
+app.listen(3000);
+__Run
+npm install express
+node app.js
+Open:
+http://localhost:3000/download
+_______________________________________________________________________________________
 SLIP 22
-Q.1] Write an Java Android Program to Change the Image on the Screen.
-(A) Add Images
-Place images in: res → drawable
-image1.jpg
-image2.jpg
-(B) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<ImageView
-android:id="@+id/imageView"
-android:src="@drawable/image1"
-android:layout_width="200dp"
-android:layout_height="200dp"/>
-<Button
-android:id="@+id/btnChange"
-android:text="Change Image"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(C) Java Code (MainActivity.java)
-package com.example.imagechange;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-ImageView imageView;
-Button btnChange;
-boolean isFirst = true;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-imageView = findViewById(R.id.imageView);
-btnChange = findViewById(R.id.btnChange);
-btnChange.setOnClickListener(v -> {
-if (isFirst) {
-imageView.setImageResource(R.drawable.image2);
-} else {
-imageView.setImageResource(R.drawable.image1);
-}
-isFirst = !isFirst;
+Q.1) Using node js create an Employee Registration Form validation.
+__1. index.html
+<!DOCTYPE html>
+<html>
+<head>
+<title>Employee Registration</title>
+</head>
+<body>
+<h2>Employee Registration Form</h2>
+<form action="/register" method="post">
+Name:<br>
+<input type="text" name="name"><br><br>
+Email:<br>
+<input type="text" name="email"><br><br>
+Mobile:<br>
+<input type="text" name="mobile"><br><br>
+Salary:<br>
+<input type="text" name="salary"><br><br>
+<input type="submit" value="Register">
+</form>
+</body>
+</html>
+__2. app.js
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.get("/", (req, res) => {
+res.sendFile(__dirname + "/index.html");
 });
+app.post("/register", (req, res) => {
+const { name, email, mobile, salary } = req.body;
+const namePattern = /^[A-Za-z ]+$/;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const mobilePattern = /^[0-9]{10}$/;
+const salaryPattern = /^[0-9]+$/;
+if (!namePattern.test(name)) {
+return res.send("Invalid Name");
 }
+if (!emailPattern.test(email)) {
+return res.send("Invalid Email");
 }
-Q.2] Perform following numeric operation according to user selection of radio button.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/editNumber"
-android:hint="Enter Number"
-android:inputType="number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<RadioGroup
-android:id="@+id/radioGroup"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content">
-<RadioButton
-android:id="@+id/rbOddEven"
-android:text="Odd or Even"/>
-<RadioButton
-android:id="@+id/rbPosNeg"
-android:text="Positive or Negative"/>
-<RadioButton
-android:id="@+id/rbSquare"
-android:text="Square"/>
-</RadioGroup>
-<Button
-android:id="@+id/btnCheck"
-android:text="Click"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-<TextView
-android:id="@+id/txtResult"
-android:text="Ans:"
-android:textSize="18sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Java Code (MainActivity.java)
-package com.example.radiodemo;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText editNumber;
-RadioGroup radioGroup;
-RadioButton rbOddEven, rbPosNeg, rbSquare;
-Button btnCheck;
-TextView txtResult;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-editNumber = findViewById(R.id.editNumber);
-radioGroup = findViewById(R.id.radioGroup);
-rbOddEven = findViewById(R.id.rbOddEven);
-rbPosNeg = findViewById(R.id.rbPosNeg);
-rbSquare = findViewById(R.id.rbSquare);
-btnCheck = findViewById(R.id.btnCheck);
-txtResult = findViewById(R.id.txtResult);
-btnCheck.setOnClickListener(v -> {
-int num = Integer.parseInt(editNumber.getText().toString());
-if (rbOddEven.isChecked()) {
-if (num % 2 == 0)
-txtResult.setText("Ans: Number is Even");
-else
-txtResult.setText("Ans: Number is Odd");
+if (!mobilePattern.test(mobile)) {
+return res.send("Invalid Mobile Number");
 }
-else if (rbPosNeg.isChecked()) {
-if (num >= 0)
-txtResult.setText("Ans: Positive Number");
-else
-txtResult.setText("Ans: Negative Number");
+if (!salaryPattern.test(salary)) {
+return res.send("Invalid Salary");
 }
-else if (rbSquare.isChecked()) {
-int square = num * num;
-txtResult.setText("Ans: Square = " + square);
-}
+res.send("Employee Registered Successfully");
 });
-}
-}
-____________________________________________________________________________________________________________________________
+app.listen(3000);
+__Run
+npm init -y
+npm install express body-parser
+node app.js
+Open:
+http://localhost:3000
+Q.2) Create a js file named main.js for event-driven application. There should be a main
+loop that listens for events, and then triggers a callback function when one of those events is detected.
+__main.js
+const EventEmitter = require("events");
+const eventEmitter = new EventEmitter();
+eventEmitter.on("login", function(user) {
+console.log("User logged in:", user);
+});
+eventEmitter.on("logout", function(user) {
+console.log("User logged out:", user);
+});
+console.log("Main loop listening for events...");
+setTimeout(function() {
+eventEmitter.emit("login", "Admin");
+}, 2000);
+setTimeout(function() {
+eventEmitter.emit("logout", "Admin");
+}, 4000);
+___Run
+node main.js
+__________________________________________________________________________________________________
 SLIP 23
-Q. 1] Write a Java android program to demonstrate implicit intent.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<Button
-android:id="@+id/btnWeb"
-android:text="Open Website"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnCall"
-android:text="Dial Number"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Java Code (MainActivity.java)
-package com.example.implicitintent;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.widget.Button;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-Button btnWeb, btnCall;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-btnWeb = findViewById(R.id.btnWeb);
-btnCall = findViewById(R.id.btnCall);
-btnWeb.setOnClickListener(v -> {
-Intent intent = new Intent(Intent.ACTION_VIEW);
-intent.setData(Uri.parse("https://www.google.com"));
-startActivity(intent);
-});
-btnCall.setOnClickListener(v -> {
-Intent intent = new Intent(Intent.ACTION_DIAL);
-intent.setData(Uri.parse("tel:1234567890"));
-startActivity(intent);
-});
-}
-}
-Q.2] Create an Android application which will ask the user to input his / her name.
-A message should display the two items concatenated in a label. Change the format of
-the label using radio buttons and check boxes for selection. The user can make the
-label text bold, underlined or italic as well as change its color. Also include
-buttons to display the message in the label, clear the text boxes as well as label. Finally exit.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<LinearLayout
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="wrap_content">
-<EditText
-android:id="@+id/editName"
-android:hint="Enter Your Name"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<CheckBox
-android:id="@+id/cbBold"
-android:text="Bold"/>
-<CheckBox
-android:id="@+id/cbItalic"
-android:text="Italic"/>
-<CheckBox
-android:id="@+id/cbUnderline"
-android:text="Underline"/>
-<RadioGroup
-android:id="@+id/radioGroup">
-<RadioButton
-android:id="@+id/rbRed"
-android:text="Red"/>
-<RadioButton
-android:id="@+id/rbBlue"
-android:text="Blue"/>
-<RadioButton
-android:id="@+id/rbGreen"
-android:text="Green"/>
-</RadioGroup>
-<Button
-android:id="@+id/btnDisplay"
-android:text="Display"/>
-<Button
-android:id="@+id/btnClear"
-android:text="Clear"/>
-<Button
-android:id="@+id/btnExit"
-android:text="Exit"/>
-<TextView
-android:id="@+id/txtResult"
-android:text="Result will appear here"
-android:textSize="20sp"
-android:padding="10dp"/>
-</LinearLayout>
-</ScrollView>
-(B) Java Code (MainActivity.java)
-package com.example.formatapp;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText editName;
-CheckBox cbBold, cbItalic, cbUnderline;
-RadioGroup radioGroup;
-RadioButton rbRed, rbBlue, rbGreen;
-Button btnDisplay, btnClear, btnExit;
-TextView txtResult;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-editName = findViewById(R.id.editName);
-cbBold = findViewById(R.id.cbBold);
-cbItalic = findViewById(R.id.cbItalic);
-cbUnderline = findViewById(R.id.cbUnderline);
-radioGroup = findViewById(R.id.radioGroup);
-rbRed = findViewById(R.id.rbRed);
-rbBlue = findViewById(R.id.rbBlue);
-rbGreen = findViewById(R.id.rbGreen);
-btnDisplay = findViewById(R.id.btnDisplay);
-btnClear = findViewById(R.id.btnClear);
-btnExit = findViewById(R.id.btnExit);
-txtResult = findViewById(R.id.txtResult);
-btnDisplay.setOnClickListener(v -> {
-String name = editName.getText().toString();
-txtResult.setText("Hello " + name);
-if (cbBold.isChecked() && cbItalic.isChecked()) {
-txtResult.setTypeface(null, Typeface.BOLD_ITALIC);
-} else if (cbBold.isChecked()) {
-txtResult.setTypeface(null, Typeface.BOLD);
-} else if (cbItalic.isChecked()) {
-txtResult.setTypeface(null, Typeface.ITALIC);
+Q.1) Write node js script to interact with the file system, and serve a web page from a File
+__app.js
+const http = require("http");
+const fs = require("fs");
+http.createServer(function(req, res) {
+fs.readFile("index.html", function(err, data) {
+if (err) {
+res.writeHead(404, { "Content-Type": "text/html" });
+res.end("404 Not Found");
 } else {
-txtResult.setTypeface(null, Typeface.NORMAL);
-}
-if (cbUnderline.isChecked()) {
-txtResult.setPaintFlags(txtResult.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-} else {
-txtResult.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-}
-if (rbRed.isChecked()) {
-txtResult.setTextColor(Color.RED);
-} else if (rbBlue.isChecked()) {
-txtResult.setTextColor(Color.BLUE);
-} else if (rbGreen.isChecked()) {
-txtResult.setTextColor(Color.GREEN);
+res.writeHead(200, { "Content-Type": "text/html" });
+res.write(data);
+res.end();
 }
 });
-btnClear.setOnClickListener(v -> {
-editName.setText("");
-txtResult.setText("");
-});
-btnExit.setOnClickListener(v -> {
-finish();
-});
-}
-}
-_______________________________________________________________________________________________________________________
+}).listen(3000);
+___Run
+node app.js
+Open:
+http://localhost:3000
+__index.html
+<!DOCTYPE html>
+<html>
+<head>
+<title>File System Web Page</title>
+</head>
+<body>
+<h2>Welcome to Node.js File System Example</h2>
+<p>This page is served from a file using fs module.</p>
+</body>
+</html>
+Q.2) Write node js script to build Your Own Node.js Module. Use require (âhttpâ) module 
+is a built-in Node module that invokes the functionality of the HTTP library to create
+a local server. Also use the export statement to make functions in your module available
+externally. Create a new text file to contain the functions in your module called,
+âmodules.jsâ and add this function to return todayâs date and time.
+___1. modules.js (Custom Module)
+exports.getDateTime = function() {
+return new Date();
+};
+____2. main.js
+const http = require("http");
+const myModule = require("./modules");
+http.createServer(function(req, res) {
+res.writeHead(200, { "Content-Type": "text/html" });
+res.write("Current Date and Time: " + myModule.getDateTime());
+res.end();
+}).listen(3000);
+___Run
+node main.js
+Open:
+http://localhost:3000
+_________________________________________________________________________________________
 SLIP 24
-Q.1] Write an application to accept a string from the user.
-With two buttons to display the string in Uppercase and Lowercase using the toast message
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/editText"
-android:hint="Enter String"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnLower"
-android:text="LowerCase"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnUpper"
-android:text="UpperCase"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Java Code (MainActivity.java)
-package com.example.stringapp;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText editText;
-Button btnLower, btnUpper;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-editText = findViewById(R.id.editText);
-btnLower = findViewById(R.id.btnLower);
-btnUpper = findViewById(R.id.btnUpper);
-btnLower.setOnClickListener(v -> {
-String text = editText.getText().toString();
-Toast.makeText(this, text.toLowerCase(), Toast.LENGTH_SHORT).show();
+Q.1) Using node js create an eLearning System
+<!DOCTYPE html>
+<html>
+<head>
+<title>eLearning System</title>
+</head>
+<body>
+<h2>Available Courses</h2>
+<form action="/enroll" method="post">
+<label>Name:</label><br>
+<input type="text" name="name" required><br><br>
+<label>Select Course:</label><br>
+<select name="course">
+<option value="Full Stack Development">Full Stack Development</option>
+<option value="Data Science">Data Science</option>
+<option value="Machine Learning">Machine Learning</option>
+</select><br><br>
+<input type="submit" value="Enroll">
+</form>
+</body>
+</html>
+__ Node.js File (app.js)
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.get("/", (req, res) => {
+res.sendFile(__dirname + "/index.html");
 });
-btnUpper.setOnClickListener(v -> {
-String text = editText.getText().toString();
-Toast.makeText(this, text.toUpperCase(), Toast.LENGTH_SHORT).show();
+app.post("/enroll", (req, res) => {
+const name = req.body.name;
+const course = req.body.course;
+res.send("<h2>" + name + " enrolled in " + course + " successfully!</h2>");
 });
-}
-}
-Q.2] Create table Car (id, name, type, color). Create Java Android Application for
-performing the following operation on the table. (Using SQLite database)
-i) Insert 5 New Car Details.
-ii) Show All the Car Details
-(A) Database Helper Class (DBHelper.java)
-package com.example.cardb;
-import android.content.*;
-import android.database.Cursor;
-import android.database.sqlite.*;
-public class DBHelper extends SQLiteOpenHelper {
-public static final String DB_NAME = "CarDB";
-public static final int DB_VERSION = 1;
-public DBHelper(Context context) {
-super(context, DB_NAME, null, DB_VERSION);
-}
-@Override
-public void onCreate(SQLiteDatabase db) {
-db.execSQL("CREATE TABLE Car(id INTEGER PRIMARY KEY, name TEXT, type TEXT, color TEXT)");
-}
-@Override
-public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-db.execSQL("DROP TABLE IF EXISTS Car");
-onCreate(db);
-}
-public void insertData(int id, String name, String type, String color) {
-SQLiteDatabase db = this.getWritableDatabase();
-ContentValues cv = new ContentValues();
-cv.put("id", id);
-cv.put("name", name);
-cv.put("type", type);
-cv.put("color", color);
-db.insert("Car", null, cv);
-}
-public Cursor getData() {
-SQLiteDatabase db = this.getReadableDatabase();
-return db.rawQuery("SELECT * FROM Car", null);
-}
-}
-(B) XML Layout (activity_main.xml)
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<Button
-android:id="@+id/btnInsert"
-android:text="Insert 5 Cars"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnDisplay"
-android:text="Show All Cars"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<TextView
-android:id="@+id/txtResult"
-android:text="Output"
-android:textSize="16sp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(C) MainActivity.java
-package com.example.cardb;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-DBHelper db;
-Button btnInsert, btnDisplay;
-TextView txtResult;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-db = new DBHelper(this);
-btnInsert = findViewById(R.id.btnInsert);
-btnDisplay = findViewById(R.id.btnDisplay);
-txtResult = findViewById(R.id.txtResult);
-btnInsert.setOnClickListener(v -> {
-db.insertData(1, "Swift", "Hatchback", "Red");
-db.insertData(2, "Creta", "SUV", "White");
-db.insertData(3, "City", "Sedan", "Black");
-db.insertData(4, "Thar", "SUV", "Green");
-db.insertData(5, "i20", "Hatchback", "Blue");
-txtResult.setText("5 Car Records Inserted");
+app.listen(3000, () => {
+console.log("Server running at http://localhost:3000");
 });
-btnDisplay.setOnClickListener(v -> {
-Cursor c = db.getData();
-StringBuilder data = new StringBuilder();
-while (c.moveToNext()) {
-data.append("ID: ").append(c.getInt(0)).append("\n");
-data.append("Name: ").append(c.getString(1)).append("\n");
-data.append("Type: ").append(c.getString(2)).append("\n");
-data.append("Color: ").append(c.getString(3)).append("\n\n");
+__Steps to Run
+npm init -y
+npm install express body-parser
+node app.js
+Q.2) Using angular js create a SPA to carry out validation for a username entered in a textbox.
+If the textbox is blank, alert âEnter usernameâ. If the number of characters is less than three,
+alert â Username is too shortâ. If value entered is appropriate the print
+âValid usernameâ and password should be minimum 8 characters
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>Username Validation SPA</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>User Validation</h2>
+<form ng-submit="validate()">
+Username:<br>
+<input type="text" ng-model="username"><br><br>
+Password:<br>
+<input type="password" ng-model="password"><br><br>
+<input type="submit" value="Submit">
+</form>
+<h3>{{message}}</h3>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope) {
+$scope.validate = function() {
+if (!$scope.username || $scope.username.trim() === "") {
+alert("Enter username");
+return;
 }
-txtResult.setText(data.toString());
+if ($scope.username.length < 3) {
+alert("Username is too short");
+return;
+}
+if (!$scope.password || $scope.password.length < 8) {
+alert("Password should be minimum 8 characters");
+return;
+}
+$scope.message = "Valid username";
+};
 });
-}
-}
-_________________________________________________________________________________________________________________
+</script>
+</body>
+</html>
+___________________________________________________________________________________________
 SLIP 25
-Q.1] Create an android application for SMS activity.
-(A) XML Layout (activity_main.xml)
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<EditText
-android:id="@+id/phone"
-android:hint="Enter Phone Number"
-android:inputType="phone"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/message"
-android:hint="Enter Message"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/btnSend"
-android:text="Send SMS"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-(B) Java Code (MainActivity.java)
-package com.example.smsapp;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText phone, message;
-Button btnSend;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-phone = findViewById(R.id.phone);
-message = findViewById(R.id.message);
-btnSend = findViewById(R.id.btnSend);
-btnSend.setOnClickListener(v -> {
-String num = phone.getText().toString();
-String msg = message.getText().toString();
-Intent intent = new Intent(Intent.ACTION_SENDTO);
-intent.setData(Uri.parse("smsto:" + num));
-intent.putExtra("sms_body", msg);
-startActivity(intent);
+Q.1) Create an angular JS Application that shows the location of the current web page.
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<title>Page Location</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="myController">
+<h2>Current Web Page Location</h2>
+<p><b>URL:</b> {{url}}</p>
+<p><b>Protocol:</b> {{protocol}}</p>
+<p><b>Host:</b> {{host}}</p>
+<p><b>Path:</b> {{path}}</p>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myController", function($scope, $location) {
+$scope.url = $location.absUrl();
+$scope.protocol = $location.protocol();
+$scope.host = $location.host();
+$scope.path = $location.path();
 });
-}
-}
-4. Alternative (Direct SMS using SmsManager) (Needs Permission)⚠️⚠️
-Permission in AndroidManifest.xml
-<uses-permission android:name="android.permission.SEND_SMS"/>
-Code Snippet
-SmsManager smsManager = SmsManager.getDefault();
-smsManager.sendTextMessage(num, null, msg, null, null);
-Toast.makeText(this, "SMS Sent", Toast.LENGTH_SHORT).show();
-Q.2] Create an Android application, which show Login Form. After clicking LOGIN button display the
-“Login Successful…” message if username and password is same else display
-“Invalid Login” message in Toast Control.
-1. XML Layout (activity_main.xml)
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:padding="20dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<TextView
-android:text="Login Form"
-android:textSize="22sp"
-android:textStyle="bold"
-android:layout_marginBottom="20dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/username"
-android:hint="Username"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<EditText
-android:id="@+id/password"
-android:hint="Password"
-android:inputType="textPassword"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"/>
-<Button
-android:id="@+id/loginBtn"
-android:text="LOGIN"
-android:layout_marginTop="15dp"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"/>
-</LinearLayout>
-2. Java Code (MainActivity.java)
-package com.example.loginapp;
-import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
-EditText username, password;
-Button loginBtn;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.activity_main);
-username = findViewById(R.id.username);
-password = findViewById(R.id.password);
-loginBtn = findViewById(R.id.loginBtn);
-loginBtn.setOnClickListener(v -> {
-String user = username.getText().toString();
-String pass = password.getText().toString();
-if (user.equals(pass)) {
-Toast.makeText(this, "Login Successful...", Toast.LENGTH_SHORT).show();
-} else {
-Toast.makeText(this, "Invalid Login", Toast.LENGTH_SHORT).show();
-}
+</script>
+</body>
+</html>
+Q.2) Create a js file named main.js for event-driven application. There should be a main
+loop that listens for events, and then triggers a callback function when one of those events is detected.
+___main.js
+const EventEmitter = require("events");
+const eventEmitter = new EventEmitter();
+eventEmitter.on("start", function() {
+console.log("Start event detected");
 });
-}
-}
-
-</code>
+eventEmitter.on("process", function(data) {
+console.log("Processing data:", data);
+});
+eventEmitter.on("end", function() {
+console.log("End event detected");
+});
+console.log("Main loop is listening for events...");
+setTimeout(function() {
+eventEmitter.emit("start");
+}, 1000);
+setTimeout(function() {
+eventEmitter.emit("process", "Sample Input");
+}, 2000);
+setTimeout(function() {
+eventEmitter.emit("end");
+}, 3000);
+___Run
+node main.js
+____________________________@#$%^&*_______________________________________
 </pre>
         
     <!-- <div>
